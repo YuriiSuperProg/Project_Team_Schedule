@@ -12,10 +12,10 @@ const BELLS = {
 // ============================================================
 //  ДНИ
 // ============================================================
-const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const DAY_NAMES = {
   Пн: "Понедельник", Вт: "Вторник", Ср: "Среда",
-  Чт: "Четверг", Пт: "Пятница", Сб: "Суббота"
+  Чт: "Четверг", Пт: "Пятница", Сб: "Суббота", Вс: "Воскресенье"
 };
 
 // ============================================================
@@ -299,6 +299,11 @@ function renderChips(containerId, items, current, onClick, label = x => x) {
 //  ФИЛЬТРЫ
 // ============================================================
 function renderFilters() {
+  // режим просмотра преподавателя — управление в teachers.js
+  if (window.__renderTeacherFilters && state.viewTeacher) {
+    return window.__renderTeacherFilters();
+  }
+
   renderChips("specs", Object.keys(SCHEDULE), state.spec, spec => {
     state.spec = spec;
     state.course = null;
@@ -331,6 +336,11 @@ function renderFilters() {
 //  РАСПИСАНИЕ
 // ============================================================
 function renderSchedule() {
+  // режим просмотра преподавателя — управление в teachers.js
+  if (window.__renderTeacherSchedule && state.viewTeacher) {
+    return window.__renderTeacherSchedule();
+  }
+
   const out = $("out");
   const info = $("weekInfo");
 
@@ -411,6 +421,12 @@ function renderDayProgress() {
 
   if (!card || !track) return;
 
+  // в режиме преподавателя виджет дня скрываем
+  if (state.viewTeacher) {
+    card.classList.add("hidden");
+    return;
+  }
+
   // пересоздаём dcNow, если его нет в DOM
   let nowDot = $("dcNow");
   if (!nowDot) {
@@ -428,9 +444,18 @@ function renderDayProgress() {
   const now = new Date();
   const todayIndex = (now.getDay() + 6) % 7;
   const raw = SCHEDULE[state.spec][state.course][state.group];
-  const pairs = raw[todayIndex];
+  let pairs = raw[todayIndex];
 
   if (!pairs || !pairs.length) {
+    card.classList.add("hidden");
+    return;
+  }
+
+  // фильтруем по текущей неделе
+  const week = WEEK_LIST[state.week];
+  pairs = pairs.filter(p => !p.star || p.star === week.star);
+
+  if (!pairs.length) {
     card.classList.add("hidden");
     return;
   }
@@ -441,8 +466,15 @@ function renderDayProgress() {
     BELL_MIN[n] = { start: toMin(start), end: toMin(end), num: Number(n) };
   });
 
+  // убираем дубли по номеру пары, оставляем первую
+  const seenNum = new Set();
   const sorted = pairs
     .filter(p => BELL_MIN[p.number])
+    .filter(p => {
+      if (seenNum.has(p.number)) return false;
+      seenNum.add(p.number);
+      return true;
+    })
     .map(p => ({ ...BELL_MIN[p.number], pair: p }))
     .sort((a, b) => a.start - b.start);
 
@@ -538,13 +570,69 @@ function renderDayProgress() {
 }
 
 // ============================================================
+//  БЛОК «ЗАВТРА»
+// ============================================================
+function renderTomorrow() {
+  const wrap = $("tomorrow");
+  const mainEl = $("tmMain");
+  const subEl  = $("tmSub");
+  if (!wrap || !mainEl || !subEl) return;
+
+  // в режиме преподавателя скрываем
+  if (state.viewTeacher) {
+    wrap.classList.add("hidden");
+    return;
+  }
+
+  if (!state.spec || !state.group) {
+    wrap.classList.add("hidden");
+    return;
+  }
+
+  const now = new Date();
+  const tomorrowIndex = (now.getDay() + 1) % 7;
+  const raw = SCHEDULE[state.spec][state.course][state.group];
+  let pairs = raw[tomorrowIndex];
+
+  const dayName = DAY_NAMES[DAYS[tomorrowIndex]];
+
+  if (!pairs || !pairs.length) {
+    mainEl.innerHTML = "Пар <b>нет</b> — отдыхай! 🎉";
+    subEl.textContent = dayName;
+    wrap.classList.remove("hidden");
+    return;
+  }
+
+  const w = WEEK_LIST[state.week];
+  pairs = pairs.filter(p => !p.star || p.star === w.star);
+
+  if (!pairs.length) {
+    mainEl.innerHTML = "Пар <b>нет</b> — отдыхай! 🎉";
+    subEl.textContent = dayName;
+    wrap.classList.remove("hidden");
+    return;
+  }
+
+  const sorted = [...pairs].sort((a, b) => a.number - b.number);
+  const first = sorted[0];
+
+  const time = BELLS[first.number] ? BELLS[first.number].split("–")[0] : "";
+  const subject = first.text.split("преп.")[0].trim();
+  const count = sorted.length;
+
+  mainEl.innerHTML = `${time} · <b>${subject}</b>`;
+  subEl.textContent = `${dayName} · пар: ${count}`;
+  wrap.classList.remove("hidden");
+}
+
+// ============================================================
 //  ОБЩИЙ РЕНДЕР
 // ============================================================
 function renderAll() {
   renderFilters();
   renderSchedule();
   renderDayProgress();
-  if (typeof showRandomWish === "function") showRandomWish();
+  renderTomorrow();
 }
 
 // ============================================================
@@ -554,11 +642,13 @@ function shiftWeek(d) {
   state.week = Math.max(0, Math.min(WEEK_LIST.length - 1, state.week + d));
   renderSchedule();
   renderDayProgress();
+  renderTomorrow();
 }
 function goToday() {
   state.week = currentWeek();
   renderSchedule();
   renderDayProgress();
+  renderTomorrow();
 }
 
 // ============================================================
@@ -597,5 +687,8 @@ if (forgetBtn) {
   });
 }
 
-// обновление виджета дня раз в минуту
-setInterval(renderDayProgress, 60000);
+// обновление раз в минуту
+setInterval(() => {
+  renderDayProgress();
+  renderTomorrow();
+}, 60000);

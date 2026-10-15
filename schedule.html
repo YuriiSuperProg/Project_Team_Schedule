@@ -18,8 +18,9 @@
         </span>
       </a>
       <div class="nav-actions">
+        <button class="icon-btn" id="switchRole" title="Сменить роль">🔄 Сменить роль</button>
         <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
-        <button class="icon-btn" id="forgetGroup" title="Забыть группу">🗑 Забыть группу</button>
+        <button class="icon-btn" id="forgetGroup" title="Забыть группу">🗑</button>
         <a href="index.html" class="back">← На главную</a>
       </div>
     </div>
@@ -27,77 +28,114 @@
 
   <main class="container">
 
-    <div class="greeting" id="greeting">
-      <div class="greeting-text">
-        Привет, <span id="userName">друг</span>! 👋
+    <!-- ЭКРАН ВЫБОРА РОЛИ -->
+    <div class="role-screen" id="roleScreen">
+      <div class="role-title">Кто ты?</div>
+      <div class="role-sub">Выбери, чтобы настроить расписание под себя</div>
+      <div class="role-cards">
+        <button class="role-card" data-role="student">
+          <div class="rc-icon">👨‍🎓</div>
+          <div class="rc-title">Я студент</div>
+          <div class="rc-desc">Расписание своей группы</div>
+        </button>
+        <button class="role-card" data-role="teacher">
+          <div class="rc-icon">👨‍🏫</div>
+          <div class="rc-title">Я преподаватель</div>
+          <div class="rc-desc">Свои пары и группы</div>
+        </button>
       </div>
-      <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
     </div>
 
-    <!-- ПОЖЕЛАНИЕ ДНЯ -->
-    <div class="wish" id="wish">
-      <span class="wish-emoji" id="wishEmoji">✨</span>
-      <span class="wish-text" id="wishText">Хорошего дня!</span>
-      <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
-    </div>
+    <!-- ОСНОВНОЙ ЭКРАН -->
+    <div class="schedule-screen" id="scheduleScreen" style="display:none">
 
-    <div class="filters">
-      <div class="row"><span>Специальность</span><div class="chips" id="specs"></div></div>
-      <div class="row"><span>Курс</span><div class="chips" id="courses"></div></div>
-      <div class="row"><span>Группа</span><div class="chips" id="groups"></div></div>
-    </div>
+      <div class="greeting" id="greeting">
+        <div class="greeting-text">
+          Привет, <span id="userName">друг</span>! 👋
+        </div>
+        <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
+      </div>
 
-    <div class="weekbar">
-      <button onclick="shiftWeek(-1)">←</button>
-      <b id="weekInfo">Выберите группу</b>
-      <button onclick="shiftWeek(1)">→</button>
-      <button onclick="goToday()">Сегодня</button>
-    </div>
+      <!-- ПОЖЕЛАНИЕ -->
+      <div class="wish" id="wish">
+        <span class="wish-emoji" id="wishEmoji">✨</span>
+        <span class="wish-text" id="wishText">Хорошего дня!</span>
+        <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
+      </div>
 
-    <!-- ВИДЖЕТ ДНЯ -->
-    <div class="day-card hidden" id="dayCard">
+      <div class="filters">
+        <div class="row"><span id="filterLabel1">Специальность</span><div class="chips" id="specs"></div></div>
+        <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
+        <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
+        <div class="row" id="rowTeacher" style="display:none"><span>Преподаватель</span><div class="chips" id="teachers"></div></div>
+      </div>
 
-      <div class="dc-main">
-        <div class="dc-ring" id="dcRing">
-          <svg viewBox="0 0 120 120">
-            <circle class="dc-ring-bg" cx="60" cy="60" r="52"/>
-            <circle class="dc-ring-fill" cx="60" cy="60" r="52" id="dcRingFill"/>
-          </svg>
-          <div class="dc-ring-text">
-            <b id="dayPercent">0%</b>
-            <span>дня</span>
+      <!-- ПОИСК ПО ДАТЕ -->
+      <div class="date-search">
+        <span class="ds-icon">🔍</span>
+        <input type="text" id="dateInput" class="ds-input" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off">
+        <button class="ds-btn" id="dateFind">Найти</button>
+      </div>
+
+      <div class="weekbar">
+        <button onclick="shiftWeek(-1)">←</button>
+        <b id="weekInfo">Выберите группу</b>
+        <button onclick="shiftWeek(1)">→</button>
+        <button onclick="goToday()">Сегодня</button>
+      </div>
+
+      <!-- ВИДЖЕТ ДНЯ -->
+      <div class="day-card hidden" id="dayCard">
+        <div class="dc-main">
+          <div class="dc-ring" id="dcRing">
+            <svg viewBox="0 0 120 120">
+              <circle class="dc-ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="dc-ring-fill" cx="60" cy="60" r="52" id="dcRingFill"/>
+            </svg>
+            <div class="dc-ring-text">
+              <b id="dayPercent">0%</b>
+              <span>дня</span>
+            </div>
+          </div>
+          <div class="dc-info">
+            <div class="dc-status">
+              <span class="pulse"></span>
+              <span id="dayStatus">Идёт учебный день</span>
+            </div>
+            <div class="dc-pair" id="dcPair">—</div>
+            <div class="dc-meta" id="dcMeta">—</div>
+            <div class="dc-left" id="dayLeft">—</div>
           </div>
         </div>
-
-        <div class="dc-info">
-          <div class="dc-status">
-            <span class="pulse"></span>
-            <span id="dayStatus">Идёт учебный день</span>
+        <div class="dc-timeline">
+          <div class="dc-track" id="dcTrack">
+            <div class="dc-now" id="dcNow"></div>
           </div>
-          <div class="dc-pair" id="dcPair">—</div>
-          <div class="dc-meta" id="dcMeta">—</div>
-          <div class="dc-left" id="dayLeft">—</div>
+          <div class="dc-labels" id="dcLabels"></div>
         </div>
       </div>
 
-      <div class="dc-timeline">
-        <div class="dc-track" id="dcTrack">
-          <div class="dc-now" id="dcNow"></div>
+      <!-- ЗАВТРА -->
+      <div class="tomorrow hidden" id="tomorrow">
+        <div class="tm-icon">🌅</div>
+        <div class="tm-info">
+          <div class="tm-label">Завтра</div>
+          <div class="tm-main" id="tmMain">—</div>
+          <div class="tm-sub" id="tmSub">—</div>
         </div>
-        <div class="dc-labels" id="dcLabels"></div>
       </div>
+
+      <div class="minical" id="minical"></div>
+      <div class="nowbar hidden" id="nowbar"></div>
+      <div id="out"></div>
 
     </div>
-
-    <div class="minical" id="minical"></div>
-
-    <div class="nowbar hidden" id="nowbar"></div>
-
-    <div id="out"></div>
 
   </main>
 
   <script src="data.js"></script>
   <script src="schedule.js"></script>
+  <script src="search.js"></script>
+  <script src="teachers.js"></script>
 </body>
 </html>
