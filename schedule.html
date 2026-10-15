@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Расписание — ПараЗвёзд</title>
   <link rel="stylesheet" href="schedule.css">
-  <script src="/data.js"></script>
 </head>
 <body>
 
@@ -20,6 +19,7 @@
       </a>
       <div class="nav-actions">
         <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
+        <button class="icon-btn" id="forgetGroup" title="Забыть группу">🗑 Забыть группу</button>
         <a href="index.html" class="back">← На главную</a>
       </div>
     </div>
@@ -32,6 +32,13 @@
         Привет, <span id="userName">друг</span>! 👋
       </div>
       <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
+    </div>
+
+    <!-- ПОЖЕЛАНИЕ ДНЯ -->
+    <div class="wish" id="wish">
+      <span class="wish-emoji" id="wishEmoji">✨</span>
+      <span class="wish-text" id="wishText">Хорошего дня!</span>
+      <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
     </div>
 
     <div class="filters">
@@ -47,6 +54,41 @@
       <button onclick="goToday()">Сегодня</button>
     </div>
 
+    <!-- ВИДЖЕТ ДНЯ -->
+    <div class="day-card hidden" id="dayCard">
+
+      <div class="dc-main">
+        <div class="dc-ring" id="dcRing">
+          <svg viewBox="0 0 120 120">
+            <circle class="dc-ring-bg" cx="60" cy="60" r="52"/>
+            <circle class="dc-ring-fill" cx="60" cy="60" r="52" id="dcRingFill"/>
+          </svg>
+          <div class="dc-ring-text">
+            <b id="dayPercent">0%</b>
+            <span>дня</span>
+          </div>
+        </div>
+
+        <div class="dc-info">
+          <div class="dc-status">
+            <span class="pulse"></span>
+            <span id="dayStatus">Идёт учебный день</span>
+          </div>
+          <div class="dc-pair" id="dcPair">—</div>
+          <div class="dc-meta" id="dcMeta">—</div>
+          <div class="dc-left" id="dayLeft">—</div>
+        </div>
+      </div>
+
+      <div class="dc-timeline">
+        <div class="dc-track" id="dcTrack">
+          <div class="dc-now" id="dcNow"></div>
+        </div>
+        <div class="dc-labels" id="dcLabels"></div>
+      </div>
+
+    </div>
+
     <div class="minical" id="minical"></div>
 
     <div class="nowbar hidden" id="nowbar"></div>
@@ -55,7 +97,7 @@
 
   </main>
 
- 
+  <script src="data.js"></script>
   <script src="schedule.js"></script>
 </body>
 </html>
