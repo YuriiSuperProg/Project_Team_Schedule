@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Расписание — ПараЗвёзд</title>
+  <link rel="stylesheet" href="schedule.css">
+  <script src="/data.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🎓</span>
+        <span>
+          <b>ПараЗвёзд</b>
+          <small>Расписание ВолГУ</small>
+        </span>
+      </a>
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
+        <a href="index.html" class="back">← На главную</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <div class="greeting" id="greeting">
+      <div class="greeting-text">
+        Привет, <span id="userName">друг</span>! 👋
+      </div>
+      <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
+    </div>
+
+    <div class="filters">
+      <div class="row"><span>Специальность</span><div class="chips" id="specs"></div></div>
+      <div class="row"><span>Курс</span><div class="chips" id="courses"></div></div>
+      <div class="row"><span>Группа</span><div class="chips" id="groups"></div></div>
+    </div>
+
+    <div class="weekbar">
+      <button onclick="shiftWeek(-1)">←</button>
+      <b id="weekInfo">Выберите группу</b>
+      <button onclick="shiftWeek(1)">→</button>
+      <button onclick="goToday()">Сегодня</button>
+    </div>
+
+    <div class="minical" id="minical"></div>
+
+    <div class="nowbar hidden" id="nowbar"></div>
+
+    <div id="out"></div>
+
+  </main>
+
+ 
+  <script src="schedule.js"></script>
+</body>
+</html>

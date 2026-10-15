@@ -1,0 +1,482 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ============ ПАЛИТРА ============ */
+:root {
+  --blue:       #1769E0;
+  --blue-2:     #4C9AFF;
+  --blue-soft:  #E8F1FF;
+  --bg:         #F7F9FC;
+  --card:       #FFFFFF;
+  --text:       #0F172A;
+  --muted:      #94A3B8;
+  --line:       #E2E8F0;
+  --radius:     16px;
+}
+
+html.dark {
+  --bg:         #0F172A;
+  --card:       #1A2338;
+  --text:       #F7F9FC;
+  --muted:      #94A3B8;
+  --line:       #2A3448;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background .3s, color .3s;
+  min-height: 100vh;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ============ HEADER ============ */
+header {
+  position: sticky; top: 0;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  z-index: 100;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 68px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 1rem;
+}
+.logo-icon { font-size: 1.6rem; }
+.logo b { font-weight: 700; color: var(--blue); }
+.logo small {
+  display: block;
+  font-size: .7rem;
+  color: var(--muted);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+
+.icon-btn {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text);
+  transition: .15s;
+}
+.icon-btn:hover { border-color: var(--blue); }
+
+.back {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .9rem;
+  transition: color .15s;
+}
+.back:hover { color: var(--blue); }
+
+/* ============ КНОПКИ ============ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: .9rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: .15s;
+  font-family: inherit;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--text);
+}
+.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ============ ПРИВЕТСТВИЕ ============ */
+.greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 32px 0 16px;
+  padding: 18px 22px;
+  background: var(--c-soft, var(--blue-soft));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  transition: background .3s;
+}
+.greeting-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.greeting-text span {
+  color: var(--c-text, var(--blue));
+  font-weight: 600;
+}
+
+/* ============ ФИЛЬТРЫ ============ */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin: 24px 0 22px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.row > span {
+  color: var(--muted);
+  font-size: .85rem;
+  min-width: 110px;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.chip {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: .15s;
+}
+.chip:hover { border-color: var(--c, var(--blue)); color: var(--c-text, var(--blue)); }
+.chip.on {
+  background: var(--c, var(--blue));
+  color: #fff;
+  border-color: var(--c, var(--blue));
+}
+
+/* звёздочка избранного */
+.group-item { display: inline-flex; align-items: center; gap: 4px; }
+.star-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 2px 4px;
+  color: var(--muted);
+  transition: color .15s;
+}
+.star-btn:hover, .star-btn.on { color: #f0b429; }
+
+/* ============ НЕДЕЛЯ ============ */
+.weekbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--c-soft, var(--blue-soft));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  transition: background .3s;
+}
+
+.weekbar b {
+  flex: 1;
+  text-align: center;
+  color: var(--c-text, var(--blue));
+  font-weight: 600;
+}
+
+.weekbar button {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 8px;
+  font: inherit;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: .15s;
+}
+.weekbar button:hover { border-color: var(--c, var(--blue)); color: var(--c-text, var(--blue)); }
+
+/* ============ МИНИ-КАЛЕНДАРЬ ============ */
+.minical {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  margin-bottom: 24px;
+  scrollbar-width: thin;
+}
+.minical::-webkit-scrollbar { height: 4px; }
+.minical::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+.minical-item {
+  flex: 0 0 auto;
+  width: 44px;
+  padding: 8px 0;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font-size: .72rem;
+  cursor: pointer;
+  transition: .15s;
+  font-family: inherit;
+}
+.minical-item:hover { border-color: var(--c, var(--blue)); }
+.minical-item.on {
+  background: var(--c, var(--blue));
+  color: #fff;
+  border-color: var(--c, var(--blue));
+}
+.minical-item .star {
+  display: block;
+  font-weight: 700;
+  font-size: .8rem;
+}
+.minical-item .date {
+  display: block;
+  opacity: .7;
+  font-size: .65rem;
+  margin-top: 2px;
+}
+
+/* ============ NOW BAR ============ */
+.nowbar {
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: var(--c-soft, var(--blue-soft));
+  border: 1px solid var(--c, var(--blue));
+  color: var(--c-text, var(--blue));
+  font-weight: 500;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: .3s;
+}
+.nowbar.hidden { display: none; }
+.nowbar .pulse {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--c, var(--blue));
+  animation: pulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: .4; transform: scale(1.3); }
+}
+
+/* ============ РАСПИСАНИЕ ============ */
+.day { margin-bottom: 40px; }
+.day h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  transition: color .2s, border-color .2s;
+}
+
+.day.today h2 {
+  color: var(--c-text, var(--blue));
+  border-bottom-color: var(--c, var(--blue));
+}
+.day.today h2::after {
+  content: " • сегодня";
+  font-size: .75rem;
+  font-weight: 400;
+  opacity: .7;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--c, var(--blue));
+  border-radius: 12px;
+  padding: 18px 20px;
+  transition: transform .2s, box-shadow .2s, background .2s;
+  animation: cardIn .35s ease backwards;
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cards .card:nth-child(1) { animation-delay: .05s; }
+.cards .card:nth-child(2) { animation-delay: .10s; }
+.cards .card:nth-child(3) { animation-delay: .15s; }
+.cards .card:nth-child(4) { animation-delay: .20s; }
+.cards .card:nth-child(5) { animation-delay: .25s; }
+.cards .card:nth-child(6) { animation-delay: .30s; }
+
+.card .t {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--c-text, var(--blue));
+  margin-bottom: 6px;
+}
+.card .s {
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+.card .m {
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+.day-empty {
+  display: inline-block;
+  padding: 10px 18px;
+  background: var(--c-soft, var(--blue-soft));
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+#out { transition: opacity .2s ease; }
+#out.fade { opacity: 0; }
+
+/* ============ АДАПТИВ ============ */
+@media (max-width: 640px) {
+  .row { flex-direction: column; align-items: flex-start; }
+  .row > span { min-width: auto; }
+  .cards { grid-template-columns: 1fr; }
+  .greeting { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .nav .back { display: none; }
+}
+
+/* ============================================================
+   ТЁМНАЯ ТЕМА
+   ============================================================ */
+html.dark {
+  --bg:         #0F172A;
+  --card:       #1A2338;
+  --text:       #F7F9FC;
+  --muted:      #94A3B8;
+  --line:       #2A3448;
+}
+
+/* плашки — тёмные с лёгким оттенком цвета специальности */
+html.dark .greeting,
+html.dark .weekbar,
+html.dark .nowbar,
+html.dark .day-empty {
+  background: color-mix(in srgb, var(--c, var(--blue)) 12%, #1A2338);
+  border-color: color-mix(in srgb, var(--c, var(--blue)) 28%, #2A3448);
+}
+
+html.dark .greeting-text,
+html.dark .greeting-text span,
+html.dark .weekbar b,
+html.dark .nowbar {
+  color: var(--text);
+}
+
+html.dark .weekbar b {
+  color: var(--c, var(--blue));
+  filter: brightness(1.6);
+}
+
+html.dark .nowbar {
+  color: var(--c, var(--blue));
+  filter: brightness(1.4);
+}
+
+/* карточки пар — тёмные */
+html.dark .card {
+  background: #1A2338;
+  border-color: #2A3448;
+}
+
+html.dark .card:hover {
+  background: #212B45;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .4);
+}
+
+html.dark .card .t {
+  filter: brightness(1.6);
+}
+
+/* чипы */
+html.dark .chip {
+  background: #1A2338;
+  border-color: #2A3448;
+  color: var(--text);
+}
+
+html.dark .chip.on {
+  color: #fff;
+}
+
+/* mini-cal */
+html.dark .minical-item {
+  background: #1A2338;
+  border-color: #2A3448;
+  color: var(--text);
+}
+
+/* кнопки в weekbar */
+html.dark .weekbar button {
+  background: #1A2338;
+  border-color: #2A3448;
+  color: var(--text);
+}
+
+/* заголовки дней */
+html.dark .day h2 {
+  border-bottom-color: #2A3448;
+}
+
+/* заголовок «Понедельник» в тёмной теме */
+html.dark .day.today h2 {
+  color: var(--c, var(--blue));
+  filter: brightness(1.6);
+  border-bottom-color: var(--c, var(--blue));
+}
+
