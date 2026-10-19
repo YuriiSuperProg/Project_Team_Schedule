@@ -19,8 +19,20 @@
       </a>
       <div class="nav-actions">
         <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
-        <a href="schedule.html" class="btn btn-primary">Расписание</a>
+        <a href="schedule.html" class="btn btn-primary nav-desktop">Расписание</a>
+        <button class="burger" id="burger" aria-label="Меню">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+    </div>
+
+    <!-- МОБИЛЬНОЕ МЕНЮ -->
+    <div class="mobile-menu" id="mobileMenu">
+      <nav>
+        <a href="#about">О проекте</a>
+        <a href="#team">Команда</a>
+        <a href="schedule.html" class="btn btn-primary">Расписание</a>
+      </nav>
     </div>
   </header>
 
@@ -152,5 +164,6 @@
   </footer>
 
   <script src="script.js"></script>
+  <script src="mobile.js"></script>
 </body>
 </html>

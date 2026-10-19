@@ -292,7 +292,7 @@
       return;
     }
 
-    btn.textContent = "👀 Посмотреть преподавателя";
+    btn.textContent = "👀 Расписание преподавателей";
     btn.onclick = viewTeacher;
   }
 

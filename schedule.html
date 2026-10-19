@@ -18,11 +18,21 @@
         </span>
       </a>
       <div class="nav-actions">
-        <button class="icon-btn" id="switchRole" title="Сменить роль">🔄 Сменить роль</button>
         <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
-        <button class="icon-btn" id="forgetGroup" title="Забыть группу">🗑</button>
-        <a href="index.html" class="back">← На главную</a>
+        <a href="index.html" class="back nav-desktop">← На главную</a>
+        <button class="burger" id="burger" aria-label="Меню">
+          <span></span><span></span><span></span>
+        </button>
       </div>
+    </div>
+
+    <!-- МОБИЛЬНОЕ МЕНЮ -->
+    <div class="mobile-menu" id="mobileMenu">
+      <nav>
+        <button class="menu-item" id="switchRole">🔄 Сменить роль</button>
+        <button class="menu-item" id="forgetGroup">🗑 Забыть группу</button>
+        <a href="index.html" class="menu-item">← На главную</a>
+      </nav>
     </div>
   </header>
 
@@ -137,5 +147,6 @@
   <script src="schedule.js"></script>
   <script src="search.js"></script>
   <script src="teachers.js"></script>
+  <script src="mobile.js"></script>
 </body>
 </html>
