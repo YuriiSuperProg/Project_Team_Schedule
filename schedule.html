@@ -87,11 +87,13 @@
         <button class="ds-btn" id="dateFind">Найти</button>
       </div>
 
-      <div class="weekbar">
-        <button onclick="shiftWeek(-1)">←</button>
+        <div class="weekbar">
         <b id="weekInfo">Выберите группу</b>
-        <button onclick="shiftWeek(1)">→</button>
-        <button onclick="goToday()">Сегодня</button>
+        <div class="weekbar-controls">
+          <button onclick="shiftWeek(-1)">←</button>
+          <button onclick="shiftWeek(1)">→</button>
+          <button onclick="goToday()" class="btn-today">Сегодня</button>
+        </div>
       </div>
 
       <!-- ВИДЖЕТ ДНЯ -->

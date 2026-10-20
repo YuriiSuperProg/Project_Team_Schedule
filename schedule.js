@@ -19,35 +19,67 @@ const DAY_NAMES = {
 };
 
 // ============================================================
-//  ПОЖЕЛАНИЯ
+//  ПОЖЕЛАНИЯ (по специальностям)
 // ============================================================
-const WISHES = [
-  { emoji: "🌟", text: "Хорошего дня! Пусть всё получится." },
-  { emoji: "☕", text: "Не забудь про кофе — пары длинные." },
-  { emoji: "📚", text: "Учись, но не забывай отдыхать." },
-  { emoji: "💪", text: "Ты справишься. Даже с этой парой." },
-  { emoji: "🎯", text: "Сегодня отличный день, чтобы всё успеть." },
-  { emoji: "🍀", text: "Пусть преподаватель будет в хорошем настроении." },
-  { emoji: "🚀", text: "Вперёд к знаниям — и без опозданий!" },
-  { emoji: "🎧", text: "Между парами — музыка и отдых." },
-  { emoji: "☀️", text: "Хорошего настроения на весь день!" },
-  { emoji: "🍩", text: "После пар можно и вкусненького." },
-  { emoji: "🧠", text: "Твоя голова — твой главный актив." },
-  { emoji: "🌱", text: "Маленькие шаги каждый день — большие результаты." },
-  { emoji: "🔥", text: "Сегодня всё по плечу!" },
-  { emoji: "🎉", text: "Пусть пар будет меньше, а знаний — больше." },
-  { emoji: "🧘", text: "Спокойно. Всё идёт по плану." },
-  { emoji: "💡", text: "Вдруг сегодня узнаешь что-то важное." },
-  { emoji: "🚌", text: "Успей на пару — и без пробок!" },
-  { emoji: "✨", text: "Ты молодец. Просто помни это." },
-  { emoji: "📝", text: "Записывай — потом скажешь спасибо себе." },
-  { emoji: "🍕", text: "Пятница близко, а ты уже герой." },
-  { emoji: "🎓", text: "Ты учишься ради себя. Помни это." },
-  { emoji: "💙", text: "Команда ПараЗвёзд верит в тебя." },
-  { emoji: "😊", text: "Даже самая скучная пара когда-то закончится." },
-  { emoji: "⚡", text: "Скорость — твой друг. Но не на парах." },
-  { emoji: "🕶", text: "Ты крут. И это не обсуждается." }
-];
+const WISHES = {
+  "ЮСП": [
+    { emoji: "⚖️", text: "Сегодня отличный день, чтобы всё успеть — даже закон!" },
+    { emoji: "📜", text: "Учись с улыбкой — и кодексы запомнятся сами." },
+    { emoji: "🤵", text: "Впереди только победы. В суде и в жизни!" },
+    { emoji: "📚", text: "Каждая пара — шаг к твоей блестящей карьере." },
+    { emoji: "🕵️", text: "Ты — лучший детектив в своей собственной истории успеха." },
+    { emoji: "🧑‍💼", text: "Помни: правда на твоей стороне, а удача — в кармане." },
+    { emoji: "🔨", text: "Сегодня всё по плечу. Даже самые строгие преподаватели." },
+    { emoji: "📝", text: "Твой конспект — это карта к сокровищам знаний!" },
+    { emoji: "🚀", text: "Вперёд к знаниям — легко и с удовольствием!" },
+    { emoji: "📖", text: "Улыбайся! Ведь у тебя всё под контролем." }
+  ],
+  "ИСП": [
+    { emoji: "💻", text: "Пусть код компилируется, а жизнь — радует!" },
+    { emoji: "🐛", text: "Пусть багов будет мало, а хороших оценок — много." },
+    { emoji: "🚀", text: "Ты — творец цифровых миров. Создавай и вдохновляйся!" },
+    { emoji: "☕", text: "Сегодня идеальный день для продуктивного кодинга." },
+    { emoji: "🤖", text: "Твой потенциал безграничен, как массив без размера." },
+    { emoji: "🧠", text: "Каждая решённая задача делает тебя сильнее!" },
+    { emoji: "🔥", text: "Гори, но не выгорай. Отдых тоже важен!" },
+    { emoji: "⌨️", text: "Пусть каждая строка кода приносит радость." },
+    { emoji: "🎯", text: "Сегодня отличный день для новых открытий!" },
+    { emoji: "🍕", text: "Ты большой молодец. Не забывай вкусно кушать!" }
+  ],
+  "РУПО": [
+    { emoji: "💻", text: "Программирование — это магия, и ты — волшебник!" },
+    { emoji: "🐛", text: "Пусть все баги превращаются в полезные фичи!" },
+    { emoji: "🎧", text: "Хорошая музыка и хороший код — отличный дуэт." },
+    { emoji: "🚀", text: "К знаниям — на полной скорости и с улыбкой!" },
+    { emoji: "🤯", text: "Твой мозг способен на многое. Даже на эту лабу!" },
+    { emoji: "🧠", text: "Ты умнее, чем кажется. Особенно после пары!" },
+    { emoji: "💾", text: "Записывай — будущее скажет тебе спасибо." },
+    { emoji: "🎮", text: "Отдыхай с умом, учись с интересом!" },
+    { emoji: "⚡", text: "Ты заряжен на успех. Докажи это миру!" }
+  ],
+  "ЗСП": [
+    { emoji: "🌱", text: "Расти, как цветок под солнцем — ярко и смело!" },
+    { emoji: "🌍", text: "Наш мир огромен, и ты делаешь его лучше." },
+    { emoji: "🍃", text: "Спокойствие и гармония. Всё идёт как надо." },
+    { emoji: "🌳", text: "Дыши глубже и наслаждайся процессом обучения." },
+    { emoji: "🏞️", text: "Знания — это новые горизонты. Открывай их!" },
+    { emoji: "🌿", text: "Маленькие шаги ведут к большим победам." },
+    { emoji: "☀️", text: "Пусть сегодняшний день будет солнечным и добрым!" },
+    { emoji: "🪴", text: "Всё растёт с любовью и заботой. Твои знания тоже." },
+    { emoji: "🗺️", text: "Твой маршрут — к мечте. И шаг за шагом ты идёшь по нему." }
+  ],
+  "ЭСП": [
+    { emoji: "📈", text: "Пусть твой личностный рост всегда идёт вверх!" },
+    { emoji: "💸", text: "Инвестиции в себя — самые выгодные!" },
+    { emoji: "💰", text: "Ты — ценный актив. Помни об этом." },
+    { emoji: "📊", text: "Умные люди всегда в цене. И ты среди них." },
+    { emoji: "🧮", text: "Всё сходится! Деньги, учёба и отличное настроение." },
+    { emoji: "🏦", text: "Твоё будущее — надёжный банк с большими процентами." },
+    { emoji: "💼", text: "Сегодня ты студент, а завтра — покоритель вершин!" },
+    { emoji: "📉", text: "Любой график можно развернуть вверх. Как и твою учёбу." },
+    { emoji: "🧠", text: "Твои знания — твой золотой запас." }
+  ]
+};
 
 // ============================================================
 //  СОСТОЯНИЕ
@@ -172,7 +204,7 @@ function clearGroup() {
 // ============================================================
 //  ПОЖЕЛАНИЕ ДНЯ
 // ============================================================
-let lastWishIndex = -1;
+let lastWishIndex = {};
 
 function showRandomWish() {
   const wrap = $("wish");
@@ -180,13 +212,19 @@ function showRandomWish() {
   const textEl = $("wishText");
   if (!wrap || !emojiEl || !textEl) return;
 
+  const spec = state.spec || "ИСП";
+  const list = WISHES[spec] || WISHES["ИСП"];
+  if (!list || !list.length) return;
+
+  if (lastWishIndex[spec] === undefined) lastWishIndex[spec] = -1;
+
   let i;
   do {
-    i = Math.floor(Math.random() * WISHES.length);
-  } while (i === lastWishIndex && WISHES.length > 1);
+    i = Math.floor(Math.random() * list.length);
+  } while (i === lastWishIndex[spec] && list.length > 1);
 
-  lastWishIndex = i;
-  const w = WISHES[i];
+  lastWishIndex[spec] = i;
+  const w = list[i];
 
   emojiEl.textContent = w.emoji;
   textEl.textContent = w.text;
@@ -299,7 +337,6 @@ function renderChips(containerId, items, current, onClick, label = x => x) {
 //  ФИЛЬТРЫ
 // ============================================================
 function renderFilters() {
-  // режим просмотра преподавателя — управление в teachers.js
   if (window.__renderTeacherFilters && state.viewTeacher) {
     return window.__renderTeacherFilters();
   }
@@ -336,7 +373,6 @@ function renderFilters() {
 //  РАСПИСАНИЕ
 // ============================================================
 function renderSchedule() {
-  // режим просмотра преподавателя — управление в teachers.js
   if (window.__renderTeacherSchedule && state.viewTeacher) {
     return window.__renderTeacherSchedule();
   }
@@ -421,13 +457,11 @@ function renderDayProgress() {
 
   if (!card || !track) return;
 
-  // в режиме преподавателя виджет дня скрываем
   if (state.viewTeacher) {
     card.classList.add("hidden");
     return;
   }
 
-  // пересоздаём dcNow, если его нет в DOM
   let nowDot = $("dcNow");
   if (!nowDot) {
     nowDot = document.createElement("div");
@@ -451,7 +485,6 @@ function renderDayProgress() {
     return;
   }
 
-  // фильтруем по текущей неделе
   const week = WEEK_LIST[state.week];
   pairs = pairs.filter(p => !p.star || p.star === week.star);
 
@@ -466,7 +499,6 @@ function renderDayProgress() {
     BELL_MIN[n] = { start: toMin(start), end: toMin(end), num: Number(n) };
   });
 
-  // убираем дубли по номеру пары, оставляем первую
   const seenNum = new Set();
   const sorted = pairs
     .filter(p => BELL_MIN[p.number])
@@ -499,7 +531,6 @@ function renderDayProgress() {
   ringFill.style.strokeDasharray = dash;
   ringFill.style.strokeDashoffset = dash - (dash * percentVal / 100);
 
-  // удаляем только сегменты (не трогаем dcNow)
   track.querySelectorAll(".dc-segment").forEach(s => s.remove());
 
   sorted.forEach(item => {
@@ -578,7 +609,6 @@ function renderTomorrow() {
   const subEl  = $("tmSub");
   if (!wrap || !mainEl || !subEl) return;
 
-  // в режиме преподавателя скрываем
   if (state.viewTeacher) {
     wrap.classList.add("hidden");
     return;
@@ -633,6 +663,7 @@ function renderAll() {
   renderSchedule();
   renderDayProgress();
   renderTomorrow();
+  showRandomWish();
 }
 
 // ============================================================
@@ -657,7 +688,6 @@ function goToday() {
 SCHEDULE = buildSchedule(RAW_DATA);
 state.week = currentWeek();
 
-// восстановить ранее выбранную группу
 loadGroup();
 
 renderAll();

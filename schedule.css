@@ -207,6 +207,11 @@ header {
   font-weight: 600;
 }
 
+.weekbar-controls {
+  display: flex;
+  gap: 8px;
+}
+
 .weekbar button {
   padding: 8px 14px;
   border: 1px solid var(--line);
@@ -217,8 +222,15 @@ header {
   font-size: .9rem;
   cursor: pointer;
   transition: .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.weekbar button:hover { border-color: var(--c, var(--blue)); color: var(--c-text, var(--blue)); }
+
+.weekbar button:hover {
+  border-color: var(--c, var(--blue));
+  color: var(--c-text, var(--blue));
+}
 
 /* ============ МИНИ-КАЛЕНДАРЬ ============ */
 .minical {
@@ -495,16 +507,6 @@ html.dark .dc-now {
   border-color: #1A2338;
 }
 
-@media (max-width: 640px) {
-  .dc-main {
-    flex-direction: column;
-    text-align: center;
-    gap: 16px;
-  }
-  .dc-info { text-align: center; }
-  .dc-status { justify-content: center; }
-}
-
 /* ============================================================
    ПОЖЕЛАНИЕ ДНЯ
    ============================================================ */
@@ -660,14 +662,6 @@ html.dark .wish-text { color: var(--text); }
 #out { transition: opacity .2s ease; }
 #out.fade { opacity: 0; }
 
-@media (max-width: 640px) {
-  .row { flex-direction: column; align-items: flex-start; }
-  .row > span { min-width: auto; }
-  .cards { grid-template-columns: 1fr; }
-  .greeting { flex-direction: column; gap: 12px; align-items: flex-start; }
-  .nav .back { display: none; }
-}
-
 /* ============================================================
    ТЁМНАЯ ТЕМА
    ============================================================ */
@@ -706,14 +700,12 @@ html.dark .card:hover {
 
 html.dark .card .t { filter: brightness(1.6); }
 
-/* -------- ЧИПЫ В ТЁМНОЙ ТЕМЕ -------- */
 html.dark .chip {
   background: #1A2338;
   border-color: #2A3448;
   color: var(--text);
 }
 
-/* активный чип — яркая подсветка */
 html.dark .chip.on {
   color: #fff;
   background: var(--c, var(--blue));
@@ -731,7 +723,6 @@ html.dark .minical-item {
   color: var(--text);
 }
 
-/* активная неделя в мини-календаре тоже пусть светится */
 html.dark .minical-item.on {
   background: var(--c, var(--blue));
   color: #fff;
@@ -776,16 +767,8 @@ html.dark .day.today h2 {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.tm-icon {
-  font-size: 1.8rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.tm-info {
-  flex: 1;
-  min-width: 0;
-}
+.tm-icon { font-size: 1.8rem; line-height: 1; flex-shrink: 0; }
+.tm-info { flex: 1; min-width: 0; }
 
 .tm-label {
   font-size: .78rem;
@@ -802,17 +785,9 @@ html.dark .day.today h2 {
   margin-bottom: 4px;
   line-height: 1.3;
 }
+.tm-main b { color: var(--c-text, var(--blue)); }
+.tm-sub { font-size: .85rem; color: var(--muted); }
 
-.tm-main b {
-  color: var(--c-text, var(--blue));
-}
-
-.tm-sub {
-  font-size: .85rem;
-  color: var(--muted);
-}
-
-/* тёмная тема */
 html.dark .tomorrow {
   background: color-mix(in srgb, var(--c, var(--blue)) 12%, #1A2338);
   border-color: color-mix(in srgb, var(--c, var(--blue)) 30%, #2A3448);
@@ -836,11 +811,7 @@ html.dark .tomorrow {
   border-color: var(--c, var(--blue));
 }
 
-.ds-icon {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  opacity: .7;
-}
+.ds-icon { font-size: 1.1rem; flex-shrink: 0; opacity: .7; }
 
 .ds-input {
   flex: 1;
@@ -875,19 +846,12 @@ html.dark .tomorrow {
   transition: .15s;
   white-space: nowrap;
 }
-.ds-btn:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
-}
-.ds-btn:active {
-  transform: translateY(0);
-}
+.ds-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.ds-btn:active { transform: translateY(0); }
 
-/* точечная подсветка «дня, который нашли» */
 .day.highlight h2 {
   color: var(--c-text, var(--blue));
   border-bottom-color: var(--c, var(--blue));
-  position: relative;
 }
 .day.highlight h2::after {
   content: " • найденный день";
@@ -895,58 +859,19 @@ html.dark .tomorrow {
   font-weight: 400;
   opacity: .7;
 }
-.day.highlight {
-  animation: hlPulse 1.4s ease;
-}
+.day.highlight { animation: hlPulse 1.4s ease; }
 @keyframes hlPulse {
   0%   { background: transparent; }
   30%  { background: color-mix(in srgb, var(--c, var(--blue)) 8%, transparent); }
   100% { background: transparent; }
 }
 
-/* тёмная тема */
 html.dark .date-search {
   background: #1A2338;
   border-color: #2A3448;
 }
 html.dark .ds-input {
   background: #0F172A;
-  border-color: #2A3448;
-}
-
-/* ============================================================
-   ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА (Студенты / Преподаватели)
-   ============================================================ */
-.mode-switch {
-  display: inline-flex;
-  gap: 4px;
-  padding: 4px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  margin: 24px 0 16px;
-}
-
-.mode-btn {
-  padding: 8px 20px;
-  border: none;
-  background: transparent;
-  color: var(--muted);
-  font: inherit;
-  font-size: .9rem;
-  font-weight: 500;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: .15s;
-}
-.mode-btn:hover { color: var(--text); }
-.mode-btn.on {
-  background: var(--c, var(--blue));
-  color: #fff;
-}
-
-html.dark .mode-switch {
-  background: #1A2338;
   border-color: #2A3448;
 }
 
@@ -958,25 +883,17 @@ html.dark .mode-switch {
   text-align: center;
   animation: roleIn .5s cubic-bezier(.2, .8, .2, 1) both;
 }
-
 @keyframes roleIn {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .role-title {
   font-size: clamp(1.8rem, 4vw, 2.6rem);
   font-weight: 700;
   letter-spacing: -.02em;
   margin-bottom: 10px;
 }
-
-.role-sub {
-  color: var(--muted);
-  font-size: 1rem;
-  margin-bottom: 40px;
-}
-
+.role-sub { color: var(--muted); font-size: 1rem; margin-bottom: 40px; }
 .role-cards {
   display: grid;
   grid-template-columns: repeat(2, minmax(240px, 1fr));
@@ -984,7 +901,6 @@ html.dark .mode-switch {
   max-width: 620px;
   margin: 0 auto;
 }
-
 .role-card {
   padding: 36px 24px 32px;
   border-radius: 20px;
@@ -996,41 +912,16 @@ html.dark .mode-switch {
   text-align: center;
   transition: .2s;
 }
-
 .role-card:hover {
   border-color: var(--blue);
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
 }
+.rc-icon { font-size: 3rem; line-height: 1; margin-bottom: 16px; }
+.rc-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 6px; }
+.rc-desc { font-size: .88rem; color: var(--muted); }
 
-.rc-icon {
-  font-size: 3rem;
-  line-height: 1;
-  margin-bottom: 16px;
-}
-
-.rc-title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.rc-desc {
-  font-size: .88rem;
-  color: var(--muted);
-}
-
-@media (max-width: 560px) {
-  .role-cards { grid-template-columns: 1fr; }
-}
-
-html.dark .role-card {
-  background: #1A2338;
-  border-color: #2A3448;
-}
-html.dark .role-card:hover {
-  border-color: var(--blue);
-}
+html.dark .role-card { background: #1A2338; border-color: #2A3448; }
 
 /* ============================================================
    МОБИЛЬНОЕ МЕНЮ
@@ -1050,7 +941,6 @@ html.dark .role-card:hover {
   padding: 0;
   flex-shrink: 0;
 }
-
 .burger span {
   display: block;
   width: 18px;
@@ -1059,7 +949,6 @@ html.dark .role-card:hover {
   border-radius: 2px;
   transition: transform .25s, opacity .25s;
 }
-
 .burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .burger.open span:nth-child(2) { opacity: 0; }
 .burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
@@ -1076,23 +965,19 @@ html.dark .role-card:hover {
   box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
   z-index: 99;
 }
-
 .mobile-menu.open {
   display: block;
   animation: mmIn .2s ease;
 }
-
 @keyframes mmIn {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .mobile-menu nav {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .mobile-menu .menu-item {
   display: block;
   width: 100%;
@@ -1109,81 +994,104 @@ html.dark .role-card:hover {
   cursor: pointer;
   transition: background .15s;
 }
+.mobile-menu .menu-item:hover { background: var(--card); }
 
-.mobile-menu .menu-item:hover {
-  background: var(--card);
-}
-
-/* На телефоне — бургер виден, кнопки скрыты */
+/* ============================================================
+   АДАПТИВ
+   ============================================================ */
 @media (max-width: 640px) {
+  /* мобильная шапка */
   .burger { display: flex; }
   .nav-desktop { display: none; }
-
   .nav { height: 58px; }
   .logo b { font-size: .95rem; }
   .logo small { font-size: .65rem; }
   .logo-icon { font-size: 1.4rem; }
-}
 
-/* ============================================================
-   МОБИЛЬНЫЙ WEEK BAR (компактный)
-   ============================================================ */
-@media (max-width: 640px) {
+  /* общие */
+  .row { flex-direction: column; align-items: flex-start; }
+  .row > span { min-width: auto; }
+  .cards { grid-template-columns: 1fr; }
+  .greeting { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .nav .back { display: none; }
+  .role-cards { grid-template-columns: 1fr; }
+  .dc-main { flex-direction: column; text-align: center; gap: 16px; }
+  .dc-info { text-align: center; }
+  .dc-status { justify-content: center; }
+
+  /* WEEK BAR — мобильный (стрелки сверху, Сегодня снизу) */
   .weekbar {
-    display: grid;
-    grid-template-columns: 40px 1fr 40px;
-    grid-template-rows: auto auto;
-    gap: 6px;
-    padding: 12px 14px;
-    margin-bottom: 14px;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    align-items: stretch;
   }
 
-  /* Стрелки */
-  .weekbar > button:first-child,
-  .weekbar > button:nth-child(3) {
-    width: 36px;
-    height: 36px;
+  .weekbar b {
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .weekbar-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+  }
+
+  /* Стрелки: маленькие по центру */
+  .weekbar-controls button:not(.btn-today) {
+    flex: 1;
+    height: 44px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    grid-row: 1 / 3;
+    font-size: 1.2rem;
   }
 
-  /* Стрелка "назад" */
-  .weekbar > button:first-child {
-    grid-column: 1;
-  }
-
-  /* Стрелка "вперёд" */
-  .weekbar > button:nth-child(3) {
-    grid-column: 3;
-  }
-
-  /* Текст недели */
-  .weekbar b {
-    grid-column: 2;
+  /* Кнопка "Сегодня": на всю ширину и на новую строку */
+  .weekbar-controls .btn-today {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 44px;
     font-size: 0.95rem;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight: 500;
   }
+}
 
-  /* Кнопка "Сегодня" — на всю ширину снизу */
-  .weekbar > button:last-child {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin-top: 6px;
-    padding: 8px 12px;
-    font-size: 0.88rem;
-  }
+/* ============================================================
+   ХОВЕРЫ В ТЁМНОЙ ТЕМЕ (наведение мышкой)
+   ============================================================ */
+html.dark .chip:hover {
+  background: color-mix(in srgb, var(--c, var(--blue)) 20%, #1A2338);
+  border-color: var(--c, var(--blue));
+  color: #fff;
+  transform: translateY(-1px);
+}
 
-  /* Чтобы текст недели был короче — убираем "Неделя" и оставляем только * / ** */
-  .weekbar b {
-    font-size: 0.9rem;
-  }
+html.dark .weekbar button:hover {
+  background: color-mix(in srgb, var(--c, var(--blue)) 20%, #1A2338);
+  border-color: var(--c, var(--blue));
+  color: #fff;
+}
+
+html.dark .ds-btn:hover {
+  background: color-mix(in srgb, var(--c, var(--blue)) 80%, #fff);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--c, var(--blue)) 40%, transparent);
+}
+
+html.dark .card:hover {
+  border-left-color: var(--c, var(--blue));
+  box-shadow: 0 0 0 1px var(--c, var(--blue)),
+              0 10px 24px rgba(0, 0, 0, .5);
+}
+
+html.dark .minical-item:hover {
+  background: color-mix(in srgb, var(--c, var(--blue)) 20%, #1A2338);
+  border-color: var(--c, var(--blue));
+  color: #fff;
 }

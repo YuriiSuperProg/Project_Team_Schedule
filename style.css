@@ -554,3 +554,16 @@ footer a:hover { color: var(--blue); }
     padding: 24px 20px;
   }
 }
+
+/* Белая кнопка "Расписание" в шапке */
+.nav-desktop.btn-primary {
+  background: #ffffff;
+  color: var(--blue);
+  border: 1px solid #ffffff;
+}
+
+.nav-desktop.btn-primary:hover {
+  background: #f0f0f0;
+  border-color: #f0f0f0;
+}
+
