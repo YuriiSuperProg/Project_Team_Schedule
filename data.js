@@ -51,7 +51,8 @@ const WEEKS = [
 const COLORS = {
   "ЗСП":  { c: "#6ecf9b", soft: "#f4fbf7", text: "#2f9c66" },
   "ЭСП":  { c: "#e6b86a", soft: "#fdf9f1", text: "#b8862f" },
-  "РУПО": { c: "#9aa3b2", soft: "#f6f7f9", text: "#5b6474" },
+  // РУПО сделаем светло-голубым (небесным), а ИСП оставим тёмно-синим
+  "РУПО": { c: "#4C9AFF", soft: "#EDF5FF", text: "#2b6fbb" }, 
   "ИСП":  { c: "#1769E0", soft: "#E8F1FF", text: "#1769E0" },
   "ЮСП":  { c: "#e86a6a", soft: "#fdf5f5", text: "#c43a3a" },
   "teacher": { c: "#e6b86a", soft: "#fdf9f1", text: "#b8862f" }

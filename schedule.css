@@ -14,7 +14,7 @@
 }
 
 html.dark {
-  --bg:         #0F172A;
+  --bg:         #0B1120; /* Очень тёмный космос */
   --card:       #1A2338;
   --text:       #F7F9FC;
   --muted:      #94A3B8;
@@ -25,15 +25,103 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
+  background: transparent; /* Прозрачный, чтобы видеть фон */
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   transition: background .3s, color .3s;
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
 .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ============================================================
+   ФОН И ЗВЁЗДЫ
+   ============================================================ */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-color: var(--bg);
+  overflow: hidden;
+}
+
+.aurora-bg::before,
+.aurora-bg::after {
+  content: '';
+  position: absolute;
+  width: 80vmax;
+  height: 80vmax;
+  border-radius: 50%;
+  opacity: 0.6;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.aurora-bg::before {
+  top: -20%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(23, 105, 224, 0.35) 0%, transparent 60%),
+              radial-gradient(circle, rgba(110, 207, 155, 0.25) 0%, transparent 60%);
+  animation: float1 20s ease-in-out infinite alternate;
+}
+
+.aurora-bg::after {
+  bottom: -20%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(232, 106, 106, 0.25) 0%, transparent 60%),
+              radial-gradient(circle, rgba(230, 184, 106, 0.25) 0%, transparent 60%);
+  animation: float2 25s ease-in-out infinite alternate;
+}
+
+/* В темной теме убираем пятна */
+html.dark .aurora-bg::before,
+html.dark .aurora-bg::after {
+  display: none;
+}
+
+/* Звёзды */
+.star-field {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  display: none; /* В светлой теме скрыто */
+}
+
+html.dark .star-field {
+  display: block;
+}
+
+.star {
+  position: absolute;
+  background-color: var(--c, #ffffff);
+  border-radius: 50%;
+  box-shadow: 0 0 4px 1px color-mix(in srgb, var(--c, #ffffff) 50%, transparent);
+  animation: twinkle linear infinite alternate;
+  transition: background-color .6s ease, box-shadow .6s ease;
+}
+
+@keyframes twinkle {
+  0% { transform: scale(0.8); opacity: 0.2; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes float1 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(10vw, 10vh) scale(1.1); }
+  100% { transform: translate(-5vw, 15vh) scale(0.9); }
+}
+
+@keyframes float2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15vw, -10vh) scale(1.1); }
+  100% { transform: translate(5vw, -15vh) scale(0.9); }
+}
 
 /* ============ HEADER ============ */
 header {
@@ -50,46 +138,6 @@ header {
   align-items: center;
   height: 68px;
 }
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  text-decoration: none;
-  font-size: 1rem;
-}
-.logo-icon { font-size: 1.6rem; }
-.logo b { font-weight: 700; color: var(--blue); }
-.logo small {
-  display: block;
-  font-size: .7rem;
-  color: var(--muted);
-  font-weight: 400;
-  line-height: 1;
-}
-
-.nav-actions { display: flex; align-items: center; gap: 12px; }
-
-.icon-btn {
-  border: 1px solid var(--line);
-  background: var(--card);
-  border-radius: 10px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 1rem;
-  color: var(--text);
-  transition: .15s;
-}
-.icon-btn:hover { border-color: var(--blue); }
-
-.back {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: .9rem;
-  transition: color .15s;
-}
-.back:hover { color: var(--blue); }
 
 /* ============ КНОПКИ ============ */
 .btn {
@@ -113,6 +161,28 @@ header {
   color: var(--text);
 }
 .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+
+.icon-btn {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text);
+  transition: .15s;
+}
+.icon-btn:hover { border-color: var(--blue); }
+
+.back {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .9rem;
+  transition: color .15s;
+}
+.back:hover { color: var(--blue); }
 
 /* ============ ПРИВЕТСТВИЕ ============ */
 .greeting {
@@ -1000,7 +1070,6 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
    АДАПТИВ
    ============================================================ */
 @media (max-width: 640px) {
-  /* мобильная шапка */
   .burger { display: flex; }
   .nav-desktop { display: none; }
   .nav { height: 58px; }
@@ -1008,7 +1077,6 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
   .logo small { font-size: .65rem; }
   .logo-icon { font-size: 1.4rem; }
 
-  /* общие */
   .row { flex-direction: column; align-items: flex-start; }
   .row > span { min-width: auto; }
   .cards { grid-template-columns: 1fr; }
@@ -1019,7 +1087,6 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
   .dc-info { text-align: center; }
   .dc-status { justify-content: center; }
 
-  /* WEEK BAR — мобильный (стрелки сверху, Сегодня снизу) */
   .weekbar {
     display: flex;
     flex-direction: column;
@@ -1042,7 +1109,6 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
     width: 100%;
   }
 
-  /* Стрелки: маленькие по центру */
   .weekbar-controls button:not(.btn-today) {
     flex: 1;
     height: 44px;
@@ -1053,7 +1119,6 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
     font-size: 1.2rem;
   }
 
-  /* Кнопка "Сегодня": на всю ширину и на новую строку */
   .weekbar-controls .btn-today {
     flex: 0 0 100%;
     width: 100%;
@@ -1064,7 +1129,7 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
 }
 
 /* ============================================================
-   ХОВЕРЫ В ТЁМНОЙ ТЕМЕ (наведение мышкой)
+   ХОВЕРЫ В ТЁМНОЙ ТЕМЕ
    ============================================================ */
 html.dark .chip:hover {
   background: color-mix(in srgb, var(--c, var(--blue)) 20%, #1A2338);
@@ -1094,4 +1159,135 @@ html.dark .minical-item:hover {
   background: color-mix(in srgb, var(--c, var(--blue)) 20%, #1A2338);
   border-color: var(--c, var(--blue));
   color: #fff;
+}
+
+/* ============================================================
+   ЖИВОЙ ЛОГОТИП
+   ============================================================ */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.02);
+}
+
+.logo-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--blue-soft, #E8F1FF), #ffffff);
+  box-shadow: 0 4px 12px rgba(23, 105, 224, 0.15);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logo-icon-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+  transform: skewX(-20deg);
+  animation: logoShine 4s infinite;
+}
+
+@keyframes logoShine {
+  0% { left: -100%; }
+  20% { left: 200%; }
+  100% { left: 200%; }
+}
+
+.logo-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.logo-text b {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(90deg, #1769E0, #4C9AFF, #1769E0);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: textGradient 4s linear infinite;
+}
+
+@keyframes textGradient {
+  to { background-position: 200% center; }
+}
+
+.logo-text small {
+  font-size: 0.72rem;
+  color: var(--muted, #94A3B8);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+
+.star-sparkle {
+  display: inline-block;
+  font-size: 0.9rem;
+  -webkit-text-fill-color: initial;
+  color: #4C9AFF;
+  animation: sparkle 2s infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.3) rotate(15deg); opacity: 0.7; }
+}
+
+html.dark .logo-icon-wrap {
+  background: linear-gradient(135deg, #1A2338, #2A3448);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+html.dark .logo-icon-wrap::after {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+html.dark .logo-text b {
+  background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4C9AFF);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+@media (max-width: 640px) {
+  .logo-icon-wrap {
+    width: 38px;
+    height: 38px;
+  }
+  .logo-text b {
+    font-size: 1.05rem;
+  }
+  .logo-text small {
+    font-size: 0.65rem;
+  }
 }

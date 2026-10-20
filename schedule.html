@@ -8,14 +8,20 @@
 </head>
 <body>
 
+  <!-- ФОНЫ -->
+  <div class="aurora-bg"></div>
+  <div class="star-field" id="starField"></div>
+
   <header>
     <div class="container nav">
       <a href="index.html" class="logo">
-        <span class="logo-icon">🎓</span>
-        <span>
-          <b>ПараЗвёзд</b>
+        <div class="logo-icon-wrap">
+          <span class="logo-icon">🎓</span>
+        </div>
+        <div class="logo-text">
+          <b>ПараЗвёзд <span class="star-sparkle">✨</span></b>
           <small>Расписание ВолГУ</small>
-        </span>
+        </div>
       </a>
       <div class="nav-actions">
         <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
@@ -26,7 +32,6 @@
       </div>
     </div>
 
-    <!-- МОБИЛЬНОЕ МЕНЮ -->
     <div class="mobile-menu" id="mobileMenu">
       <nav>
         <button class="menu-item" id="switchRole">🔄 Сменить роль</button>
@@ -38,7 +43,6 @@
 
   <main class="container">
 
-    <!-- ЭКРАН ВЫБОРА РОЛИ -->
     <div class="role-screen" id="roleScreen">
       <div class="role-title">Кто ты?</div>
       <div class="role-sub">Выбери, чтобы настроить расписание под себя</div>
@@ -56,7 +60,6 @@
       </div>
     </div>
 
-    <!-- ОСНОВНОЙ ЭКРАН -->
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
 
       <div class="greeting" id="greeting">
@@ -66,7 +69,6 @@
         <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
       </div>
 
-      <!-- ПОЖЕЛАНИЕ -->
       <div class="wish" id="wish">
         <span class="wish-emoji" id="wishEmoji">✨</span>
         <span class="wish-text" id="wishText">Хорошего дня!</span>
@@ -80,14 +82,13 @@
         <div class="row" id="rowTeacher" style="display:none"><span>Преподаватель</span><div class="chips" id="teachers"></div></div>
       </div>
 
-      <!-- ПОИСК ПО ДАТЕ -->
       <div class="date-search">
         <span class="ds-icon">🔍</span>
         <input type="text" id="dateInput" class="ds-input" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off">
         <button class="ds-btn" id="dateFind">Найти</button>
       </div>
 
-        <div class="weekbar">
+      <div class="weekbar">
         <b id="weekInfo">Выберите группу</b>
         <div class="weekbar-controls">
           <button onclick="shiftWeek(-1)">←</button>
@@ -96,7 +97,6 @@
         </div>
       </div>
 
-      <!-- ВИДЖЕТ ДНЯ -->
       <div class="day-card hidden" id="dayCard">
         <div class="dc-main">
           <div class="dc-ring" id="dcRing">
@@ -127,7 +127,6 @@
         </div>
       </div>
 
-      <!-- ЗАВТРА -->
       <div class="tomorrow hidden" id="tomorrow">
         <div class="tm-icon">🌅</div>
         <div class="tm-info">
@@ -150,5 +149,6 @@
   <script src="search.js"></script>
   <script src="teachers.js"></script>
   <script src="mobile.js"></script>
+  <script src="stars.js"></script>
 </body>
 </html>
