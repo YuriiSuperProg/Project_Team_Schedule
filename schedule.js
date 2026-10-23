@@ -187,22 +187,44 @@ function clearGroup() {
 }
 
 // ============================================================
-//  ПОЖЕЛАНИЕ
+//  ПОЖЕЛАНИЕ (С ПРОВЕРКОЙ ПО ВРЕМЕНИ ДЛЯ КАЖДОЙ СПЕЦИАЛЬНОСТИ)
 // ============================================================
 let lastWishIndex = {};
-function showRandomWish() {
+
+function showRandomWish(force = false) {
+  if (state.viewTeacher) return;
+
   const wrap = $("wish"), emojiEl = $("wishEmoji"), textEl = $("wishText");
   if (!wrap || !emojiEl || !textEl) return;
+  
   const spec = state.spec || "ИСП";
   const list = WISHES[spec] || WISHES["ИСП"];
   if (!list || !list.length) return;
+
+  // Проверяем время отдельно для КАЖДОЙ специальности
+  const now = Date.now();
+  const storageKey = `wishLastChange_${spec}`; // Уникальный ключ для каждой специальности
+  const lastChange = parseInt(localStorage.getItem(storageKey) || "0", 10);
+  const interval = 1.5 * 60 * 60 * 1000; // 1.5 часа
+
+  // Если НЕ принудительно и для этой специальности прошло меньше 1.5 часа — ничего не меняем
+  if (!force && (now - lastChange < interval)) {
+    return; 
+  }
+
+  // Обновляем время последней смены для этой специальности
+  localStorage.setItem(storageKey, now.toString());
+  
+  // Выбираем случайное пожелание, не повторяя предыдущее
   if (lastWishIndex[spec] === undefined) lastWishIndex[spec] = -1;
   let i;
   do { i = Math.floor(Math.random() * list.length); } while (i === lastWishIndex[spec] && list.length > 1);
   lastWishIndex[spec] = i;
+  
   const w = list[i];
   emojiEl.textContent = w.emoji;
   textEl.textContent = w.text;
+  
   wrap.classList.remove("changing");
   void wrap.offsetWidth;
   wrap.classList.add("changing");
@@ -307,7 +329,10 @@ function renderFilters() {
 
   renderChips("specs", Object.keys(SCHEDULE), state.spec, spec => {
     state.spec = spec; state.course = null; state.group = null; state.week = currentWeek();
-    applyColor(spec); saveGroup(); renderAll();
+    applyColor(spec); saveGroup(); 
+    // При смене специальности принудительно меняем пожелание на новое из её списка
+    showRandomWish(true); 
+    renderAll();
   });
 
   if (state.spec) {
@@ -435,7 +460,6 @@ function renderDayProgress() {
 
   card.classList.remove("hidden");
 
-  // === ПРОЦЕНТЫ ===
   const total = dayEnd - dayStart;
   let passed = nowMin - dayStart;
   passed = Math.max(0, Math.min(total, passed));
@@ -446,27 +470,22 @@ function renderDayProgress() {
   ringFill.style.strokeDasharray = dash;
   ringFill.style.strokeDashoffset = dash - (dash * percentVal / 100);
 
-  // === ШКАЛА ===
   track.innerHTML = "";
   labels.innerHTML = "";
 
-  // Контейнер для шкалы (чтобы позиционировать подписи)
   const trackWrap = document.createElement("div");
   trackWrap.style.cssText = "position:relative;width:100%;height:100%;";
   track.appendChild(trackWrap);
 
-  // 1. Серый фон полоски
   const bg = document.createElement("div");
   bg.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;background:var(--line);border-radius:999px;";
   trackWrap.appendChild(bg);
 
-  // 2. Пары и перемены
   for (let i = 0; i < sorted.length; i++) {
     const item = sorted[i];
     const leftP = ((item.start - dayStart) / total) * 100;
     const wP = ((item.end - item.start) / total) * 100;
 
-    // Блок пары
     const seg = document.createElement("div");
     seg.style.cssText = `
       position:absolute;
@@ -479,9 +498,8 @@ function renderDayProgress() {
     `;
     trackWrap.appendChild(seg);
 
-    // Время под парой
     const timeLabel = document.createElement("span");
-    timeLabel.textContent = BELLS[item.num].replace("–", " – "); // "10:10 – 11:40"
+    timeLabel.textContent = BELLS[item.num].replace("–", " – ");
     timeLabel.style.cssText = `
       position:absolute;
       left:${leftP + wP/2}%;
@@ -494,7 +512,6 @@ function renderDayProgress() {
     `;
     trackWrap.appendChild(timeLabel);
 
-    // Перемена (если не последняя пара)
     if (i < sorted.length - 1) {
       const nextItem = sorted[i + 1];
       const breakStart = item.end;
@@ -505,7 +522,6 @@ function renderDayProgress() {
         const bLeftP = ((breakStart - dayStart) / total) * 100;
         const bWP = ((breakEnd - breakStart) / total) * 100;
         
-        // Полупрозрачный блок перемены
         const breakSeg = document.createElement("div");
         breakSeg.style.cssText = `
           position:absolute;
@@ -517,8 +533,6 @@ function renderDayProgress() {
         `;
         trackWrap.appendChild(breakSeg);
 
-        // Длительность перемены (очень мелко, под шкалой)
-        // Если места мало, можно скрыть, но давай оставим
         const bLabel = document.createElement("span");
         bLabel.textContent = `${breakDuration} мин`;
         bLabel.style.cssText = `
@@ -537,7 +551,6 @@ function renderDayProgress() {
     }
   }
 
-  // 3. Точка "Сейчас"
   if (nowMin >= dayStart && nowMin <= dayEnd) {
     const nowP = ((nowMin - dayStart) / total) * 100;
     const dot = document.createElement("div");
@@ -556,7 +569,6 @@ function renderDayProgress() {
     trackWrap.appendChild(dot);
   }
 
-  // === ТЕКСТ СТАТУСА ===
   let current = null;
   sorted.forEach(item => { if (nowMin >= item.start && nowMin <= item.end) current = item; });
 
@@ -572,17 +584,14 @@ function renderDayProgress() {
     status.textContent = "День завершён 🎉";
     pairEl.textContent = "Хорошего отдыха!";
     
-    // 1. Считаем количество пар сегодня
     const pairsCount = sorted.length;
     let pairsWord = "пар";
     if (pairsCount === 1) pairsWord = "пара";
     else if (pairsCount > 1 && pairsCount < 5) pairsWord = "пары";
 
-    // 2. Берем время начала и конца
     const firstPairTime = BELLS[sorted[0].num].split("–")[0];
     const lastPairTime = BELLS[sorted[sorted.length - 1].num].split("–")[1];
     
-    // 3. Смотрим, что там завтра
     const tomorrowIndex = (now.getDay() + 1) % 7;
     const tomorrowPairs = raw[tomorrowIndex];
     let tomorrowText = "";
@@ -590,7 +599,6 @@ function renderDayProgress() {
     if (!tomorrowPairs || !tomorrowPairs.length) {
       tomorrowText = "Завтра — выходной.";
     } else {
-      // Фильтруем пары завтрашнего дня по текущей неделе
       const weekNow = WEEK_LIST[state.week];
       const tomorrowFiltered = tomorrowPairs.filter(p => !p.star || p.star === weekNow.star);
       
@@ -684,7 +692,7 @@ function renderAll() {
   renderSchedule();
   renderDayProgress();
   renderTomorrow();
-  showRandomWish();
+  showRandomWish(); // false по умолчанию - проверит время
 }
 
 function shiftWeek(d) {
@@ -710,7 +718,7 @@ $("nameEdit").addEventListener("click", askName);
 $("themeToggle").addEventListener("click", toggleTheme);
 
 const wishBtn = $("wishRefresh");
-if (wishBtn) wishBtn.addEventListener("click", showRandomWish);
+if (wishBtn) wishBtn.addEventListener("click", () => showRandomWish(true));
 
 // Кнопка "Забыть группу" (в мобильном меню)
 const forgetBtn = $("forgetGroup");
@@ -726,7 +734,14 @@ if (forgetBtn) {
 // Запрос имени
 if (!getUserName()) setTimeout(askName, 500);
 
-// Обновление раз в минуту
+// Первый показ пожелания (принудительно, чтобы появилось при загрузке)
+showRandomWish(true);
+
+// Обновление раз в минуту (виджет дня, завтра и проверка пожелания)
 setInterval(() => {
-  if (!state.viewTeacher) { renderDayProgress(); renderTomorrow(); }
+  if (!state.viewTeacher) { 
+    renderDayProgress(); 
+    renderTomorrow(); 
+    showRandomWish(false); // Проверяем, не прошло ли 1.5 часа
+  }
 }, 60000);

@@ -1,11 +1,12 @@
 // ============================================================
-//  РОЛЬ + ПРОСМОТР ПРЕПОДАВАТЕЛЕЙ (ЧЕРЕЗ МОДАЛЬНОЕ ОКНО)
+//  РОЛЬ + ПРОСМОТР ПРЕПОДАВАТЕЛЕЙ (МОДАЛКА + ФИЛЬТРЫ)
 // ============================================================
 (function () {
   const get$ = id => document.getElementById(id);
   const ROLE_KEY = "role";
 
   let ALL_TEACHERS = {};
+  let activeFilterSpec = null; 
 
   function buildTeacherSchedule(raw) {
     if (typeof raw === "undefined") return;
@@ -77,13 +78,15 @@
   function openModal() {
     const modal = get$("teacherModal");
     const input = get$("modalTeacherInput");
-    const list = get$("modalTeacherList");
-    
-    if (!modal || !list) return;
+    if (!modal) return;
 
     modal.classList.add("open");
     input.value = "";
+    activeFilterSpec = null;
+    
+    renderModalFilters();
     renderModalList("");
+    
     setTimeout(() => input.focus(), 100);
   }
 
@@ -92,14 +95,51 @@
     if (modal) modal.classList.remove("open");
   }
 
+  function renderModalFilters() {
+    const bar = get$("modalSpecsFilter");
+    if (!bar) return;
+    
+    bar.innerHTML = "";
+    
+    const uniqueSpecs = new Set();
+    Object.values(ALL_TEACHERS).forEach(t => t.specs.forEach(s => uniqueSpecs.add(s)));
+    
+    Array.from(uniqueSpecs).sort().forEach(spec => {
+      const col = COLORS[spec] ? COLORS[spec].c : "#1769E0";
+      
+      const chip = document.createElement("button");
+      chip.className = "ts-filter-chip" + (activeFilterSpec === spec ? " on" : "");
+      
+      chip.innerHTML = `<span class="dot" style="background:${col};"></span> ${spec}`;
+      
+      chip.onclick = () => {
+        if (activeFilterSpec === spec) {
+          activeFilterSpec = null;
+        } else {
+          activeFilterSpec = spec;
+        }
+        renderModalFilters();
+        renderModalList(get$("modalTeacherInput").value);
+      };
+      
+      bar.appendChild(chip);
+    });
+  }
+
   function renderModalList(query) {
     const list = get$("modalTeacherList");
     if (!list) return;
 
     const q = query.toLowerCase().trim();
-    const names = Object.keys(ALL_TEACHERS).sort().filter(name => 
-      name.toLowerCase().includes(q)
-    );
+    let names = Object.keys(ALL_TEACHERS).sort();
+
+    if (q) {
+      names = names.filter(name => name.toLowerCase().includes(q));
+    }
+
+    if (activeFilterSpec) {
+      names = names.filter(name => ALL_TEACHERS[name].specs.includes(activeFilterSpec));
+    }
 
     if (names.length === 0) {
       list.innerHTML = `<div class="ts-no-results">Никого не найдено</div>`;
@@ -110,7 +150,17 @@
     names.forEach(name => {
       const el = document.createElement("div");
       el.className = "ts-modal-item";
-      el.textContent = name;
+      
+      const specs = ALL_TEACHERS[name].specs;
+      let dotsHTML = '<div class="ts-dots">';
+      specs.forEach(spec => {
+        const col = COLORS[spec] ? COLORS[spec].c : "#1769E0";
+        dotsHTML += `<span title="Ведет у ${spec}" style="background:${col};"></span>`;
+      });
+      dotsHTML += '</div>';
+
+      el.innerHTML = `<span>${name}</span> ${dotsHTML}`;
+      
       el.onclick = () => {
         state.teacher = name;
         closeModal();

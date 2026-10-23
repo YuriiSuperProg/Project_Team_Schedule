@@ -10,7 +10,13 @@
   --text:       #0F172A;
   --muted:      #94A3B8;
   --line:       #E2E8F0;
-  --radius:     16px;
+  --radius:     20px;
+  
+  /* Мягкие тени */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 32px rgba(15, 23, 42, 0.06);
+  --shadow-xl: 0 4px 12px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.1);
 }
 
 html.dark {
@@ -19,6 +25,11 @@ html.dark {
   --text:       #F7F9FC;
   --muted:      #94A3B8;
   --line:       #2A3448;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 1px 3px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 html { scroll-behavior: smooth; }
@@ -150,8 +161,9 @@ header {
   margin: 32px 0 16px;
   padding: 18px 22px;
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  border: none;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius);
 }
 .greeting-text {
   font-size: 1.1rem;
@@ -209,8 +221,9 @@ header {
   gap: 12px;
   padding: 14px 18px;
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
+  border: none;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius);
   margin-bottom: 16px;
 }
 
@@ -253,11 +266,12 @@ header {
   position: relative;
   margin: 0 0 16px;
   padding: 28px 28px 24px;
-  border-radius: 20px;
+  border-radius: 24px;
   background: var(--card);
-  border: 1px solid var(--line);
+  border: none;
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
-  transition: background .3s, border-color .3s, opacity .4s, transform .4s;
+  transition: box-shadow .3s, transform .3s;
   animation: dcIn .5s cubic-bezier(.2, .8, .2, 1) both;
 }
 
@@ -435,7 +449,6 @@ header {
 
 html.dark .day-card {
   background: #1A2338;
-  border-color: #2A3448;
 }
 html.dark .dc-now {
   border-color: #1A2338;
@@ -450,7 +463,7 @@ html.dark .dc-now {
   gap: 12px;
   padding: 14px 18px;
   margin: 0 0 24px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--card);
   border: 1px dashed var(--line);
   color: var(--c-text, var(--blue));
@@ -526,16 +539,17 @@ html.dark .wish-text { color: var(--text); }
 
 .card {
   background: var(--card);
-  border: 1px solid var(--line);
+  border: none;
   border-left: 4px solid var(--c, var(--blue));
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 18px 20px;
-  transition: transform .2s, box-shadow .2s, background .2s;
+  box-shadow: var(--shadow-sm);
+  transition: transform .2s, box-shadow .2s;
   animation: cardIn .35s ease backwards;
 }
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+  box-shadow: var(--shadow-xl);
 }
 
 @keyframes cardIn {
@@ -577,7 +591,6 @@ html.dark .weekbar,
 html.dark .nowbar,
 html.dark .day-empty {
   background: color-mix(in srgb, var(--c, var(--blue)) 12%, #1A2338);
-  border-color: color-mix(in srgb, var(--c, var(--blue)) 28%, #2A3448);
 }
 
 html.dark .greeting-text,
@@ -590,8 +603,8 @@ html.dark .weekbar b {
   filter: brightness(1.6);
 }
 
-html.dark .card { background: #1A2338; border-color: #2A3448; }
-html.dark .card:hover { background: #212B45; box-shadow: 0 10px 24px rgba(0, 0, 0, .4); }
+html.dark .card { background: #1A2338; }
+html.dark .card:hover { background: #212B45; }
 html.dark .card .t { filter: brightness(1.6); }
 
 html.dark .chip { background: #1A2338; border-color: #2A3448; color: var(--text); }
@@ -621,9 +634,10 @@ html.dark .day.today h2 {
   gap: 18px;
   padding: 18px 22px;
   margin: 0 0 16px;
-  border-radius: 16px;
+  border-radius: var(--radius);
   background: var(--card);
-  border: 1px solid var(--line);
+  border: none;
+  box-shadow: var(--shadow-md);
   animation: tmIn .5s cubic-bezier(.2, .8, .2, 1) both;
 }
 .tomorrow.hidden { display: none; }
@@ -656,7 +670,6 @@ html.dark .day.today h2 {
 
 html.dark .tomorrow {
   background: color-mix(in srgb, var(--c, var(--blue)) 12%, #1A2338);
-  border-color: color-mix(in srgb, var(--c, var(--blue)) 30%, #2A3448);
 }
 
 /* ============================================================
@@ -668,12 +681,15 @@ html.dark .tomorrow {
   gap: 10px;
   padding: 10px 16px;
   margin-bottom: 14px;
-  border-radius: 14px;
+  border-radius: var(--radius);
   background: var(--card);
-  border: 1px solid var(--line);
-  transition: border-color .15s;
+  border: none;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow .15s;
 }
-.date-search:focus-within { border-color: var(--c, var(--blue)); }
+.date-search:focus-within {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent), var(--shadow-md);
+}
 
 .ds-icon { font-size: 1.1rem; flex-shrink: 0; opacity: .7; }
 
@@ -682,18 +698,18 @@ html.dark .tomorrow {
   min-width: 0;
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid var(--line);
+  border: none;
   background: var(--bg);
   color: var(--text);
   font: inherit;
   font-size: .92rem;
   cursor: pointer;
-  transition: .15s;
+  transition: background .15s;
 }
-.ds-input:hover { border-color: var(--c, var(--blue)); }
+.ds-input:hover { background: var(--line); }
 .ds-input:focus {
   outline: none;
-  border-color: var(--c, var(--blue));
+  background: var(--card);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
 }
 
@@ -730,8 +746,8 @@ html.dark .tomorrow {
   100% { background: transparent; }
 }
 
-html.dark .date-search { background: #1A2338; border-color: #2A3448; }
-html.dark .ds-input { background: #0F172A; border-color: #2A3448; }
+html.dark .date-search { background: #1A2338; }
+html.dark .ds-input { background: #0F172A; }
 
 /* ============================================================
    ЭКРАН ВЫБОРА РОЛИ
@@ -761,9 +777,10 @@ html.dark .ds-input { background: #0F172A; border-color: #2A3448; }
 }
 .role-card {
   padding: 36px 24px 32px;
-  border-radius: 20px;
+  border-radius: var(--radius);
   background: var(--card);
-  border: 2px solid var(--line);
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-md);
   color: var(--text);
   font: inherit;
   cursor: pointer;
@@ -773,13 +790,13 @@ html.dark .ds-input { background: #0F172A; border-color: #2A3448; }
 .role-card:hover {
   border-color: var(--blue);
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
+  box-shadow: var(--shadow-xl);
 }
 .rc-icon { font-size: 3rem; line-height: 1; margin-bottom: 16px; }
 .rc-title { font-size: 1.15rem; font-weight: 600; margin-bottom: 6px; }
 .rc-desc { font-size: .88rem; color: var(--muted); }
 
-html.dark .role-card { background: #1A2338; border-color: #2A3448; }
+html.dark .role-card { background: #1A2338; }
 
 /* ============================================================
    МОБИЛЬНОЕ МЕНЮ
@@ -818,7 +835,7 @@ html.dark .role-card { background: #1A2338; border-color: #2A3448; }
   border-bottom: 1px solid var(--line);
   display: none;
   padding: 16px 24px 24px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
+  box-shadow: var(--shadow-lg);
   z-index: 99;
 }
 .mobile-menu.open { display: block; animation: mmIn .2s ease; }
@@ -897,10 +914,6 @@ html.dark .ds-btn:hover {
   background: color-mix(in srgb, var(--c, var(--blue)) 80%, #fff);
   box-shadow: 0 4px 12px color-mix(in srgb, var(--c, var(--blue)) 40%, transparent);
 }
-html.dark .card:hover {
-  border-left-color: var(--c, var(--blue));
-  box-shadow: 0 0 0 1px var(--c, var(--blue)), 0 10px 24px rgba(0, 0, 0, .5);
-}
 
 /* ============================================================
    ЖИВОЙ ЛОГОТИП
@@ -922,7 +935,7 @@ html.dark .card:hover {
   height: 44px;
   border-radius: 14px;
   background: linear-gradient(135deg, var(--blue-soft, #E8F1FF), #ffffff);
-  box-shadow: 0 4px 12px rgba(23, 105, 224, 0.15);
+  box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
@@ -962,7 +975,7 @@ html.dark .card:hover {
   50% { transform: scale(1.3) rotate(15deg); opacity: 0.7; }
 }
 
-html.dark .logo-icon-wrap { background: linear-gradient(135deg, #1A2338, #2A3448); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+html.dark .logo-icon-wrap { background: linear-gradient(135deg, #1A2338, #2A3448); }
 html.dark .logo-icon-wrap::after { background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); }
 html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4C9AFF); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; }
 
@@ -997,9 +1010,9 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
   width: 100%;
   max-width: 500px;
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+  border: none;
+  border-radius: 24px;
+  box-shadow: var(--shadow-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -1032,6 +1045,60 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
 }
 .ts-modal-input::placeholder { color: var(--muted); }
 
+/* Фильтр по специальностям */
+.ts-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+
+.ts-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: .15s;
+}
+
+.ts-filter-chip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.ts-filter-chip.on {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+  font-weight: 500;
+}
+
+html.dark .ts-filter-chip.on {
+  background: var(--blue-2);
+  color: #fff;
+  border-color: var(--blue-2);
+}
+
+.ts-filter-chip.on .dot {
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+}
+
+.ts-filter-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 .ts-modal-list {
   max-height: 350px;
   overflow-y: auto;
@@ -1047,6 +1114,7 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
   transition: background .1s;
   color: var(--text);
   font-size: 0.95rem;
+  gap: 8px;
 }
 .ts-modal-item:hover, .ts-modal-item.active {
   background: var(--c-soft, var(--blue-soft));
@@ -1055,6 +1123,20 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
 html.dark .ts-modal-item:hover, html.dark .ts-modal-item.active {
   background: color-mix(in srgb, var(--c, var(--blue)) 15%, #1A2338);
   color: #fff;
+}
+
+.ts-dots {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.ts-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: help;
 }
 
 .ts-no-results {
