@@ -72,22 +72,19 @@
 
       <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
       <div class="filters">
-        <div class="row"><span>Специальность</span><div class="chips" id="specs"></div></div>
+        <!-- Строка специальностей (скрывается для препода) -->
+        <div class="row" id="rowSpecs"><span>Специальность</span><div class="chips" id="specs"></div></div>
         
         <!-- Для студента -->
         <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
         <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
         
-        <!-- Для препода (ЖИВОЙ ПОИСК) -->
-        <div class="row" id="rowTeacher" style="display:none">
+        <!-- КНОПКА ОТКРЫТИЯ МОДАЛКИ ПРЕПОДАВАТЕЛЕЙ (Только для препода) -->
+        <div class="row" id="rowTeacherBtn" style="display:none">
           <span>Преподаватель</span>
-          <div class="live-search-wrap">
-            <div class="ls-input-box">
-              <span class="ls-icon">🔍</span>
-              <input type="text" id="teacherInput" class="ls-input" placeholder="Введите фамилию..." autocomplete="off">
-            </div>
-            <div class="ls-dropdown" id="teacherDropdown"></div>
-          </div>
+          <button class="btn btn-ghost" id="openTeacherModalBtn" style="border-color: var(--line); background: var(--card);">
+            🔍 Найти преподавателя
+          </button>
         </div>
       </div>
 
@@ -141,6 +138,17 @@
 
     </div>
   </main>
+
+  <!-- МОДАЛЬНОЕ ОКНО ПРЕПОДАВАТЕЛЕЙ -->
+  <div class="ts-modal-overlay" id="teacherModal">
+    <div class="ts-modal">
+      <div class="ts-modal-input-wrap">
+        <span>🔍</span>
+        <input type="text" class="ts-modal-input" id="modalTeacherInput" placeholder="Введите фамилию..." autocomplete="off">
+      </div>
+      <div class="ts-modal-list" id="modalTeacherList"></div>
+    </div>
+  </div>
 
   <script src="data.js"></script>
   <script src="schedule.js"></script>

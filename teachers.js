@@ -1,13 +1,14 @@
 // ============================================================
-//  РОЛЬ + ЖИВОЙ ПОИСК ПРЕПОДАВАТЕЛЕЙ
+//  РОЛЬ + ПРОСМОТР ПРЕПОДАВАТЕЛЕЙ (ЧЕРЕЗ МОДАЛЬНОЕ ОКНО)
 // ============================================================
 (function () {
   const get$ = id => document.getElementById(id);
   const ROLE_KEY = "role";
 
+  let ALL_TEACHERS = {};
+
   function buildTeacherSchedule(raw) {
-    const result = {};
-    if (typeof raw === "undefined") return result;
+    if (typeof raw === "undefined") return;
 
     Object.keys(raw).forEach(groupName => {
       const specMatch = groupName.match(/^([А-ЯЁ]+)-/);
@@ -32,17 +33,21 @@
           const roomMatch = t.match(/ауд\.\s*([^,]+?)(?:\s|$)/);
           const room = roomMatch ? roomMatch[1].trim() : "";
 
-          if (!result[spec]) result[spec] = {};
-          if (!result[spec][teacher]) result[spec][teacher] = {};
-          if (!result[spec][teacher][dayIndex]) result[spec][teacher][dayIndex] = [];
+          if (!ALL_TEACHERS[teacher]) ALL_TEACHERS[teacher] = { specs: new Set(), days: {} };
+          ALL_TEACHERS[teacher].specs.add(spec);
 
-          result[spec][teacher][dayIndex].push({
+          if (!ALL_TEACHERS[teacher].days[dayIndex]) ALL_TEACHERS[teacher].days[dayIndex] = [];
+
+          ALL_TEACHERS[teacher].days[dayIndex].push({
             number: p.number, text: subject, subject: subject, room: room, group: groupName, spec: spec, star: p.star
           });
         });
       });
     });
-    return result;
+
+    Object.keys(ALL_TEACHERS).forEach(name => {
+      ALL_TEACHERS[name].specs = Array.from(ALL_TEACHERS[name].specs);
+    });
   }
 
   function getSavedRole() { return localStorage.getItem(ROLE_KEY) || ""; }
@@ -50,133 +55,93 @@
   function clearRole() { localStorage.removeItem(ROLE_KEY); }
 
   function switchToStudentUI() {
-    get$("rowTeacher").style.display = "none";
+    get$("rowSpecs").style.display = "";
     get$("rowCourses").style.display = "";
     get$("rowGroups").style.display = "";
+    get$("rowTeacherBtn").style.display = "none";
   }
 
   function switchToTeacherUI() {
+    get$("rowSpecs").style.display = "none";
     get$("rowCourses").style.display = "none";
     get$("rowGroups").style.display = "none";
-    get$("rowTeacher").style.display = "";
+    get$("rowTeacherBtn").style.display = "";
   }
 
-  // --- ЖИВОЙ ПОИСК ---
-  let currentIndex = -1;
-  
   function renderTeacherFilters() {
     switchToTeacherUI();
-    applyColor(state.spec || "ИСП");
-
-    const specsBox = get$("specs");
-    specsBox.innerHTML = "";
-
-    Object.keys(window.TEACHER_SCHEDULE).sort().forEach(spec => {
-      const b = document.createElement("button");
-      b.className = "chip" + (state.spec === spec ? " on" : "");
-      b.textContent = spec;
-      b.onclick = () => { 
-        state.spec = spec; 
-        state.teacher = null; 
-        applyColor(spec);
-        get$("teacherInput").value = "";
-        renderAll(); 
-      };
-      specsBox.appendChild(b);
-    });
-
-    get$("courses").innerHTML = "";
-    get$("groups").innerHTML = "";
-    
-    const input = get$("teacherInput");
-    if (state.teacher) input.value = state.teacher;
-    else input.value = "";
+    applyColor("ИСП");
   }
 
-  function initLiveSearch() {
-    const input = get$("teacherInput");
-    const dropdown = get$("teacherDropdown");
-    if (!input || !dropdown) return;
+  // --- МОДАЛКА ---
+  function openModal() {
+    const modal = get$("teacherModal");
+    const input = get$("modalTeacherInput");
+    const list = get$("modalTeacherList");
+    
+    if (!modal || !list) return;
 
-    function closeDropdown() {
-      dropdown.classList.remove("open");
-      currentIndex = -1;
+    modal.classList.add("open");
+    input.value = "";
+    renderModalList("");
+    setTimeout(() => input.focus(), 100);
+  }
+
+  function closeModal() {
+    const modal = get$("teacherModal");
+    if (modal) modal.classList.remove("open");
+  }
+
+  function renderModalList(query) {
+    const list = get$("modalTeacherList");
+    if (!list) return;
+
+    const q = query.toLowerCase().trim();
+    const names = Object.keys(ALL_TEACHERS).sort().filter(name => 
+      name.toLowerCase().includes(q)
+    );
+
+    if (names.length === 0) {
+      list.innerHTML = `<div class="ts-no-results">Никого не найдено</div>`;
+      return;
     }
 
-    function updateActiveItem() {
-      const items = dropdown.querySelectorAll(".ls-item");
-      items.forEach((item, idx) => {
-        item.classList.toggle("active", idx === currentIndex);
-        if (idx === currentIndex) item.scrollIntoView({ block: "nearest" });
+    list.innerHTML = "";
+    names.forEach(name => {
+      const el = document.createElement("div");
+      el.className = "ts-modal-item";
+      el.textContent = name;
+      el.onclick = () => {
+        state.teacher = name;
+        closeModal();
+        state.week = currentWeek();
+        renderAll();
+      };
+      list.appendChild(el);
+    });
+  }
+
+  function initModal() {
+    const openBtn = get$("openTeacherModalBtn");
+    const closeBtn = get$("closeTeacherModal");
+    const modal = get$("teacherModal");
+    const input = get$("modalTeacherInput");
+
+    if (openBtn) openBtn.addEventListener("click", openModal);
+    if (closeBtn) closeBtn.addEventListener("click", closeModal);
+
+    if (modal) {
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
       });
     }
 
-    input.addEventListener("input", (e) => {
-      const query = e.target.value.toLowerCase().trim();
-      if (!state.spec) {
-        dropdown.innerHTML = `<div class="ls-no-results">Сначала выберите специальность</div>`;
-        dropdown.classList.add("open");
-        return;
-      }
-
-      const teachers = (window.TEACHER_SCHEDULE || {})[state.spec] || {};
-      const filtered = Object.keys(teachers).sort().filter(t => 
-        t.toLowerCase().includes(query)
-      );
-
-      if (filtered.length === 0) {
-        dropdown.innerHTML = `<div class="ls-no-results">Никого не найдено</div>`;
-        dropdown.classList.add("open");
-        return;
-      }
-
-      currentIndex = -1;
-      dropdown.innerHTML = "";
-      filtered.forEach(t => {
-        const el = document.createElement("div");
-        el.className = "ls-item";
-        el.textContent = t;
-        el.onclick = () => selectTeacher(t);
-        dropdown.appendChild(el);
-      });
-      dropdown.classList.add("open");
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
     });
 
-    document.addEventListener("click", (e) => {
-      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
-        closeDropdown();
-      }
-    });
-
-    input.addEventListener("keydown", (e) => {
-      if (!dropdown.classList.contains("open")) return;
-      const items = dropdown.querySelectorAll(".ls-item");
-      if (items.length === 0) return;
-
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        currentIndex = (currentIndex + 1) % items.length;
-        updateActiveItem();
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        currentIndex = (currentIndex - 1 + items.length) % items.length;
-        updateActiveItem();
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        if (currentIndex >= 0 && items[currentIndex]) {
-          selectTeacher(items[currentIndex].textContent);
-        }
-      } else if (e.key === "Escape") {
-        closeDropdown();
-      }
-    });
-
-    function selectTeacher(name) {
-      state.teacher = name;
-      input.value = name;
-      closeDropdown();
-      state.week = currentWeek();
-      renderAll();
+    if (input) {
+      input.addEventListener("input", (e) => renderModalList(e.target.value));
     }
   }
 
@@ -184,17 +149,19 @@
     const out = get$("out"), info = get$("weekInfo");
     out.innerHTML = "";
 
-    if (!state.spec) { info.textContent = "Выберите специальность"; return; }
-    if (!state.teacher) { info.textContent = "Выберите преподавателя"; return; }
+    if (!state.teacher) { 
+      info.textContent = "Выберите преподавателя"; 
+      return; 
+    }
 
     const w = WEEK_LIST[state.week];
     info.textContent = `Неделя ${w.star} (${w.start} – ${w.end})`;
 
-    const raw = (window.TEACHER_SCHEDULE[state.spec] || {})[state.teacher];
-    if (!raw) return;
+    const data = ALL_TEACHERS[state.teacher];
+    if (!data) return;
 
     DAYS.forEach((day, index) => {
-      const dayPairs = raw[index];
+      const dayPairs = data.days[index];
       if (!dayPairs || !dayPairs.length) return;
 
       const weekPairs = dayPairs.filter(p => !p.star || p.star === w.star);
@@ -208,11 +175,19 @@
 
       const grid = document.createElement("div");
       grid.className = "cards";
-      weekPairs.sort((a, b) => a.number - b.number).forEach(p => {
+
+      weekPairs.sort((a, b) => {
+        if (a.number !== b.number) return a.number - b.number;
+        return a.group.localeCompare(b.group);
+      }).forEach(p => {
         const card = document.createElement("article");
         card.className = "card";
+        
+        const specColor = COLORS[p.spec] ? COLORS[p.spec].c : "#1769E0";
+        card.style.borderLeftColor = specColor;
+        
         card.innerHTML = `
-          <div class="t">${BELLS[p.number]} <span style="opacity:0.7;">· ${p.spec}</span></div>
+          <div class="t" style="color: ${specColor}; font-weight: 600;">${BELLS[p.number]} <span style="opacity:0.6; color:var(--muted); font-weight:400;">· ${p.spec}</span></div>
           <div class="s">${p.subject}</div>
           <div class="m">${p.room} · <b>${p.group}</b></div>
         `;
@@ -256,11 +231,10 @@
     updateNavButtons(); renderAll();
   }
 
-  // --- УПРАВЛЕНИЕ КНОПКАМИ В МЕНЮ И ШАПКЕ ---
   function updateNavButtons() {
     const btnDesktop = get$("switchRoleDesktop");
     const btnMobile = get$("switchRole");
-    const btnForget = get$("forgetGroup"); // Кнопка "Забыть группу"
+    const btnForget = get$("forgetGroup"); 
     const menu = get$("mobileMenu");
     const burger = get$("burger");
 
@@ -269,7 +243,6 @@
       if (burger) burger.classList.remove("open");
     }
 
-    // Скрываем "Забыть группу", если мы в режиме препода
     if (btnForget) {
       if (state.mode === "teacher" || state.viewTeacher) {
         btnForget.style.display = "none";
@@ -278,7 +251,6 @@
       }
     }
 
-    // Функция для применения настроек к кнопке
     function applyBtnSettings(btn) {
       if (!btn) return;
       
@@ -305,19 +277,14 @@
       }
     }
 
-    if (btnDesktop) {
-      applyBtnSettings(btnDesktop);
-    }
-
-    if (btnMobile) {
-      applyBtnSettings(btnMobile);
-    }
+    if (btnDesktop) applyBtnSettings(btnDesktop);
+    if (btnMobile) applyBtnSettings(btnMobile);
   }
 
   function init() {
     if (typeof RAW_DATA === "undefined" || typeof SCHEDULE === "undefined") return;
 
-    window.TEACHER_SCHEDULE = buildTeacherSchedule(RAW_DATA);
+    buildTeacherSchedule(RAW_DATA);
     window.__renderTeacherSchedule = renderTeacherSchedule;
     window.__renderTeacherFilters  = renderTeacherFilters;
 
@@ -329,9 +296,8 @@
       card.addEventListener("click", () => setRole(card.dataset.role));
     });
 
-    initLiveSearch();
+    initModal();
 
-    // Обработчик для кнопки "Забыть группу" в меню
     const btnForgetGroup = get$("forgetGroup");
     if (btnForgetGroup) {
       btnForgetGroup.addEventListener("click", () => {
