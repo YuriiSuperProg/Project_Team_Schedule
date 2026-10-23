@@ -5,23 +5,33 @@
   --blue:       #1769E0;
   --blue-2:     #4C9AFF;
   --blue-soft:  #E8F1FF;
-  --bg:         #EEF3F9;
-  --bg-2:       #E3EBF4;
+  --bg:         #F7F9FC;
+  --bg-2:       #EEF3F9;
   --card:       #FFFFFF;
   --text:       #0F172A;
   --muted:      #5B6B7F;
-  --line:       #D6E0EC;
-  --radius:     14px;
+  --line:       #E2E8F0;
+  --radius:     20px;
+  
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 32px rgba(15, 23, 42, 0.06);
+  --shadow-xl: 0 4px 12px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.1);
 }
 
 html.dark {
-  --bg:         #0F172A;
+  --bg:         #0B1120;
   --bg-2:       #131C2E; 
   --card:       #1A2338;
   --text:       #F7F9FC;
   --muted:      #94A3B8;
   --line:       #2A3448;
   --blue-soft:  #1E2A42;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 1px 3px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 4px 12px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 html { scroll-behavior: smooth; }
@@ -40,7 +50,7 @@ body {
 /* ============ HEADER ============ */
 header {
   position: sticky; top: 0;
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
   z-index: 100;
@@ -50,7 +60,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
+  height: 68px;
 }
 
 .nav-actions { display: flex; align-items: center; gap: 10px; }
@@ -98,7 +108,7 @@ header {
 
 /* ============ HERO ============ */
 .hero {
-  padding: 60px 0 40px;
+  padding: 70px 0 50px;
   text-align: center;
 }
 
@@ -117,7 +127,7 @@ header {
 }
 
 .hero h1 {
-  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 700;
   letter-spacing: -.03em;
   line-height: 1.15;
@@ -138,17 +148,18 @@ header {
   flex-wrap: wrap;
 }
 
-/* ============ INTRO ============ */
-.intro { padding: 0 0 48px; }
+/* ============ INTRO (КАРТОЧКА) ============ */
+.intro { padding: 0 0 56px; }
 
 .intro-card {
   position: relative;
   max-width: 720px;
   margin: 0 auto;
   padding: 32px 36px 28px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border: none;
+  border-radius: 24px;
   background: var(--card);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 
@@ -183,9 +194,7 @@ header {
 }
 
 /* ============ КНОПКА В ИНТРО ============ */
-.intro-sign-wrap {
-  margin-top: 24px;
-}
+.intro-sign-wrap { margin-top: 24px; }
 
 .intro-sign {
   display: inline-flex;
@@ -213,23 +222,24 @@ header {
   box-shadow: 0 2px 8px rgba(23, 105, 224, 0.2);
 }
 
-html.dark .intro-sign {
-  box-shadow: 0 4px 12px rgba(23, 105, 224, 0.15);
-}
-html.dark .intro-sign:hover {
-  box-shadow: 0 6px 16px rgba(23, 105, 224, 0.25);
-}
+html.dark .intro-sign { box-shadow: 0 4px 12px rgba(23, 105, 224, 0.15); }
+html.dark .intro-sign:hover { box-shadow: 0 6px 16px rgba(23, 105, 224, 0.25); }
 
 /* ============ СЕКЦИИ ============ */
-section { padding: 56px 0; }
+section { padding: 48px 0; }
 
-.section-head { margin-bottom: 28px; }
+.section-head { 
+  margin-bottom: 20px;
+  padding-left: 16px;
+  border-left: 3px solid var(--blue);
+}
 
 .section-title {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -.02em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  line-height: 1.2;
 }
 
 .section-sub {
@@ -241,20 +251,21 @@ section { padding: 56px 0; }
 .about-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
+  gap: 16px;
 }
 
 .about-item {
   background: var(--card);
   padding: 32px 28px;
-  transition: background .15s;
+  border-radius: 20px;
+  box-shadow: var(--shadow-md);
+  transition: box-shadow .2s, transform .2s;
 }
 
-.about-item:hover { background: var(--blue-soft); }
+.about-item:hover { 
+  box-shadow: var(--shadow-lg); 
+  transform: translateY(-2px);
+}
 
 .about-item:nth-child(3) {
   grid-column: 1 / -1;
@@ -282,19 +293,8 @@ section { padding: 56px 0; }
 }
 
 @media (max-width: 640px) {
-  .about-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    background: transparent;
-    border: none;
-  }
-  .about-item {
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-  }
-  .about-item:nth-child(3) {
-    grid-column: auto;
-  }
+  .about-grid { grid-template-columns: 1fr; gap: 12px; }
+  .about-item:nth-child(3) { grid-column: auto; }
 } 
 
 /* ============ КОМАНДА ============ */
@@ -307,15 +307,16 @@ section { padding: 56px 0; }
 .member {
   position: relative;
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border: none;
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: var(--shadow-md);
   transition: transform .25s, box-shadow .25s;
 }
 
 .member:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(15, 23, 42, .1);
+  box-shadow: var(--shadow-xl);
 }
 
 .member::before {
@@ -375,15 +376,16 @@ html.dark .member--soft { --accent: #64748B; --accent-text: #94A3B8; }
 
 /* ============ CTA ============ */
 .cta {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 40px 28px;
+  border: none;
+  border-radius: 24px;
+  padding: 48px 28px;
   text-align: center;
   background: var(--card);
+  box-shadow: var(--shadow-lg);
 }
 
 .cta h2 {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -.02em;
   margin-bottom: 10px;
@@ -391,7 +393,7 @@ html.dark .member--soft { --accent: #64748B; --accent-text: #94A3B8; }
 
 .cta p {
   color: var(--muted);
-  font-size: .93rem;
+  font-size: .95rem;
   max-width: 460px;
   margin: 0 auto 22px;
 }
@@ -399,7 +401,8 @@ html.dark .member--soft { --accent: #64748B; --accent-text: #94A3B8; }
 /* ============ FOOTER ============ */
 footer {
   border-top: 1px solid var(--line);
-  padding: 24px 0;
+  padding: 32px 0;
+  margin-top: 32px;
 }
 
 .footer-inner {
@@ -422,7 +425,7 @@ footer a:hover { color: var(--blue); }
 /* ============ АДАПТИВ ============ */
 @media (max-width: 640px) {
   .hero { padding: 44px 0 32px; }
-  section { padding: 40px 0; }
+  section { padding: 36px 0; }
   .intro { padding-bottom: 40px; }
   .intro-card { padding: 24px 20px; }
   .team-grid { grid-template-columns: 1fr; gap: 18px; }
@@ -479,7 +482,7 @@ footer a:hover { color: var(--blue); }
   border-bottom: 1px solid var(--line);
   display: none;
   padding: 20px 24px 24px;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
+  box-shadow: var(--shadow-lg);
 }
 
 .mobile-menu.open {
@@ -510,7 +513,6 @@ footer a:hover { color: var(--blue); }
 
 .mobile-menu nav a:hover { background: var(--card); }
 
-/* Кнопка в меню */
 .mobile-menu nav .btn {
   margin-top: 8px;
   display: flex;
@@ -522,7 +524,6 @@ footer a:hover { color: var(--blue); }
   border-color: var(--blue);
 }
 
-/* ФИКС: чтобы при наведении кнопка не исчезала */
 .mobile-menu nav .btn:hover {
   background: #1259c4;       
   color: #ffffff;
@@ -538,10 +539,8 @@ footer a:hover { color: var(--blue); }
   .hero p { font-size: .95rem; line-height: 1.55; }
   .hero-buttons { flex-direction: column; align-items: stretch; }
   .hero-buttons .btn { justify-content: center; }
-  .intro-card { padding: 24px 20px; }
 }
 
-/* Белая кнопка "Расписание" в шапке */
 /* Кнопка "Расписание" в шапке */
 .nav-desktop.btn-primary {
   background: #ffffff;
@@ -555,8 +554,8 @@ footer a:hover { color: var(--blue); }
 
 /* Тёмная тема: стеклянная кнопка */
 html.dark .nav-desktop.btn-primary {
-  background: rgba(76, 154, 255, 0.15); /* синий с прозрачностью */
-  color: #4C9AFF;                       /* голубой текст */
+  background: rgba(76, 154, 255, 0.15);
+  color: #4C9AFF;
   border: 1px solid rgba(76, 154, 255, 0.3);
   backdrop-filter: blur(4px);
 }
@@ -566,7 +565,7 @@ html.dark .nav-desktop.btn-primary:hover {
 }
 
 /* ============================================================
-   ЖИВОЙ ЛОГОТИП (В ЦВЕТАХ СПЕЦИАЛЬНОСТЕЙ)
+   ЖИВОЙ ЛОГОТИП
    ============================================================ */
 .logo {
   display: inline-flex;
@@ -578,7 +577,6 @@ html.dark .nav-desktop.btn-primary:hover {
 
 .logo:hover { transform: scale(1.02); }
 
-/* ИКОНКА */
 .logo-icon-wrap {
   display: flex;
   align-items: center;
@@ -593,7 +591,6 @@ html.dark .nav-desktop.btn-primary:hover {
   flex-shrink: 0;
 }
 
-/* Блик, пробегающий по иконке */
 .logo-icon-wrap::after {
   content: '';
   position: absolute;
@@ -621,7 +618,6 @@ html.dark .nav-desktop.btn-primary:hover {
   50% { transform: translateY(-3px); }
 }
 
-/* ТЕКСТ */
 .logo-text {
   display: flex;
   flex-direction: column;
@@ -655,7 +651,6 @@ html.dark .nav-desktop.btn-primary:hover {
   margin-top: 2px;
 }
 
-/* МЕРЦАЮЩАЯ ЗВЕЗДА */
 .star-sparkle {
   display: inline-block;
   font-size: 0.9rem;
@@ -669,7 +664,6 @@ html.dark .nav-desktop.btn-primary:hover {
   50% { transform: scale(1.3) rotate(15deg); opacity: 0.7; }
 }
 
-/* ТЁМНАЯ ТЕМА ДЛЯ ЛОГОТИПА */
 html.dark .logo-icon-wrap {
   background: linear-gradient(135deg, #1A2338, #2A3448);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -690,4 +684,399 @@ html.dark .logo-text b {
   .logo-icon-wrap { width: 38px; height: 38px; }
   .logo-text b { font-size: 1.05rem; }
   .logo-text small { font-size: 0.65rem; }
+}
+
+/* ============================================================
+   ССЫЛКИ НА СОЦСЕТИ В КАРТОЧКАХ КОМАНДЫ (ТЕКСТОВЫЕ)
+   ============================================================ */
+.member-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.member-links a {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .15s, transform .15s;
+}
+
+.member-links a:hover {
+  transform: translateY(-1px);
+}
+
+/* Цвета при наведении (по брендам) */
+.member-links a[title="ВКонтакте"]:hover {
+  color: #0077FF;
+}
+
+.member-links a[title="Telegram"]:hover {
+  color: #229ED9;
+}
+
+.member-links a[title="GitHub"]:hover {
+  color: var(--text);
+}
+
+/* ============================================================
+   БЛОК ЭКОСИСТЕМЫ (САЙТ / БОТ / ПРИЛОЖЕНИЕ)
+   ============================================================ */
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.eco-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  padding: 36px 28px 28px;
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow .3s;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+/* Верхняя акцентная полоска при наведении */
+.eco-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--blue), var(--blue-2));
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.eco-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: color-mix(in srgb, var(--blue) 15%, transparent);
+}
+
+.eco-card:hover::before {
+  opacity: 1;
+}
+
+/* Иконка в мягком квадратике */
+.eco-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--blue-soft);
+  margin-bottom: 20px;
+  transition: background .3s, transform .3s;
+}
+
+.eco-card:hover .eco-icon-wrap {
+  background: var(--blue);
+  transform: scale(1.05);
+}
+
+.eco-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  transition: transform .3s;
+}
+
+.eco-card:hover .eco-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.eco-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
+}
+
+.eco-card p {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.55;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.eco-link {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap .2s;
+}
+
+.eco-card:hover .eco-link {
+  gap: 8px;
+}
+
+/* Карточка "Скоро" (приглушенная) */
+.eco-card--soon {
+  opacity: 0.65;
+  cursor: default;
+  background: var(--bg-2);
+  border: 1px dashed var(--line);
+  box-shadow: none;
+}
+
+.eco-card--soon:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--line);
+}
+
+.eco-card--soon::before {
+  display: none;
+}
+
+.eco-card--soon .eco-icon-wrap {
+  background: var(--line);
+}
+
+.eco-card--soon:hover .eco-icon-wrap {
+  background: var(--line);
+  transform: none;
+}
+
+.eco-card--soon:hover .eco-icon {
+  transform: none;
+}
+
+.eco-card--soon .eco-link {
+  color: var(--muted);
+}
+
+/* Тёмная тема */
+html.dark .eco-card--soon {
+  background: var(--bg-2);
+}
+
+/* Адаптив */
+@media (max-width: 900px) {
+  .eco-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .eco-card--soon {
+    grid-column: 1 / -1;
+    text-align: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .eco-grid {
+    grid-template-columns: 1fr;
+  }
+  .eco-card--soon {
+    grid-column: auto;
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+/* ============================================================
+   БЛОК ЭКОСИСТЕМЫ (САЙТ / БОТ / ПРИЛОЖЕНИЕ)
+   ============================================================ */
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.eco-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  padding: 36px 28px 28px;
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow .3s;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+.eco-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--blue), var(--blue-2));
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.eco-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-xl);
+  border-color: color-mix(in srgb, var(--blue) 15%, transparent);
+}
+
+.eco-card:hover::before {
+  opacity: 1;
+}
+
+.eco-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--blue-soft);
+  margin-bottom: 20px;
+  transition: background .3s, transform .3s;
+}
+
+.eco-card:hover .eco-icon-wrap {
+  background: var(--blue);
+  transform: scale(1.05);
+}
+
+.eco-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  transition: transform .3s;
+}
+
+.eco-card:hover .eco-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.eco-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: -.01em;
+}
+
+.eco-card p {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.55;
+  margin-bottom: 24px;
+  flex: 1;
+}
+
+.eco-link {
+  font-size: .9rem;
+  font-weight: 600;
+  color: var(--blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap .2s;
+}
+
+.eco-card:hover .eco-link {
+  gap: 8px;
+}
+
+/* ============ КАРТОЧКА ПРИЛОЖЕНИЯ (С КНОПКАМИ) ============ */
+.eco-card--app {
+  cursor: default;
+}
+
+.eco-card--app .eco-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.eco-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+
+.eco-btn--primary {
+  background: var(--blue);
+  color: #fff;
+  border: 1px solid var(--blue);
+}
+.eco-btn--primary:hover {
+  background: #1259c4;
+  border-color: #1259c4;
+}
+
+.eco-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.eco-btn--ghost:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* ============ ПОДСКАЗКА PWA ============ */
+.pwa-hint {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: translateY(8px);
+  z-index: 10;
+}
+
+.pwa-hint.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+html.dark .pwa-hint {
+  background: var(--bg-2);
+}
+
+/* ============ АДАПТИВ ДЛЯ ЭКОСИСТЕМЫ ============ */
+@media (max-width: 900px) {
+  .eco-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .eco-card--app {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .eco-grid {
+    grid-template-columns: 1fr;
+  }
+  .eco-card--app {
+    grid-column: auto;
+  }
 }

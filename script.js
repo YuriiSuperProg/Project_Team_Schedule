@@ -43,3 +43,25 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 
 revealTargets.forEach(el => revealObserver.observe(el));
+
+// ============================================================
+//  ПОДСКАЗКА ДЛЯ PWA (УСТАНОВКА НА ГЛАВНЫЙ ЭКРАН)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const pwaBtn = document.getElementById("pwaBtn");
+  const pwaHint = document.getElementById("pwaHint");
+
+  if (pwaBtn && pwaHint) {
+    pwaBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      pwaHint.classList.toggle("show");
+    });
+
+    // Скрываем подсказку при клике вне неё
+    document.addEventListener("click", (e) => {
+      if (!pwaBtn.contains(e.target) && !pwaHint.contains(e.target)) {
+        pwaHint.classList.remove("show");
+      }
+    });
+  }
+});
