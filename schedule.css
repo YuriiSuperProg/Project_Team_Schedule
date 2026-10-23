@@ -1314,6 +1314,7 @@ html.dark .group-chip.mine {
    ============================================================ */
 .dc-time-label {
   position: absolute;
+  top: 120%;
   transform: translateX(-50%);
   font-size: 0.65rem;
   color: var(--muted);
@@ -1323,6 +1324,7 @@ html.dark .group-chip.mine {
 
 .dc-break-label {
   position: absolute;
+  top: 120%;
   transform: translateX(-50%);
   font-size: 0.55rem;
   color: var(--muted);
@@ -1331,12 +1333,164 @@ html.dark .group-chip.mine {
   z-index: 3;
 }
 
+/* Скрываем подписи на мобилках */
 @media (max-width: 640px) {
-  .dc-break-label {
-    display: none; /* Скрываем подписи перемен на мобилках */
+  .desktop-only {
+    display: none !important;
   }
-  .dc-time-label {
-    font-size: 0.6rem;
-    font-weight: 600;
+}
+
+/* Панель с расписанием по клику */
+.dc-details-panel {
+  display: none;
+  margin-top: 24px;
+  padding: 16px;
+  background: var(--bg);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  animation: dcIn .3s ease;
+}
+
+.dc-details-panel.open {
+  display: block;
+}
+
+.dc-detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.dc-detail-item b {
+  color: var(--c-text, var(--blue));
+  font-variant-numeric: tabular-nums;
+}
+
+.dc-detail-break {
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 2px 0 6px 0;
+  border-bottom: 1px dashed var(--line);
+  margin-bottom: 6px;
+}
+
+/* Анимация мигания для подсказки */
+@keyframes pulseHint {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+}
+
+/* ============================================================
+   КНОПКА И МОДАЛКА ЗВОНКОВ (МОБИЛКИ)
+   ============================================================ */
+
+/* Кнопка */
+.dc-mobile-btn {
+  display: none;
+  margin-top: 12px;
+  padding: 8px 14px;
+  background: var(--c-soft, var(--blue-soft));
+  color: var(--c-text, var(--blue));
+  border: 1px solid color-mix(in srgb, var(--c, var(--blue)) 25%, transparent);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .15s;
+  width: 100%;
+}
+
+.dc-mobile-btn:active { transform: scale(0.98); }
+
+@media (max-width: 640px) {
+  .dc-mobile-btn {
+    display: inline-block;
   }
+}
+
+/* Модальное окно звонков */
+.bells-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.bells-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bells-modal {
+  background: var(--card);
+  width: 100%;
+  max-width: 340px;
+  border-radius: 24px;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  transform: translateY(20px);
+  transition: transform .2s;
+}
+
+.bells-modal-overlay.open .bells-modal {
+  transform: translateY(0);
+}
+
+.bells-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.bells-modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bells-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.bells-modal-content {
+  padding: 16px 24px 24px;
+}
+
+.bells-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.bells-row b {
+  color: var(--c-text, var(--blue));
+  font-variant-numeric: tabular-nums;
+}
+
+.bells-break {
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 4px 0 8px 0;
+  border-bottom: 1px dashed var(--line);
+  margin-bottom: 8px;
 }

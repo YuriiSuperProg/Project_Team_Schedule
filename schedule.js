@@ -251,15 +251,12 @@ function currentWeek() {
 function parseText(text) {
   let t = text.replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "").trim();
   
-  // Ищем препода (до запятой или конца строки)
   const teacherMatch = t.match(/преп\.\s*([^,]+)/);
   const teacher = teacherMatch ? teacherMatch[1].trim() : "";
   
-  // Ищем аудиторию (ауд. или спортивный зал)
   const roomMatch = t.match(/(?:ауд\.|спортивный зал)\s*([^,]+?)(?:\s|$)/i);
   let room = roomMatch ? roomMatch[1].trim() : "";
   
-  // Если нашли "спортивный зал" в тексте, ставим его в аудиторию
   if (t.toLowerCase().includes("спортивный зал")) {
     room = "Спортивный зал";
   }
@@ -284,11 +281,6 @@ function parseDay(pairs) {
 // ============================================================
 //  АГРЕГАЦИЯ ПОТОКОВЫХ ПАР
 // ============================================================
-// Собираем пары со ВСЕХ групп (по всем специальностям и курсам),
-// чтобы одинаковые лекции (предмет + аудитория + время) склеились
-// в одну карточку. Ключ: день + номер пары + время + предмет +
-// аудитория (+ подгруппа + даты, чтобы не смешивать разные занятия).
-
 function collectAllGroups() {
   const list = [];
   Object.keys(SCHEDULE).forEach(spec => {
@@ -305,20 +297,15 @@ function lessonKey(dayIndex, p, parsed, star, groupName) {
   const sub = p.subgroup ? `|sub${p.subgroup}` : "";
   const dates = p.dates ? `|d${p.dates.join(",")}` : "";
   
-  // Определяем, является ли пара лекцией (ищем "(л.)" в тексте)
   const isLecture = parsed.subject.includes("(л.)");
-  
-  // Если это НЕ лекция, добавляем группу в ключ, чтобы не склеивать с другими группами
-  const groupKey = isLecture ? "" : `|g${groupName}`;
+  const teacherKey = isLecture ? "" : `|t${parsed.teacher}`;
 
   return [
     dayIndex, p.number, star, parsed.subject.trim(),
-    parsed.room.trim(), sub, dates, groupKey
+    parsed.room.trim(), sub, dates, teacherKey
   ].join("§");
 }
 
-// Возвращает: { [dayIndex]: { [star]: [ card, ... ] } }
-// card = { time, number, subject, room, teachers:[], groups:[{spec,group}], subgroup, dates }
 function buildLessonCards() {
   const all = collectAllGroups();
   const byDay = {};
@@ -332,7 +319,6 @@ function buildLessonCards() {
         const parsed = parseText(p.text);
         const stars = p.star ? [p.star] : ["*", "**"];
         stars.forEach(star => {
-          // Передаем имя группы в lessonKey
           const key = lessonKey(dayIndex, p, parsed, star, group);
           if (!byDay[dayIndex]) byDay[dayIndex] = {};
           if (!byDay[dayIndex][star]) byDay[dayIndex][star] = {};
@@ -474,7 +460,6 @@ function renderSchedule() {
     h2.textContent = DAY_NAMES[day];
     block.appendChild(h2);
 
-    // Берём все карточки дня и оставляем ТОЛЬКО те, где есть моя группа
     let dayCards = (cardsByDay[index] && cardsByDay[index][w.star]) || [];
     dayCards = dayCards.filter(card =>
       card.groups.some(g => g.group === state.group)
@@ -576,6 +561,24 @@ function renderDayProgress() {
   ringFill.style.strokeDasharray = dash;
   ringFill.style.strokeDashoffset = dash - (dash * percentVal / 100);
 
+  // --- УДАЛЯЕМ СТАРЫЕ ЭЛЕМЕНТЫ ---
+  const existingBtn = document.getElementById("dcMobileBtn");
+  if (existingBtn) existingBtn.remove();
+
+  // --- ДОБАВЛЯЕМ КНОПКУ В БЛОК ИНФОРМАЦИИ (ТОЛЬКО НА МОБИЛКЕ) ---
+  const isMobile = window.innerWidth <= 640;
+  if (isMobile) {
+    const btn = document.createElement("button");
+    btn.id = "dcMobileBtn";
+    btn.className = "dc-mobile-btn";
+    btn.innerHTML = "🕒 Посмотреть время пар";
+    btn.onclick = () => openMobileBells(sorted);
+    
+    // Вставляем кнопку прямо после кнопки "До звонка"
+    leftEl.after(btn);
+  }
+
+  // --- ОТРИСОВКА ШКАЛЫ ---
   track.innerHTML = "";
   labels.innerHTML = "";
 
@@ -604,12 +607,10 @@ function renderDayProgress() {
     `;
     trackWrap.appendChild(seg);
 
-    // Время пары
     const timeLabel = document.createElement("span");
-    timeLabel.className = "dc-time-label";
+    timeLabel.className = "dc-time-label desktop-only";
     timeLabel.textContent = BELLS[item.num].replace("–", " – ");
     timeLabel.style.left = `${leftP + wP/2}%`;
-    timeLabel.style.top = "120%";
     trackWrap.appendChild(timeLabel);
 
     if (i < sorted.length - 1) {
@@ -633,12 +634,10 @@ function renderDayProgress() {
         `;
         trackWrap.appendChild(breakSeg);
 
-        // Время перемены
         const bLabel = document.createElement("span");
-        bLabel.className = "dc-break-label";
+        bLabel.className = "dc-break-label desktop-only";
         bLabel.textContent = `${breakDuration} мин`;
         bLabel.style.left = `${bLeftP + bWP/2}%`;
-        bLabel.style.top = "120%";
         trackWrap.appendChild(bLabel);
       }
     }
@@ -684,6 +683,7 @@ function renderDayProgress() {
     trackWrap.appendChild(nowTimeLabel);
   }
 
+  // --- СТАТУСЫ ---
   let current = null;
   sorted.forEach(item => { if (nowMin >= item.start && nowMin <= item.end) current = item; });
 
@@ -758,6 +758,49 @@ function renderDayProgress() {
   }
 }
 
+// Вспомогательная функция для открытия модалки со звонками
+function openMobileBells(sorted) {
+  let modal = document.getElementById("bellsModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "bellsModal";
+    modal.className = "bells-modal-overlay";
+    modal.innerHTML = `
+      <div class="bells-modal">
+        <div class="bells-modal-header">
+          <h3>Расписание звонков</h3>
+          <button class="bells-modal-close" onclick="document.getElementById('bellsModal').classList.remove('open')">✕</button>
+        </div>
+        <div class="bells-modal-content" id="bellsModalContent"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Закрытие по клику вне окна
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("open");
+    });
+  }
+
+  const content = document.getElementById("bellsModalContent");
+  let html = "";
+  
+  sorted.forEach((item, i) => {
+    const timeStr = BELLS[item.num].replace("–", " – ");
+    html += `<div class="bells-row"><span>${item.num}-я пара</span> <b>${timeStr}</b></div>`;
+    if (i < sorted.length - 1) {
+      const next = sorted[i+1];
+      const bDur = next.start - item.end;
+      if (bDur > 0) {
+        html += `<div class="bells-break">Перемена: ${bDur} мин</div>`;
+      }
+    }
+  });
+  
+  content.innerHTML = html;
+  modal.classList.add("open");
+}
+
 // ============================================================
 //  БЛОК «ЗАВТРА» (УЛУЧШЕННЫЙ СПИСОК)
 // ============================================================
@@ -768,8 +811,6 @@ function renderTomorrow() {
   if (!state.spec || !state.group) { wrap.classList.add("hidden"); return; }
 
   const now = new Date();
-  
-  // Правильный расчет индекса дня (пн=0, вт=1, ..., вс=6)
   const todayIndex = (now.getDay() + 6) % 7; 
   const tomorrowIndex = (todayIndex + 1) % 7;
   
@@ -778,7 +819,6 @@ function renderTomorrow() {
   
   const dayName = DAY_NAMES[DAYS[tomorrowIndex]];
   
-  // Дата (завтрашняя)
   const tomorrowDate = new Date(now);
   tomorrowDate.setDate(now.getDate() + 1);
   const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
@@ -803,7 +843,6 @@ function renderTomorrow() {
 
   const sorted = [...pairs].sort((a, b) => a.number - b.number);
   
-  // Формируем красивый список
   let pairsHtml = '<div class="tm-list">';
   sorted.forEach(p => {
     const time = BELLS[p.number] ? BELLS[p.number].split("–")[0] : "";
@@ -874,7 +913,9 @@ if (forgetBtn) {
   });
 }
 
-if (!getUserName()) setTimeout(askName, 500);
+// НОВАЯ СТРОКА: Вместо старого prompt() вызываем welcome.js (он подгрузится отдельно)
+// Старую строку if (!getUserName()) setTimeout(askName, 500); мы УДАЛИЛИ.
+// welcome.js сам проверит наличие имени при загрузке страницы.
 
 showRandomWish(true);
 

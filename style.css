@@ -1080,3 +1080,140 @@ html.dark .pwa-hint {
     grid-column: auto;
   }
 }
+
+/* ============================================================
+   МОДАЛКА ПРИВЕТСТВИЯ (ПЕРВЫЙ ЗАХОД)
+   ============================================================ */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  animation: welcomeFadeIn .4s ease forwards;
+}
+
+.welcome-overlay.closing {
+  animation: welcomeFadeOut .3s ease forwards;
+}
+
+@keyframes welcomeFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes welcomeFadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+.welcome-card {
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 28px;
+  padding: 32px 24px 24px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
+  text-align: center;
+  transform: translateY(20px);
+  animation: welcomeSlideUp .4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes welcomeSlideUp { to { transform: translateY(0); } }
+
+.welcome-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 16px;
+  animation: iconWave 2.5s infinite;
+  display: inline-block;
+  transform-origin: 70% 70%;
+}
+
+@keyframes iconWave {
+  0%, 100% { transform: rotate(0deg); }
+  10% { transform: rotate(14deg); }
+  20% { transform: rotate(-8deg); }
+  30% { transform: rotate(14deg); }
+  40% { transform: rotate(-4deg); }
+  50% { transform: rotate(10deg); }
+  60% { transform: rotate(0deg); }
+}
+
+.welcome-card h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 8px;
+  letter-spacing: -.02em;
+}
+
+.welcome-card p {
+  font-size: 0.9rem;
+  color: #94A3B8;
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.welcome-input-wrap { margin-bottom: 16px; }
+
+.welcome-input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 2px solid #E2E8F0;
+  background: #F7F9FC;
+  color: #0F172A;
+  font: inherit;
+  font-size: 1rem;
+  text-align: center;
+  transition: .2s;
+  outline: none;
+}
+
+.welcome-input::placeholder { color: #94A3B8; opacity: 0.7; }
+
+.welcome-input:focus {
+  border-color: #1769E0;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(23, 105, 224, 0.15);
+}
+
+.welcome-input.error {
+  border-color: #ef4444;
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.welcome-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: none;
+  background: #1769E0;
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .15s;
+  box-shadow: 0 4px 12px rgba(23, 105, 224, 0.3);
+}
+
+.welcome-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(23, 105, 224, 0.4);
+}
+
+.welcome-btn:active { transform: translateY(0); }
+
+/* Поддержка темной темы (если на главной есть класс dark) */
+html.dark .welcome-card { background: #1A2338; }
+html.dark .welcome-card h2 { color: #F7F9FC; }
+html.dark .welcome-card p { color: #94A3B8; }
+html.dark .welcome-input { background: #0F172A; border-color: #2A3448; color: #F7F9FC; }
+html.dark .welcome-input:focus { background: #1A2338; }
