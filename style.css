@@ -530,7 +530,7 @@ footer a:hover { color: var(--blue); }
 }
 
 @media (max-width: 640px) {
-  .nav-desktop { display: none; }
+  .nav-desktop { display: none !important; }
   .burger { display: flex; }
   .nav { height: 58px; gap: 12px; }
   .hero { padding: 40px 0 40px; }
@@ -542,6 +542,7 @@ footer a:hover { color: var(--blue); }
 }
 
 /* Белая кнопка "Расписание" в шапке */
+/* Кнопка "Расписание" в шапке */
 .nav-desktop.btn-primary {
   background: #ffffff;
   color: var(--blue);
@@ -551,10 +552,17 @@ footer a:hover { color: var(--blue); }
   background: #f0f0f0;
   border-color: #f0f0f0;
 }
+
+/* Тёмная тема: стеклянная кнопка */
 html.dark .nav-desktop.btn-primary {
-  background: #ffffff;
-  color: var(--blue);
-  border-color: #ffffff;
+  background: rgba(76, 154, 255, 0.15); /* синий с прозрачностью */
+  color: #4C9AFF;                       /* голубой текст */
+  border: 1px solid rgba(76, 154, 255, 0.3);
+  backdrop-filter: blur(4px);
+}
+html.dark .nav-desktop.btn-primary:hover {
+  background: rgba(76, 154, 255, 0.25);
+  border-color: rgba(76, 154, 255, 0.5);
 }
 
 /* ============================================================

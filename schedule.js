@@ -19,7 +19,7 @@ const DAY_NAMES = {
 };
 
 // ============================================================
-//  ПОЖЕЛАНИЯ (по специальностям)
+//  ПОЖЕЛАНИЯ
 // ============================================================
 const WISHES = {
   "ЮСП": [
@@ -128,15 +128,10 @@ function toggleTheme() {
 }
 
 // ============================================================
-//  ИМЯ ПОЛЬЗОВАТЕЛЯ
+//  ИМЯ
 // ============================================================
-function getUserName() {
-  return localStorage.getItem("userName") || "";
-}
-
-function setUserName(name) {
-  localStorage.setItem("userName", name.trim());
-}
+function getUserName() { return localStorage.getItem("userName") || ""; }
+function setUserName(name) { localStorage.setItem("userName", name.trim()); }
 
 function applyName() {
   const saved = getUserName();
@@ -154,7 +149,7 @@ function askName() {
 }
 
 // ============================================================
-//  ЗАПОМИНАНИЕ ГРУППЫ
+//  ГРУППА
 // ============================================================
 const GROUP_KEY = "savedGroup";
 
@@ -162,11 +157,9 @@ function saveGroup() {
   if (!state.spec || !state.course || !state.group) return;
   try {
     localStorage.setItem(GROUP_KEY, JSON.stringify({
-      spec: state.spec,
-      course: state.course,
-      group: state.group
+      spec: state.spec, course: state.course, group: state.group
     }));
-  } catch (e) { /* приватный режим */ }
+  } catch (e) { /* ignore */ }
 }
 
 function loadGroup() {
@@ -175,80 +168,59 @@ function loadGroup() {
     if (!raw) return false;
     const data = JSON.parse(raw);
     if (!data || !data.spec || !data.group) return false;
-
-    if (!SCHEDULE[data.spec]) return false;
-    if (!SCHEDULE[data.spec][data.course]) return false;
-    if (!SCHEDULE[data.spec][data.course][data.group]) return false;
+    if (!SCHEDULE[data.spec] || !SCHEDULE[data.spec][data.course] || !SCHEDULE[data.spec][data.course][data.group]) return false;
 
     state.spec = data.spec;
     state.course = data.course;
     state.group = data.group;
-
     applyColor(data.spec);
     return true;
   } catch (e) {
-    console.warn("load group error:", e);
     return false;
   }
 }
 
 function clearGroup() {
   localStorage.removeItem(GROUP_KEY);
-  state.spec = null;
-  state.course = null;
-  state.group = null;
-  state.week = currentWeek();
+  state.spec = null; state.course = null; state.group = null; state.week = currentWeek();
   applyColor("ИСП");
 }
 
 // ============================================================
-//  ПОЖЕЛАНИЕ ДНЯ
+//  ПОЖЕЛАНИЕ
 // ============================================================
 let lastWishIndex = {};
-
 function showRandomWish() {
-  const wrap = $("wish");
-  const emojiEl = $("wishEmoji");
-  const textEl = $("wishText");
+  const wrap = $("wish"), emojiEl = $("wishEmoji"), textEl = $("wishText");
   if (!wrap || !emojiEl || !textEl) return;
-
   const spec = state.spec || "ИСП";
   const list = WISHES[spec] || WISHES["ИСП"];
   if (!list || !list.length) return;
-
   if (lastWishIndex[spec] === undefined) lastWishIndex[spec] = -1;
-
   let i;
-  do {
-    i = Math.floor(Math.random() * list.length);
-  } while (i === lastWishIndex[spec] && list.length > 1);
-
+  do { i = Math.floor(Math.random() * list.length); } while (i === lastWishIndex[spec] && list.length > 1);
   lastWishIndex[spec] = i;
   const w = list[i];
-
   emojiEl.textContent = w.emoji;
   textEl.textContent = w.text;
-
   wrap.classList.remove("changing");
   void wrap.offsetWidth;
   wrap.classList.add("changing");
 }
 
 // ============================================================
-//  РАЗБОР НЕДЕЛЬ
+//  НЕДЕЛИ
 // ============================================================
 const WEEK_LIST = WEEKS.map(line => {
   const [start, end, star] = line.split("|").map(s => s.trim());
   return { start, end, star };
 });
-
 const parseDate = s => { const [d, m, y] = s.split(".").map(Number); return new Date(y, m - 1, d); };
 
 function currentWeek() {
   const t = new Date(); t.setHours(0, 0, 0, 0);
   for (let i = 0; i < WEEK_LIST.length; i++) {
-    const a = parseDate(WEEK_LIST[i].start);
-    const b = parseDate(WEEK_LIST[i].end);
+    const a = parseDate(WEEK_LIST[i].start), b = parseDate(WEEK_LIST[i].end);
     b.setHours(23, 59, 59, 999);
     if (t >= a && t <= b) return i;
   }
@@ -256,20 +228,29 @@ function currentWeek() {
 }
 
 // ============================================================
-//  ПАРСИНГ ПАРЫ
+//  ПАРСИНГ
 // ============================================================
 function parseText(text) {
   let t = text.replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "").trim();
-
   const teacherMatch = t.match(/преп\.\s*([^,]+?)(?:,\s*ауд\.|$)/);
   const teacher = teacherMatch ? teacherMatch[1].trim() : "";
-
   const roomMatch = t.match(/ауд\.\s*([^,]+?)(?:\s|$)/);
   const room = roomMatch ? roomMatch[1].trim() : "";
-
   const subject = t.split("преп.")[0].trim().replace(/,\s*$/, "");
-
   return { subject, teacher, room };
+}
+
+function parseDay(pairs) {
+  const result = { "*": [], "**": [] };
+  pairs.forEach(p => {
+    const time = BELLS[p.number] || (p.number + " пара");
+    const parsed = parseText(p.text);
+    const item = { time, ...parsed, subgroup: p.subgroup };
+    if (p.star === "*") result["*"].push(item);
+    else if (p.star === "**") result["**"].push(item);
+    else { result["*"].push(item); result["**"].push(item); }
+  });
+  return result;
 }
 
 // ============================================================
@@ -284,7 +265,7 @@ function applyColor(spec) {
 }
 
 // ============================================================
-//  ГРУППИРОВКА
+//  СБОРКА
 // ============================================================
 function buildSchedule(raw) {
   const result = {};
@@ -294,26 +275,9 @@ function buildSchedule(raw) {
     const spec = match[1];
     const course = GROUP_TO_COURSE[groupName];
     if (!course) return;
-
     if (!result[spec]) result[spec] = {};
     if (!result[spec][course]) result[spec][course] = {};
     result[spec][course][groupName] = raw[groupName];
-  });
-  return result;
-}
-
-// ============================================================
-//  ПАРСИНГ ДНЯ
-// ============================================================
-function parseDay(pairs) {
-  const result = { "*": [], "**": [] };
-  pairs.forEach(p => {
-    const time = BELLS[p.number] || (p.number + " пара");
-    const parsed = parseText(p.text);
-    const item = { time, ...parsed, subgroup: p.subgroup };
-    if (p.star === "*") result["*"].push(item);
-    else if (p.star === "**") result["**"].push(item);
-    else { result["*"].push(item); result["**"].push(item); }
   });
   return result;
 }
@@ -342,29 +306,19 @@ function renderFilters() {
   }
 
   renderChips("specs", Object.keys(SCHEDULE), state.spec, spec => {
-    state.spec = spec;
-    state.course = null;
-    state.group = null;
-    state.week = currentWeek();
-    applyColor(spec);
-    saveGroup();
-    renderAll();
+    state.spec = spec; state.course = null; state.group = null; state.week = currentWeek();
+    applyColor(spec); saveGroup(); renderAll();
   });
 
   if (state.spec) {
     renderChips("courses", Object.keys(SCHEDULE[state.spec]).sort(), state.course, course => {
-      state.course = course;
-      state.group = null;
-      saveGroup();
-      renderAll();
+      state.course = course; state.group = null; saveGroup(); renderAll();
     }, c => c + " курс");
   } else $("courses").innerHTML = "";
 
   if (state.spec && state.course) {
     renderChips("groups", Object.keys(SCHEDULE[state.spec][state.course]).sort(), state.group, group => {
-      state.group = group;
-      saveGroup();
-      renderAll();
+      state.group = group; saveGroup(); renderAll();
     });
   } else $("groups").innerHTML = "";
 }
@@ -377,9 +331,7 @@ function renderSchedule() {
     return window.__renderTeacherSchedule();
   }
 
-  const out = $("out");
-  const info = $("weekInfo");
-
+  const out = $("out"), info = $("weekInfo");
   if (!state.spec || !state.course || !state.group) {
     info.textContent = "Выберите группу";
     out.innerHTML = "";
@@ -388,7 +340,6 @@ function renderSchedule() {
 
   const w = WEEK_LIST[state.week];
   info.textContent = `Неделя ${w.star}   (${w.start} – ${w.end})`;
-
   const raw = SCHEDULE[state.spec][state.course][state.group];
   out.innerHTML = "";
 
@@ -396,7 +347,6 @@ function renderSchedule() {
     const dayPairs = raw[index];
     const block = document.createElement("section");
     block.className = "day";
-
     const h2 = document.createElement("h2");
     h2.textContent = DAY_NAMES[day];
     block.appendChild(h2);
@@ -442,56 +392,27 @@ function renderSchedule() {
 }
 
 // ============================================================
-//  ВИДЖЕТ ДНЯ
+//  ВИДЖЕТ ДНЯ (ВРЕМЯ ПАР НА ШКАЛЕ)
 // ============================================================
 function renderDayProgress() {
-  const card = $("dayCard");
-  const status = $("dayStatus");
-  const percent = $("dayPercent");
-  const ringFill = $("dcRingFill");
-  const pairEl = $("dcPair");
-  const metaEl = $("dcMeta");
-  const leftEl = $("dayLeft");
-  const track = $("dcTrack");
-  const labels = $("dcLabels");
+  const card = $("dayCard"), status = $("dayStatus"), percent = $("dayPercent");
+  const ringFill = $("dcRingFill"), pairEl = $("dcPair"), metaEl = $("dcMeta");
+  const leftEl = $("dayLeft"), track = $("dcTrack"), labels = $("dcLabels");
 
   if (!card || !track) return;
-
-  if (state.viewTeacher) {
-    card.classList.add("hidden");
-    return;
-  }
-
-  let nowDot = $("dcNow");
-  if (!nowDot) {
-    nowDot = document.createElement("div");
-    nowDot.id = "dcNow";
-    nowDot.className = "dc-now";
-    track.appendChild(nowDot);
-  }
-
-  if (!state.spec || !state.group || state.week !== currentWeek()) {
-    card.classList.add("hidden");
-    return;
-  }
+  if (state.viewTeacher) { card.classList.add("hidden"); return; }
+  if (!state.spec || !state.group || state.week !== currentWeek()) { card.classList.add("hidden"); return; }
 
   const now = new Date();
   const todayIndex = (now.getDay() + 6) % 7;
   const raw = SCHEDULE[state.spec][state.course][state.group];
   let pairs = raw[todayIndex];
 
-  if (!pairs || !pairs.length) {
-    card.classList.add("hidden");
-    return;
-  }
+  if (!pairs || !pairs.length) { card.classList.add("hidden"); return; }
 
   const week = WEEK_LIST[state.week];
   pairs = pairs.filter(p => !p.star || p.star === week.star);
-
-  if (!pairs.length) {
-    card.classList.add("hidden");
-    return;
-  }
+  if (!pairs.length) { card.classList.add("hidden"); return; }
 
   const BELL_MIN = {};
   Object.keys(BELLS).forEach(n => {
@@ -502,25 +423,19 @@ function renderDayProgress() {
   const seenNum = new Set();
   const sorted = pairs
     .filter(p => BELL_MIN[p.number])
-    .filter(p => {
-      if (seenNum.has(p.number)) return false;
-      seenNum.add(p.number);
-      return true;
-    })
+    .filter(p => { if (seenNum.has(p.number)) return false; seenNum.add(p.number); return true; })
     .map(p => ({ ...BELL_MIN[p.number], pair: p }))
     .sort((a, b) => a.start - b.start);
 
-  if (!sorted.length) {
-    card.classList.add("hidden");
-    return;
-  }
+  if (!sorted.length) { card.classList.add("hidden"); return; }
 
   const dayStart = sorted[0].start;
-  const dayEnd   = sorted[sorted.length - 1].end;
-  const nowMin   = now.getHours() * 60 + now.getMinutes();
+  const dayEnd = sorted[sorted.length - 1].end;
+  const nowMin = now.getHours() * 60 + now.getMinutes();
 
   card.classList.remove("hidden");
 
+  // === ПРОЦЕНТЫ ===
   const total = dayEnd - dayStart;
   let passed = nowMin - dayStart;
   passed = Math.max(0, Math.min(total, passed));
@@ -531,39 +446,119 @@ function renderDayProgress() {
   ringFill.style.strokeDasharray = dash;
   ringFill.style.strokeDashoffset = dash - (dash * percentVal / 100);
 
-  track.querySelectorAll(".dc-segment").forEach(s => s.remove());
+  // === ШКАЛА ===
+  track.innerHTML = "";
+  labels.innerHTML = "";
 
-  sorted.forEach(item => {
-    const seg = document.createElement("div");
-    seg.className = "dc-segment";
+  // Контейнер для шкалы (чтобы позиционировать подписи)
+  const trackWrap = document.createElement("div");
+  trackWrap.style.cssText = "position:relative;width:100%;height:100%;";
+  track.appendChild(trackWrap);
+
+  // 1. Серый фон полоски
+  const bg = document.createElement("div");
+  bg.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;background:var(--line);border-radius:999px;";
+  trackWrap.appendChild(bg);
+
+  // 2. Пары и перемены
+  for (let i = 0; i < sorted.length; i++) {
+    const item = sorted[i];
     const leftP = ((item.start - dayStart) / total) * 100;
-    const wP    = ((item.end - item.start) / total) * 100;
+    const wP = ((item.end - item.start) / total) * 100;
+
+    // Блок пары
+    const seg = document.createElement("div");
     seg.style.cssText = `
       position:absolute;
       left:${leftP}%;
       width:${wP}%;
       top:0; bottom:0;
-      background: color-mix(in srgb, var(--c) 30%, transparent);
-      border-right: 2px solid var(--card);
-      border-radius: 2px;
+      background: var(--c, var(--blue));
+      border-radius: 4px;
+      z-index: 2;
     `;
-    track.appendChild(seg);
-  });
+    trackWrap.appendChild(seg);
 
-  const nowP = ((nowMin - dayStart) / total) * 100;
-  nowDot.style.left = Math.max(0, Math.min(100, nowP)) + "%";
+    // Время под парой
+    const timeLabel = document.createElement("span");
+    timeLabel.textContent = BELLS[item.num].replace("–", " – "); // "10:10 – 11:40"
+    timeLabel.style.cssText = `
+      position:absolute;
+      left:${leftP + wP/2}%;
+      top: 120%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      color: var(--muted);
+      white-space: nowrap;
+      z-index: 3;
+    `;
+    trackWrap.appendChild(timeLabel);
 
-  labels.innerHTML = "";
-  sorted.forEach(item => {
-    const s = document.createElement("span");
-    s.textContent = BELLS[item.num].split("–")[0];
-    labels.appendChild(s);
-  });
+    // Перемена (если не последняя пара)
+    if (i < sorted.length - 1) {
+      const nextItem = sorted[i + 1];
+      const breakStart = item.end;
+      const breakEnd = nextItem.start;
+      const breakDuration = breakEnd - breakStart;
 
+      if (breakDuration > 0) {
+        const bLeftP = ((breakStart - dayStart) / total) * 100;
+        const bWP = ((breakEnd - breakStart) / total) * 100;
+        
+        // Полупрозрачный блок перемены
+        const breakSeg = document.createElement("div");
+        breakSeg.style.cssText = `
+          position:absolute;
+          left:${bLeftP}%;
+          width:${bWP}%;
+          top:0; bottom:0;
+          background: var(--c-soft, var(--blue-soft));
+          z-index: 1;
+        `;
+        trackWrap.appendChild(breakSeg);
+
+        // Длительность перемены (очень мелко, под шкалой)
+        // Если места мало, можно скрыть, но давай оставим
+        const bLabel = document.createElement("span");
+        bLabel.textContent = `${breakDuration} мин`;
+        bLabel.style.cssText = `
+          position:absolute;
+          left:${bLeftP + bWP/2}%;
+          top: 120%;
+          transform: translateX(-50%);
+          font-size: 0.55rem;
+          color: var(--muted);
+          opacity: 0.7;
+          white-space: nowrap;
+          z-index: 3;
+        `;
+        trackWrap.appendChild(bLabel);
+      }
+    }
+  }
+
+  // 3. Точка "Сейчас"
+  if (nowMin >= dayStart && nowMin <= dayEnd) {
+    const nowP = ((nowMin - dayStart) / total) * 100;
+    const dot = document.createElement("div");
+    dot.style.cssText = `
+      position:absolute;
+      top:50%;
+      left:${nowP}%;
+      width:14px; height:14px;
+      border-radius:50%;
+      background: var(--c, var(--blue));
+      border: 3px solid var(--card);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 25%, transparent);
+      z-index: 4;
+    `;
+    trackWrap.appendChild(dot);
+  }
+
+  // === ТЕКСТ СТАТУСА ===
   let current = null;
-  sorted.forEach(item => {
-    if (nowMin >= item.start && nowMin <= item.end) current = item;
-  });
+  sorted.forEach(item => { if (nowMin >= item.start && nowMin <= item.end) current = item; });
 
   if (nowMin < dayStart) {
     status.textContent = "День ещё не начался";
@@ -573,10 +568,42 @@ function renderDayProgress() {
     return;
   }
 
-  if (nowMin > dayEnd) {
+   if (nowMin > dayEnd) {
     status.textContent = "День завершён 🎉";
     pairEl.textContent = "Хорошего отдыха!";
-    metaEl.textContent = `Пары закончились в ${BELLS[sorted[sorted.length - 1].num].split("–")[1]}`;
+    
+    // 1. Считаем количество пар сегодня
+    const pairsCount = sorted.length;
+    let pairsWord = "пар";
+    if (pairsCount === 1) pairsWord = "пара";
+    else if (pairsCount > 1 && pairsCount < 5) pairsWord = "пары";
+
+    // 2. Берем время начала и конца
+    const firstPairTime = BELLS[sorted[0].num].split("–")[0];
+    const lastPairTime = BELLS[sorted[sorted.length - 1].num].split("–")[1];
+    
+    // 3. Смотрим, что там завтра
+    const tomorrowIndex = (now.getDay() + 1) % 7;
+    const tomorrowPairs = raw[tomorrowIndex];
+    let tomorrowText = "";
+
+    if (!tomorrowPairs || !tomorrowPairs.length) {
+      tomorrowText = "Завтра — выходной.";
+    } else {
+      // Фильтруем пары завтрашнего дня по текущей неделе
+      const weekNow = WEEK_LIST[state.week];
+      const tomorrowFiltered = tomorrowPairs.filter(p => !p.star || p.star === weekNow.star);
+      
+      if (tomorrowFiltered.length === 0) {
+        tomorrowText = "Завтра — выходной.";
+      } else {
+        const firstTomorrow = [...tomorrowFiltered].sort((a, b) => a.number - b.number)[0];
+        const timeTomorrow = BELLS[firstTomorrow.number] ? BELLS[firstTomorrow.number].split("–")[0] : "";
+        tomorrowText = `Завтра — ${tomorrowFiltered.length} пар(ы), первая в ${timeTomorrow}.`;
+      }
+    }
+
+    metaEl.textContent = `Пары прошли с ${firstPairTime} до ${lastPairTime} (${pairsCount} ${pairsWord}). ${tomorrowText}`;
     leftEl.textContent = "До завтра";
     return;
   }
@@ -587,43 +614,39 @@ function renderDayProgress() {
     metaEl.textContent = `${BELLS[current.num]}`;
     leftEl.textContent = `До звонка ${fmtLeft(current.end - nowMin)}`;
   } else {
-    let next = null;
-    sorted.forEach(item => {
-      if (nowMin < item.start && (!next || item.start < next.start)) next = item;
-    });
-    if (next) {
+    let currentBreak = null;
+    for (let i = 0; i < sorted.length - 1; i++) {
+      if (nowMin > sorted[i].end && nowMin < sorted[i + 1].start) {
+        currentBreak = {
+          end: sorted[i].end,
+          nextStart: sorted[i + 1].start,
+          nextPair: sorted[i + 1].pair
+        };
+        break;
+      }
+    }
+
+    if (currentBreak) {
       status.textContent = "Перемена";
-      pairEl.textContent = next.pair.text.split("преп.")[0].trim();
-      metaEl.textContent = `Следующая в ${BELLS[next.num].split("–")[0]}`;
-      leftEl.textContent = `До пары ${fmtLeft(next.start - nowMin)}`;
+      pairEl.textContent = currentBreak.nextPair.text.split("преп.")[0].trim();
+      metaEl.textContent = `Следующая в ${BELLS[sorted.find(s => s.start === currentBreak.nextStart).num].split("–")[0]}`;
+      leftEl.textContent = `До пары ${fmtLeft(currentBreak.nextStart - nowMin)}`;
     }
   }
 }
-
 // ============================================================
-//  БЛОК «ЗАВТРА»
+//  ЗАВТРА
 // ============================================================
 function renderTomorrow() {
-  const wrap = $("tomorrow");
-  const mainEl = $("tmMain");
-  const subEl  = $("tmSub");
+  const wrap = $("tomorrow"), mainEl = $("tmMain"), subEl = $("tmSub");
   if (!wrap || !mainEl || !subEl) return;
-
-  if (state.viewTeacher) {
-    wrap.classList.add("hidden");
-    return;
-  }
-
-  if (!state.spec || !state.group) {
-    wrap.classList.add("hidden");
-    return;
-  }
+  if (state.viewTeacher) { wrap.classList.add("hidden"); return; }
+  if (!state.spec || !state.group) { wrap.classList.add("hidden"); return; }
 
   const now = new Date();
   const tomorrowIndex = (now.getDay() + 1) % 7;
   const raw = SCHEDULE[state.spec][state.course][state.group];
   let pairs = raw[tomorrowIndex];
-
   const dayName = DAY_NAMES[DAYS[tomorrowIndex]];
 
   if (!pairs || !pairs.length) {
@@ -635,7 +658,6 @@ function renderTomorrow() {
 
   const w = WEEK_LIST[state.week];
   pairs = pairs.filter(p => !p.star || p.star === w.star);
-
   if (!pairs.length) {
     mainEl.innerHTML = "Пар <b>нет</b> — отдыхай! 🎉";
     subEl.textContent = dayName;
@@ -645,7 +667,6 @@ function renderTomorrow() {
 
   const sorted = [...pairs].sort((a, b) => a.number - b.number);
   const first = sorted[0];
-
   const time = BELLS[first.number] ? BELLS[first.number].split("–")[0] : "";
   const subject = first.text.split("преп.")[0].trim();
   const count = sorted.length;
@@ -666,20 +687,14 @@ function renderAll() {
   showRandomWish();
 }
 
-// ============================================================
-//  ПЕРЕКЛЮЧЕНИЕ НЕДЕЛЬ
-// ============================================================
 function shiftWeek(d) {
   state.week = Math.max(0, Math.min(WEEK_LIST.length - 1, state.week + d));
-  renderSchedule();
-  renderDayProgress();
-  renderTomorrow();
+  renderSchedule(); renderDayProgress(); renderTomorrow();
 }
+
 function goToday() {
   state.week = currentWeek();
-  renderSchedule();
-  renderDayProgress();
-  renderTomorrow();
+  renderSchedule(); renderDayProgress(); renderTomorrow();
 }
 
 // ============================================================
@@ -688,37 +703,30 @@ function goToday() {
 SCHEDULE = buildSchedule(RAW_DATA);
 state.week = currentWeek();
 
-loadGroup();
-
-renderAll();
-
-// имя
-applyName();
-if (!getUserName()) {
-  setTimeout(askName, 300);
-}
-$("nameEdit").addEventListener("click", askName);
-
-// тема
 initTheme();
+applyName();
+
+$("nameEdit").addEventListener("click", askName);
 $("themeToggle").addEventListener("click", toggleTheme);
 
-// пожелание дня
-showRandomWish();
 const wishBtn = $("wishRefresh");
 if (wishBtn) wishBtn.addEventListener("click", showRandomWish);
 
-// кнопка «Забыть группу»
+// Кнопка "Забыть группу" (в мобильном меню)
 const forgetBtn = $("forgetGroup");
 if (forgetBtn) {
   forgetBtn.addEventListener("click", () => {
     clearGroup();
     renderAll();
+    if ($("mobileMenu")) $("mobileMenu").classList.remove("open");
+    if ($("burger")) $("burger").classList.remove("open");
   });
 }
 
-// обновление раз в минуту
+// Запрос имени
+if (!getUserName()) setTimeout(askName, 500);
+
+// Обновление раз в минуту
 setInterval(() => {
-  renderDayProgress();
-  renderTomorrow();
+  if (!state.viewTeacher) { renderDayProgress(); renderTomorrow(); }
 }, 60000);

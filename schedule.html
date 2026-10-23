@@ -5,19 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Расписание — ПараЗвёзд</title>
   <link rel="stylesheet" href="schedule.css">
+  <meta name="google" content="notranslate">
 </head>
 <body>
 
-  <!-- ФОНЫ -->
   <div class="aurora-bg"></div>
   <div class="star-field" id="starField"></div>
 
   <header>
     <div class="container nav">
       <a href="index.html" class="logo">
-        <div class="logo-icon-wrap">
-          <span class="logo-icon">🎓</span>
-        </div>
+        <div class="logo-icon-wrap"><span class="logo-icon">🎓</span></div>
         <div class="logo-text">
           <b>ПараЗвёзд <span class="star-sparkle">✨</span></b>
           <small>Расписание ВолГУ</small>
@@ -25,10 +23,9 @@
       </a>
       <div class="nav-actions">
         <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
+        <button class="btn btn-ghost nav-desktop" id="switchRoleDesktop">👀 Расписание преподавателей</button>
         <a href="index.html" class="back nav-desktop">← На главную</a>
-        <button class="burger" id="burger" aria-label="Меню">
-          <span></span><span></span><span></span>
-        </button>
+        <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
       </div>
     </div>
 
@@ -63,9 +60,7 @@
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
 
       <div class="greeting" id="greeting">
-        <div class="greeting-text">
-          Привет, <span id="userName">друг</span>! 👋
-        </div>
+        <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
         <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
       </div>
 
@@ -75,11 +70,25 @@
         <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
       </div>
 
+      <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
       <div class="filters">
-        <div class="row"><span id="filterLabel1">Специальность</span><div class="chips" id="specs"></div></div>
+        <div class="row"><span>Специальность</span><div class="chips" id="specs"></div></div>
+        
+        <!-- Для студента -->
         <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
         <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
-        <div class="row" id="rowTeacher" style="display:none"><span>Преподаватель</span><div class="chips" id="teachers"></div></div>
+        
+        <!-- Для препода (ЖИВОЙ ПОИСК) -->
+        <div class="row" id="rowTeacher" style="display:none">
+          <span>Преподаватель</span>
+          <div class="live-search-wrap">
+            <div class="ls-input-box">
+              <span class="ls-icon">🔍</span>
+              <input type="text" id="teacherInput" class="ls-input" placeholder="Введите фамилию..." autocomplete="off">
+            </div>
+            <div class="ls-dropdown" id="teacherDropdown"></div>
+          </div>
+        </div>
       </div>
 
       <div class="date-search">
@@ -104,25 +113,17 @@
               <circle class="dc-ring-bg" cx="60" cy="60" r="52"/>
               <circle class="dc-ring-fill" cx="60" cy="60" r="52" id="dcRingFill"/>
             </svg>
-            <div class="dc-ring-text">
-              <b id="dayPercent">0%</b>
-              <span>дня</span>
-            </div>
+            <div class="dc-ring-text"><b id="dayPercent">0%</b><span>дня</span></div>
           </div>
           <div class="dc-info">
-            <div class="dc-status">
-              <span class="pulse"></span>
-              <span id="dayStatus">Идёт учебный день</span>
-            </div>
+            <div class="dc-status"><span class="pulse"></span><span id="dayStatus">Идёт учебный день</span></div>
             <div class="dc-pair" id="dcPair">—</div>
             <div class="dc-meta" id="dcMeta">—</div>
             <div class="dc-left" id="dayLeft">—</div>
           </div>
         </div>
         <div class="dc-timeline">
-          <div class="dc-track" id="dcTrack">
-            <div class="dc-now" id="dcNow"></div>
-          </div>
+          <div class="dc-track" id="dcTrack"><div class="dc-now" id="dcNow"></div></div>
           <div class="dc-labels" id="dcLabels"></div>
         </div>
       </div>
@@ -136,12 +137,9 @@
         </div>
       </div>
 
-      <div class="minical" id="minical"></div>
-      <div class="nowbar hidden" id="nowbar"></div>
       <div id="out"></div>
 
     </div>
-
   </main>
 
   <script src="data.js"></script>
