@@ -1145,3 +1145,166 @@ html.dark .ts-modal-item:hover, html.dark .ts-modal-item.active {
   color: var(--muted);
   font-size: .9rem;
 }
+
+/* ============================================================
+   ПЛАШКА АКТИВНОГО ПРЕПОДАВАТЕЛЯ
+   ============================================================ */
+.active-teacher-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  background: var(--c-soft, var(--blue-soft));
+  border: 1px solid color-mix(in srgb, var(--c, var(--blue)) 30%, transparent);
+  color: var(--c-text, var(--blue));
+  animation: tmIn .4s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.atb-info {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.atb-info b {
+  font-weight: 700;
+}
+
+.atb-change-btn {
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: .15s;
+  white-space: nowrap;
+}
+
+.atb-change-btn:hover {
+  border-color: var(--c, var(--blue));
+  color: var(--c-text, var(--blue));
+}
+
+html.dark .active-teacher-banner {
+  background: color-mix(in srgb, var(--c, var(--blue)) 15%, #1A2338);
+  border-color: color-mix(in srgb, var(--c, var(--blue)) 35%, #2A3448);
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .active-teacher-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .atb-change-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ============================================================
+   УЛУЧШЕННЫЙ СПИСОК ПАР В БЛОКЕ «ЗАВТРА»
+   ============================================================ */
+.tm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+  margin-top: 4px;
+}
+
+.tm-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.tm-time {
+  font-weight: 700;
+  color: var(--c-text, var(--blue));
+  min-width: 45px;
+  flex-shrink: 0;
+}
+
+.tm-subject {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tm-room {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+  margin-left: 6px;
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+html.dark .tm-room {
+  background: var(--line);
+}
+
+/* ============================================================
+   ЧИПСЫ ГРУПП В ПОТОКОВОЙ КАРТОЧКЕ
+   ============================================================ */
+.card-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--chip-c) 12%, transparent);
+  color: var(--chip-c);
+  white-space: nowrap;
+  transition: filter .15s;
+}
+
+.group-chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--chip-c);
+  flex: none;
+}
+
+.group-chip.mine {
+  background: var(--chip-c);
+  color: #fff;
+}
+.group-chip.mine::before { background: #fff; }
+
+html.dark .group-chip {
+  background: color-mix(in srgb, var(--chip-c) 22%, #1A2338);
+  filter: brightness(1.15);
+}
+html.dark .group-chip.mine {
+  background: var(--chip-c);
+  color: #fff;
+  filter: brightness(1.2);
+}
+
+@media (max-width: 640px) {
+  .card-groups { gap: 5px; }
+  .group-chip { font-size: 0.68rem; padding: 2px 7px 2px 6px; }
+}

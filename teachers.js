@@ -31,8 +31,13 @@
           if (!teacher) return;
 
           const subject = t.split("преп.")[0].trim().replace(/,\s*$/, "");
-          const roomMatch = t.match(/ауд\.\s*([^,]+?)(?:\s|$)/);
-          const room = roomMatch ? roomMatch[1].trim() : "";
+          
+          // Ищем аудиторию или спортивный зал
+          const roomMatch = t.match(/(?:ауд\.|спортивный зал)\s*([^,]+?)(?:\s|$)/i);
+          let room = roomMatch ? roomMatch[1].trim() : "";
+          if (t.toLowerCase().includes("спортивный зал")) {
+            room = "Спортивный зал";
+          }
 
           if (!ALL_TEACHERS[teacher]) ALL_TEACHERS[teacher] = { specs: new Set(), days: {} };
           ALL_TEACHERS[teacher].specs.add(spec);
@@ -60,6 +65,8 @@
     get$("rowCourses").style.display = "";
     get$("rowGroups").style.display = "";
     get$("rowTeacherBtn").style.display = "none";
+    const banner = get$("activeTeacherBanner");
+    if (banner) banner.style.display = "none";
   }
 
   function switchToTeacherUI() {
@@ -193,55 +200,93 @@
     if (input) {
       input.addEventListener("input", (e) => renderModalList(e.target.value));
     }
+
+    // Кнопка "Сменить" в плашке
+    const changeBtn = get$("activeTeacherChangeBtn");
+    if (changeBtn) {
+      changeBtn.addEventListener("click", openModal);
+    }
   }
 
+  // --- РЕНДЕР РАСПИСАНИЯ ПРЕПОДАВАТЕЛЯ (С ГРУППИРОВКОЙ ПОТОКОВ) ---
   function renderTeacherSchedule() {
     const out = get$("out"), info = get$("weekInfo");
+    const banner = get$("activeTeacherBanner");
+    const bannerName = get$("activeTeacherName");
     out.innerHTML = "";
 
     if (!state.teacher) { 
       info.textContent = "Выберите преподавателя"; 
+      if (banner) banner.style.display = "none";
       return; 
     }
 
     const w = WEEK_LIST[state.week];
-    info.textContent = `Неделя ${w.star} (${w.start} – ${w.end})`;
+    
+    info.textContent = `${state.teacher} · Неделя ${w.star} (${w.start} – ${w.end})`;
 
-    const data = ALL_TEACHERS[state.teacher];
-    if (!data) return;
+    if (banner && bannerName) {
+      banner.style.display = "flex";
+      bannerName.textContent = state.teacher;
+    }
+
+    // Берем карточки из глобального агрегатора (из schedule.js)
+    const cardsByDay = buildLessonCards();
 
     DAYS.forEach((day, index) => {
-      const dayPairs = data.days[index];
-      if (!dayPairs || !dayPairs.length) return;
-
-      const weekPairs = dayPairs.filter(p => !p.star || p.star === w.star);
-      if (!weekPairs.length) return;
-
       const block = document.createElement("section");
       block.className = "day";
       const h2 = document.createElement("h2");
       h2.textContent = DAY_NAMES[day];
       block.appendChild(h2);
 
+      // Оставляем только карточки, где ведет этот преподаватель
+      let dayCards = (cardsByDay[index] && cardsByDay[index][w.star]) || [];
+      dayCards = dayCards.filter(card => 
+        card.teachers.includes(state.teacher)
+      );
+
+      if (!dayCards.length) {
+        const empty = document.createElement("div");
+        empty.className = "day-empty";
+        empty.textContent = "Выходной";
+        block.appendChild(empty);
+        out.appendChild(block);
+        return;
+      }
+
       const grid = document.createElement("div");
       grid.className = "cards";
 
-      weekPairs.sort((a, b) => {
-        if (a.number !== b.number) return a.number - b.number;
-        return a.group.localeCompare(b.group);
-      }).forEach(p => {
-        const card = document.createElement("article");
-        card.className = "card";
+      dayCards.forEach(card => {
+        const el = document.createElement("article");
+        el.className = "card";
         
-        const specColor = COLORS[p.spec] ? COLORS[p.spec].c : "#1769E0";
-        card.style.borderLeftColor = specColor;
-        
-        card.innerHTML = `
-          <div class="t" style="color: ${specColor}; font-weight: 600;">${BELLS[p.number]} <span style="opacity:0.6; color:var(--muted); font-weight:400;">· ${p.spec}</span></div>
-          <div class="s">${p.subject}</div>
-          <div class="m">${p.room} · <b>${p.group}</b></div>
+        // Цвет берем по первой группе из потока (или по любой)
+        const mainSpec = card.groups.length > 0 ? card.groups[0].spec : "ИСП";
+        const specColor = COLORS[mainSpec] ? COLORS[mainSpec].c : "#1769E0";
+        el.style.borderLeftColor = specColor;
+
+        const subNote = card.subgroup
+          ? ` <small style="color:#6b6b6b;font-weight:400">(подгр. ${card.subgroup})</small>`
+          : "";
+
+        // Чипсы групп
+        const chips = card.groups.map(g => {
+          const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
+          return `<span class="group-chip" style="--chip-c:${col}">${g.group}</span>`;
+        }).join("");
+
+        el.innerHTML = `
+          <div class="t" style="color: ${specColor}; font-weight: 600;">
+            ${card.time} 
+            <span style="opacity:0.6; color:var(--muted); font-weight:400;">· ${mainSpec}</span>
+          </div>
+          <div class="s">${card.subject}${subNote}</div>
+          <div class="m">${card.room}</div>
+          ${card.groups.length > 0 ? `<div class="card-groups">${chips}</div>` : ""}
         `;
-        grid.appendChild(card);
+        grid.appendChild(el);
       });
 
       block.appendChild(grid);
