@@ -604,18 +604,12 @@ function renderDayProgress() {
     `;
     trackWrap.appendChild(seg);
 
+    // Время пары
     const timeLabel = document.createElement("span");
+    timeLabel.className = "dc-time-label";
     timeLabel.textContent = BELLS[item.num].replace("–", " – ");
-    timeLabel.style.cssText = `
-      position:absolute;
-      left:${leftP + wP/2}%;
-      top: 120%;
-      transform: translateX(-50%);
-      font-size: 0.65rem;
-      color: var(--muted);
-      white-space: nowrap;
-      z-index: 3;
-    `;
+    timeLabel.style.left = `${leftP + wP/2}%`;
+    timeLabel.style.top = "120%";
     trackWrap.appendChild(timeLabel);
 
     if (i < sorted.length - 1) {
@@ -639,19 +633,12 @@ function renderDayProgress() {
         `;
         trackWrap.appendChild(breakSeg);
 
+        // Время перемены
         const bLabel = document.createElement("span");
+        bLabel.className = "dc-break-label";
         bLabel.textContent = `${breakDuration} мин`;
-        bLabel.style.cssText = `
-          position:absolute;
-          left:${bLeftP + bWP/2}%;
-          top: 120%;
-          transform: translateX(-50%);
-          font-size: 0.55rem;
-          color: var(--muted);
-          opacity: 0.7;
-          white-space: nowrap;
-          z-index: 3;
-        `;
+        bLabel.style.left = `${bLeftP + bWP/2}%`;
+        bLabel.style.top = "120%";
         trackWrap.appendChild(bLabel);
       }
     }

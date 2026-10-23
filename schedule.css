@@ -1308,3 +1308,35 @@ html.dark .group-chip.mine {
   .card-groups { gap: 5px; }
   .group-chip { font-size: 0.68rem; padding: 2px 7px 2px 6px; }
 }
+
+/* ============================================================
+   ПОДПИСИ НА ШКАЛЕ ВРЕМЕНИ
+   ============================================================ */
+.dc-time-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: var(--muted);
+  white-space: nowrap;
+  z-index: 3;
+}
+
+.dc-break-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.55rem;
+  color: var(--muted);
+  opacity: 0.7;
+  white-space: nowrap;
+  z-index: 3;
+}
+
+@media (max-width: 640px) {
+  .dc-break-label {
+    display: none; /* Скрываем подписи перемен на мобилках */
+  }
+  .dc-time-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+  }
+}
