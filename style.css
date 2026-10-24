@@ -630,3 +630,24 @@ html.dark .fs-close-btn {
   .fs-link { font-size: 1.8rem; }
   .fs-menu-content { gap: 32px; }
 }
+
+@media (max-width: 640px) {
+  .about-item:nth-child(3) {
+    text-align: left !important;
+  }
+  .about-item:nth-child(3) .num,
+  .about-item:nth-child(3) h3,
+  .about-item:nth-child(3) p {
+    text-align: left;
+  }
+}
+
+@media (max-width: 640px) {
+  /* ... остальные стили ... */
+
+  /* Карточки команды строго в один столбик */
+  .team-grid {
+    grid-template-columns: 1fr !important; 
+    gap: 16px;
+  }
+}
