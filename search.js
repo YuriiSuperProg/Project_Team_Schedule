@@ -62,27 +62,27 @@
   }
 
   // -------- основная функция --------
-  function searchByDate() {
+   function searchByDate() {
     const input = get$("dateInput");
     if (!input) return;
 
     const val = input.value.trim();
     if (!val) {
-      alert("Введи дату в формате дд.мм.гггг");
+      if (window.showGlobalToast) window.showGlobalToast("Введи дату в формате дд.мм.гггг");
       input.focus();
       return;
     }
 
     const parts = val.split(".");
     if (parts.length !== 3) {
-      alert("Формат: дд.мм.гггг");
+      if (window.showGlobalToast) window.showGlobalToast("Формат: дд.мм.гггг");
       input.focus();
       return;
     }
 
     const [dd, mm, yyyy] = parts.map(Number);
     if (!dd || !mm || !yyyy || dd > 31 || mm > 12 || yyyy < 2000) {
-      alert("Неверная дата");
+      if (window.showGlobalToast) window.showGlobalToast("Неверная дата");
       input.focus();
       return;
     }
@@ -92,12 +92,16 @@
 
     const idx = findWeekByDate(target);
     if (idx === -1) {
-      alert("Эта дата не попадает в учебный год");
+      if (window.showGlobalToast) window.showGlobalToast("Эта дата не попадает в учебный год");
       return;
     }
 
     state.week = idx;
-    const dayIndex = (target.getDay() + 6) % 7; // 0=Пн..6=Вс
+    const dayIndex = (target.getDay() + 6) % 7;
+
+    if (window.unlockAchievement) {
+      window.unlockAchievement("dateSearch");
+    }
 
     renderSchedule();
     renderDayProgress();
@@ -105,7 +109,6 @@
 
     setTimeout(() => highlightDay(dayIndex), 100);
   }
-
   // -------- инициализация --------
   function init() {
     const btn = get$("dateFind");

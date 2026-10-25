@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Расписание — ПараЗвёзд</title>
   <link rel="stylesheet" href="schedule.css">
+  <link rel="stylesheet" href="notifications.css">
   <meta name="google" content="notranslate">
 </head>
 <body>
@@ -12,33 +13,61 @@
   <div class="aurora-bg"></div>
   <div class="star-field" id="starField"></div>
 
+  <!-- ШАПКА -->
   <header>
     <div class="container nav">
       <a href="index.html" class="logo">
         <div class="logo-icon-wrap"><span class="logo-icon">🎓</span></div>
         <div class="logo-text">
           <b>ПараЗвёзд <span class="star-sparkle">✨</span></b>
-          <small>Расписание ВолГУ</small>
+          <small>Расписание ВФ ВолГУ</small>
         </div>
       </a>
-      <div class="nav-actions">
-        <button class="icon-btn" id="themeToggle" title="Тема">🌙</button>
-        <button class="btn btn-ghost nav-desktop" id="switchRoleDesktop">👀 Расписание преподавателей</button>
-        <a href="index.html" class="back nav-desktop">← На главную</a>
-        <button class="burger" id="burger" aria-label="Меню"><span></span><span></span><span></span></button>
-      </div>
-    </div>
 
-    <div class="mobile-menu" id="mobileMenu">
-      <nav>
-        <button class="menu-item" id="switchRole">🔄 Сменить роль</button>
-        <button class="menu-item" id="forgetGroup">🗑 Забыть группу</button>
-        <a href="index.html" class="menu-item">← На главную</a>
-      </nav>
+      <div class="nav-actions">
+        
+
+        <button class="nav-burger-btn" id="menuBtn" aria-label="Меню">
+          <div class="burger-icon">
+            <span></span><span></span><span></span>
+          </div>
+        </button>
+      </div>
     </div>
   </header>
 
+  <!-- ПОЛНОЭКРАННОЕ МЕНЮ -->
+  <div class="fullscreen-menu" id="mobileMenu">
+    <button class="fs-close-btn" id="closeMenuBtn" aria-label="Закрыть">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <div class="fs-menu-content">
+      <nav class="fs-nav" id="dynamicMenuNav"></nav>
+
+      <div class="fs-actions">
+        <button class="fs-theme-btn" id="themeToggleMenu">
+          <span id="themeIcon">🌑</span> Сменить тему
+        </button>
+      </div>
+    </div>
+  </div>
+
   <main class="container">
+    <!-- УВЕДОМЛЕНИЕ ОБ ИЗМЕНЕНИЯХ -->
+    <div class="schedule-notice hidden" id="scheduleNotice">
+      <div class="sn-content">
+        <span class="sn-icon">⚠️</span>
+        <div class="sn-text">
+          <b>Внимание!</b> Расписание изменилось. Проверьте свои пары.
+        </div>
+      </div>
+      <div class="sn-actions">
+        <button class="sn-btn-close" id="snCloseBtn">Понятно</button>
+      </div>
+    </div>
 
     <div class="role-screen" id="roleScreen">
       <div class="role-title">Кто ты?</div>
@@ -58,7 +87,6 @@
     </div>
 
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
-
       <div class="greeting" id="greeting">
         <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
         <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
@@ -70,20 +98,15 @@
         <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
       </div>
 
-      <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
       <div class="filters">
-        <!-- Строка специальностей (скрывается для препода) -->
         <div class="row" id="rowSpecs"><span>Специальность</span><div class="chips" id="specs"></div></div>
-        
-        <!-- Для студента -->
         <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
         <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
-        
-        <!-- КНОПКА ОТКРЫТИЯ МОДАЛКИ ПРЕПОДАВАТЕЛЕЙ (Только для препода) -->
         <div class="row" id="rowTeacherBtn" style="display:none">
           <span>Преподаватель</span>
-          <button class="btn btn-ghost" id="openTeacherModalBtn" style="border-color: var(--line); background: var(--card);">
-            🔍 Найти преподавателя
+          <button class="btn btn-ghost teacher-search-btn" id="openTeacherModalBtn">
+            <span class="ts-btn-icon">🔍</span>
+            <span>Найти преподавателя</span>
           </button>
         </div>
       </div>
@@ -94,16 +117,17 @@
         <button class="ds-btn" id="dateFind">Найти</button>
       </div>
 
-      <div class="weekbar">
+        <div class="weekbar">
         <b id="weekInfo">Выберите группу</b>
+        
         <div class="weekbar-controls">
           <button onclick="shiftWeek(-1)">←</button>
           <button onclick="shiftWeek(1)">→</button>
-          <button onclick="goToday()" class="btn-today">Сегодня</button>
         </div>
+        
+        <button onclick="goToday()" class="btn-today">Сегодня</button>
       </div>
 
-      <!-- ПЛАШКА С ИМЕНЕМ ПРЕПОДАВАТЕЛЯ -->
       <div class="active-teacher-banner" id="activeTeacherBanner" style="display:none">
         <div class="atb-info">
           👨‍🏫 Вы смотрите расписание: <b id="activeTeacherName">—</b>
@@ -133,43 +157,127 @@
         </div>
       </div>
 
-      <div class="tomorrow hidden" id="tomorrow">
-        <div class="tm-icon">🌅</div>
-        <div class="tm-info">
-          <div class="tm-label">Завтра</div>
-          <div class="tm-main" id="tmMain">—</div>
-          <div class="tm-sub" id="tmSub">—</div>
-        </div>
-      </div>
-
+      <div class="tomorrow hidden" id="tomorrow"></div>
       <div id="out"></div>
-
     </div>
   </main>
 
-  <!-- МОДАЛЬНОЕ ОКНО ПРЕПОДАВАТЕЛЕЙ -->
   <div class="ts-modal-overlay" id="teacherModal">
     <div class="ts-modal">
       <div class="ts-modal-input-wrap">
         <span>🔍</span>
         <input type="text" class="ts-modal-input" id="modalTeacherInput" placeholder="Введите фамилию..." autocomplete="off">
       </div>
-      
-      <!-- ФИЛЬТР ПО СПЕЦИАЛЬНОСТЯМ -->
-      <div class="ts-filter-bar" id="modalSpecsFilter">
-        <!-- Заполняется через JS -->
-      </div>
-
+      <div class="ts-filter-bar" id="modalSpecsFilter"></div>
       <div class="ts-modal-list" id="modalTeacherList"></div>
     </div>
   </div>
 
+  <!-- МОДАЛКА ПРОФИЛЯ -->
+  <div class="profile-overlay" id="profileModal">
+    <div class="profile-window">
+      <button class="profile-close" id="profileCloseBtn">✕</button>
+
+      <div class="profile-header">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profileAvatar" title="Кликни, чтобы сменить">🎓</div>
+          <div class="profile-level-badge" id="profileLevel">LVL 1</div>
+        </div>
+        <div class="profile-info">
+          <h1 class="profile-name" id="profileName">Студент</h1>
+          <div class="profile-meta">
+            <span id="profileGroup" class="profile-group">Группа не выбрана</span>
+            <span id="profileSpec" class="profile-spec">—</span>
+          </div>
+          <div class="profile-xp-wrap">
+            <div class="profile-xp-bar" id="profileXpBar" style="width: 0%;"></div>
+            <span class="profile-xp-text" id="profileXpText">0 / 100 XP</span>
+          </div>
+        </div>
+      </div>
+
+            <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="achievements">
+          <span>🏆</span>
+          <span class="tab-text">Достижения</span>
+        </button>
+        <button class="profile-tab" data-tab="stats">
+          <span>📊</span>
+          <span class="tab-text">Статистика</span>
+        </button>
+        <button class="profile-tab" data-tab="settings">
+          <span>⚙️</span>
+          <span class="tab-text">Настройки</span>
+        </button>
+      </div>
+
+      <div class="profile-content">
+        <div class="profile-pane active" id="pane-achievements">
+          <div class="ach-grid" id="achGrid"></div>
+        </div>
+
+        <div class="profile-pane" id="pane-stats">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-val" id="statStreak">0</div>
+              <div class="stat-label">Дней подряд</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🚀</div>
+              <div class="stat-val" id="statVisits">0</div>
+              <div class="stat-label">Всего заходов</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🔭</div>
+              <div class="stat-val" id="statSpecs">0</div>
+              <div class="stat-label">Специальностей изучено</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-pane" id="pane-settings">
+          <div class="settings-form">
+            <label class="settings-label">Ваше имя</label>
+            <div class="settings-input-wrap">
+              <input type="text" id="settingsName" class="settings-input" placeholder="Как вас зовут?" maxlength="20">
+              <button class="settings-btn" id="saveNameBtn">Сохранить</button>
+            </div>
+            <label class="settings-label" style="margin-top: 24px;">Сменить аватар</label>
+            <div class="avatar-picker" id="avatarPicker"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МАСКОТ СОВА -->
+  <div class="mascot" id="mascot" title="Привет! Я твой помощник.">
+    <div class="mascot-bubble" id="mascotBubble">Привет! Выбери группу →</div>
+    <div class="owl">
+      <div class="owl-face">
+        <div class="owl-eye"><div class="owl-pupil"></div></div>
+        <div class="owl-eye"><div class="owl-pupil"></div></div>
+      </div>
+      <div class="owl-beak"></div>
+    </div>
+  </div>
+
+  <!-- КНОПКА НАВЕРХ -->
+  <button class="scroll-top-btn" id="scrollTopBtn" aria-label="Наверх">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+  </button>
+
+  <!-- ВАШИ СКРИПТЫ -->
   <script src="data.js"></script>
+  <script src="storage.js"></script>
   <script src="schedule.js"></script>
   <script src="search.js"></script>
   <script src="teachers.js"></script>
-  <script src="mobile.js"></script>
   <script src="stars.js"></script>
-  <script src="welcome.js"></script>
+  <script src="profile.js"></script>
+  <script src="notifications.js"></script>
 </body>
 </html>

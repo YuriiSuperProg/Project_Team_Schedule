@@ -1,0 +1,154 @@
+/* ============================================================
+   УВЕДОМЛЕНИЯ ОБ ИЗМЕНЕНИЯХ В РАСПИСАНИИ (Quiet UI / Bento)
+   ============================================================ */
+
+/* ---------- Колокольчик в шапке ---------- */
+.bell-btn {
+  position: relative;
+}
+.bell-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  min-width: 18px; height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e86a6a;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(232, 106, 106, 0.4);
+  animation: bellPulse 2s ease-in-out infinite;
+  line-height: 1;
+}
+@keyframes bellPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ---------- Детали диффа внутри плашки ---------- */
+.sn-diff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+.sn-diff-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+}
+html.dark .sn-diff-item { background: rgba(0, 0, 0, 0.2); }
+
+.sn-diff-icon { flex-shrink: 0; font-size: 0.95rem; }
+.sn-diff-text { flex: 1; }
+
+.sn-diff-add     { border-left: 3px solid #6ecf9b; }
+.sn-diff-remove  { border-left: 3px solid #e86a6a; }
+.sn-diff-change  { border-left: 3px solid #e6b86a; }
+
+/* ---------- Панель истории уведомлений ---------- */
+.notif-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 25000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 80px 20px 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.notif-panel.open { opacity: 1; }
+
+.notif-window {
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  background: var(--card);
+  border-radius: 24px;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.notif-panel.open .notif-window {
+  transform: translateY(0) scale(1);
+}
+
+.notif-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+}
+.notif-panel-header h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.notif-panel-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: .15s;
+}
+.notif-panel-close:hover { background: var(--line); color: var(--text); }
+
+.notif-panel-body {
+  padding: 16px 22px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notif-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 40px 20px;
+  font-size: 0.95rem;
+}
+
+.notif-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.notif-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+/* ---------- Мобилка ---------- */
+@media (max-width: 640px) {
+  .notif-panel { padding: 60px 12px 12px; }
+  .notif-window { max-height: 85vh; border-radius: 20px; }
+  .schedule-notice { flex-direction: column; align-items: flex-start; }
+  .sn-btn-close { width: 100%; text-align: center; }
+}

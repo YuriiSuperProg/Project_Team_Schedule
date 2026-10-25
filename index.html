@@ -112,126 +112,206 @@
     </div>
   </section>
 
-  <section id="ecosystem">
+ <!-- ЭКОСИСТЕМА -->
+<section id="ecosystem">
   <div class="container">
     <div class="section-head">
-      <h2 class="section-title">Мы везде, где вам удобно</h2>
-      <p class="section-sub">Выбирайте платформу — расписание всегда под рукой</p>
+      <h2 class="section-title">Экосистема</h2>
+      <p class="section-sub">Выбери удобный формат</p>
     </div>
 
     <div class="eco-carousel-wrap">
       <div class="eco-grid" id="ecoGrid">
-
-        <!-- 1. Сайт -->
-        <article class="eco-card" data-color="#1769E0" data-eco="site">
-          <div class="mockup browser-frame">
-            <div class="browser-header">
-              <span class="dot red"></span>
-              <span class="dot yellow"></span>
-              <span class="dot green"></span>
-              <span class="browser-url">yuriisuperprog.github.io</span>
-            </div>
-            <div class="browser-content">
-              <img class="mockup-img" src="/img/web_app.png" alt="Сайт" loading="lazy">
+        
+        <!-- 1. САЙТ -->
+        <div class="eco-card" data-color="#1769E0">
+          <div class="eco-preview">
+            <div class="mockup-browser">
+              <div class="mb-header">
+                <div class="mb-dots"><span></span><span></span><span></span></div>
+                <div class="mb-url">yuriisuperprog.github.io</div>
+              </div>
+              <div class="mb-body">
+                <div class="mb-top-list">
+                  <div class="mb-line"><b>Разработка мобильных приложений (лаб.)</b> · 1-36</div>
+                  <div class="mb-line"><b>Разработка программных модулей (лаб.)</b> · 1-02</div>
+                  <div class="mb-line"><b>Разработка программных модулей (л.)</b> · 3-02</div>
+                  <div class="mb-line"><b>Внедрение и поддержка компьютерных систем (лаб.)</b> · 3-03</div>
+                  <div class="mb-subtext">16 октября · пар: 4</div>
+                </div>
+                <div class="mb-cards-row">
+                  <div class="mb-card">
+                    <div class="mb-time">12:10–13:40</div>
+                    <div class="mb-title">Разработка программных модулей (лаб.)</div>
+                    <div class="mb-room">1-02 · Донскова Д.А.</div>
+                  </div>
+                  <div class="mb-card active">
+                    <div class="mb-time">13:50–15:20</div>
+                    <div class="mb-title">Разработка программных модулей (л.)</div>
+                    <div class="mb-room">3-02 · Донскова Д.А.</div>
+                    <div class="mb-chips">
+                      <span class="mb-chip">ИСП-241</span>
+                      <span class="mb-chip">ИСП-242</span>
+                      <span class="mb-chip">ИСП-243</span>
+                    </div>
+                  </div>
+                  <div class="mb-card">
+                    <div class="mb-time">15:30–17:00</div>
+                    <div class="mb-title">Внедрение и поддержка компьютерных систем (лаб.)</div>
+                    <div class="mb-room">4-01 · Ушакова М.А.</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="eco-info">
+          <div class="eco-text">
             <h3>Сайт</h3>
             <p>Полная версия расписания в браузере</p>
-            <div class="eco-buttons">
-              <a class="eco-btn eco-btn--primary" href="schedule.html">Открыть</a>
-            </div>
+            <a href="schedule.html" class="eco-btn">Открыть</a>
           </div>
-        </article>
+        </div>
 
-        <!-- 2. Telegram -->
-        <article class="eco-card" data-color="#2AABEE" data-eco="tg">
-          <div class="mockup telegram-frame">
-            <div class="tg-header">
-              <div class="tg-avatar">📅</div>
-              <div>
-                <div class="tg-name">ВФ ВолГУ Расписание</div>
+        <!-- 2. TELEGRAM -->
+        <div class="eco-card" data-color="#2AABEE">
+          <div class="eco-preview">
+            <div class="mockup-telegram">
+              <div class="mt-header">
+                <div class="mt-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </div>
+                <div class="mt-title">
+                  <b>ПараЗвёзд</b>
+                  <span>4 подписчика</span>
+                </div>
+                <div class="mt-actions">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                </div>
+              </div>
+              <div class="mt-chat-bg">
+                <div class="mt-message">
+                  <div class="mt-msg-author">ПараЗвёзд <span class="mt-time">00:29</span></div>
+                  <div class="mt-msg-text">
+                    📅 <b>Расписание на неделю</b><br><br>
+                    👥 <b>ИСП-241</b><br><br>
+                    ⭐️⭐️ Понедельник · 19.10<br>
+                    2 Пара. 10:10 — 11:40<br>
+                    Разработка мобильных приложений (лаб.)<br>
+                    Ауд. 1-36; Преп. Леонтьев Д.А.<br><br>
+                    3 Пара. 12:10 — 13:40<br>
+                    Разработка программных модулей (лаб.)<br>
+                    Ауд. 1-02; Преп. Донскова Д.А.
+                  </div>
+                </div>
+                <div class="mt-buttons">
+                  <div class="mt-btn mt-btn-primary">📖 Посмотреть расписание</div>
+                  <div class="mt-btn mt-btn-secondary">⚙️ Настройки</div>
+                </div>
               </div>
             </div>
-            <div class="tg-content">
-              <img class="mockup-img" src="/img/tg_app.jpg" alt="Telegram-бот" loading="lazy">
-            </div>
           </div>
-          <div class="eco-info">
+          <div class="eco-text">
             <h3>Telegram-бот</h3>
             <p>Расписание прямо в мессенджере</p>
-            <div class="eco-buttons">
-              <a class="eco-btn eco-btn--primary" href="https://t.me/VFStudentBot" target="_blank" rel="noopener">Перейти</a>
-            </div>
+            <a href="#" class="eco-btn">Перейти</a>
           </div>
-        </article>
+        </div>
 
-        <!-- 3. ВКонтакте -->
-        <article class="eco-card" data-color="#0077FF" data-eco="vk">
-          <div class="mockup vk-frame">
-            <div class="vk-header">
-              <div class="vk-avatar">VK</div>
-              <div>
-                <div class="vk-name">Расписание ВФ ВолГУ</div>
+        <!-- 3. VK -->
+        <div class="eco-card" data-color="#0077FF">
+          <div class="eco-preview">
+            <div class="mockup-vk">
+              <div class="vk-header">
+                <div class="vk-avatar">B</div>
+                <div class="vk-title">
+                  <b>ПараЗвёзд</b>
+                  <span>ВКонтакте</span>
+                </div>
+              </div>
+              <div class="vk-chat-bg">
+                <div class="vk-message">
+                  <div class="vk-msg-author">ПараЗвёзд</div>
+                  <div class="vk-msg-text">
+                    📅 <b>Расписание на неделю</b><br><br>
+                    👥 <b>ИСП-241</b><br><br>
+                    ⭐️⭐️ Понедельник · 19.10<br>
+                    2 Пара. 10:10 — 11:40<br>
+                    Разработка мобильных приложений (лаб.)<br>
+                    Ауд. 1-36; Преп. Леонтьев Д.А.<br><br>
+                    3 Пара. 12:10 — 13:40<br>
+                    Разработка программных модулей (лаб.)<br>
+                    Ауд. 1-02; Преп. Донскова Д.А.
+                  </div>
+                </div>
+                <div class="vk-buttons">
+                  <div class="vk-btn">📖 Посмотреть расписание</div>
+                  <div class="vk-btn">⚙️ Настройки</div>
+                </div>
               </div>
             </div>
-            <div class="vk-content">
-              <img class="mockup-img" src="img/Vk_app.png" alt="ВКонтакте-бот" loading="lazy">
-            </div>
           </div>
-          <div class="eco-info">
-            <h3>ВКонтакте</h3>
-            <p>Бот во ВКонтакте для студентов</p>
-            <div class="eco-buttons">
-              <a class="eco-btn eco-btn--primary" href="https://vk.com/" target="_blank" rel="noopener">Перейти</a>
-            </div>
+          <div class="eco-text">
+            <h3>VK-бот</h3>
+            <p>Уведомления и расписание во ВКонтакте</p>
+            <a href="#" class="eco-btn">Перейти</a>
           </div>
-        </article>
-
-        <!-- 4. Приложение -->
-      <!-- Было: data-color="#6ecf9b" -->
-<!-- 4. Приложение -->
-<article class="eco-card" data-color="#1769E0" data-eco="app">
-  <div class="mockup phone-frame">
-    <div class="phone-screen">
-      <div class="phone-notch"></div>
-      <div class="phone-app-icon">🎓</div>
-      <div class="phone-app-name">Расписание</div>
-    </div>
-  </div>
-  <div class="eco-info">
-    <h3>Приложение</h3>
-    <p>PWA — установите на телефон</p>
-    <div class="eco-buttons">
-      <a class="eco-btn eco-btn--primary" href="schedule.html">Открыть</a>
-      
-      <!-- Обертка для кнопки и подсказки -->
-      <div class="pwa-wrapper">
-        <button class="eco-btn eco-btn--ghost pwa-btn" type="button">Как установить?</button>
-        <div class="pwa-hint">
-          Откройте меню браузера → «Установить приложение» / «На главный экран».
         </div>
-      </div>
-    </div>
-  </div>
-</article>
+
+        <!-- 4. ПРИЛОЖЕНИЕ -->
+        <div class="eco-card" data-color="#6ecf9b">
+          <div class="eco-preview">
+            <div class="mockup-app">
+              <div class="app-header">
+                <div class="app-logo">🎓</div>
+                <div class="app-title">
+                  <b>ПараЗвёзд</b>
+                  <span>Расписание ВолГУ</span>
+                </div>
+                <div class="app-actions">🌙 ☰</div>
+              </div>
+              <div class="app-body">
+                <div class="app-greeting">
+                  <b>Привет, Юрий! 👋</b>
+                </div>
+                <div class="app-wish">
+                  🧠 Каждая решённая задача делает тебя сильнее!
+                </div>
+                <div class="app-filters">
+                  <div class="app-label">Специальность</div>
+                  <div class="app-chips">
+                    <span class="app-chip">РУПО</span>
+                    <span class="app-chip active">ИСП</span>
+                    <span class="app-chip">ЗСП</span>
+                    <span class="app-chip">ЭСП</span>
+                    <span class="app-chip">ЮСП</span>
+                  </div>
+                  <div class="app-label" style="margin-top: 12px;">Курс</div>
+                  <div class="app-chips">
+                    <span class="app-chip">2 курс</span>
+                    <span class="app-chip active">3 курс</span>
+                    <span class="app-chip">4 курс</span>
+                  </div>
+                  <div class="app-label" style="margin-top: 12px;">Группа</div>
+                  <div class="app-chips">
+                    <span class="app-chip active">ИСП-241</span>
+                    <span class="app-chip">ИСП-242</span>
+                    <span class="app-chip">ИСП-243</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="eco-text">
+            <h3>Приложение</h3>
+            <p>Мобильное приложение для iOS и Android</p>
+            <a href="#" class="eco-btn">Скачать</a>
+          </div>
+        </div>
 
       </div>
-
-      <!-- Точки (мобилка) -->
-      <div class="eco-dots" id="ecoDots" aria-hidden="true"></div>
+      <!-- Точки для мобилки -->
+      <div class="eco-dots" id="ecoDots"></div>
     </div>
-  </div>
-
-  <!-- Оверлей и модалка — ЕДИНСТВЕННЫЕ, СНАРУЖИ сетки -->
-  <div class="eco-overlay" id="ecoOverlay" hidden></div>
-  <div class="eco-modal" id="ecoModal" hidden role="dialog" aria-modal="true" aria-labelledby="ecoModalTitle">
-    <div class="eco-modal__content" id="ecoModalContent"></div>
-    <button class="eco-modal__close" id="ecoModalClose" aria-label="Закрыть">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-    </button>
   </div>
 </section>
 
@@ -359,6 +439,13 @@
 
   </div>
 </footer>
+
+  <!-- ОВЕРЛЕЙ И МОДАЛКА ДЛЯ ЭКОСИСТЕМЫ -->
+  <div class="eco-overlay" id="ecoOverlay" hidden></div>
+  <div class="eco-modal" id="ecoModal" hidden>
+    <button class="eco-modal__close" id="ecoModalClose">✕</button>
+    <div class="eco-modal__content" id="ecoModalContent"></div>
+  </div>
 
   <script src="script.js"></script>
 </body>

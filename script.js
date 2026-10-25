@@ -94,24 +94,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-//  ЭКОСИСТЕМА
+//  ЭКОСИСТЕМА (3D-наклон, свайп и модалка)
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
-  const section  = document.getElementById("ecosystem");
-  const grid     = document.getElementById("ecoGrid");
-  const dotsBox  = document.getElementById("ecoDots");
-  const overlay  = document.getElementById("ecoOverlay");
-  const modal    = document.getElementById("ecoModal");
-  const modalBox = document.getElementById("ecoModalContent");
-  const closeBtn = document.getElementById("ecoModalClose");
+  const section = document.getElementById("ecosystem");
+  const grid    = document.getElementById("ecoGrid");
+  const dotsBox = document.getElementById("ecoDots");
+  const overlay = document.getElementById("ecoOverlay");
+  const modal   = document.getElementById("ecoModal");
+  const modalBox= document.getElementById("ecoModalContent");
+  const closeBtn= document.getElementById("ecoModalClose");
 
   if (!section || !grid) return;
 
-  const cards     = Array.from(grid.querySelectorAll(".eco-card"));
+  const cards = Array.from(grid.querySelectorAll(".eco-card"));
   const mqDesktop = window.matchMedia("(min-width: 901px)");
   const isDesktop = () => mqDesktop.matches;
 
-  let modalOpen   = false;
+  let modalOpen = false;
   let lastFocused = null;
 
   // ---------- 3D-наклон ----------
@@ -126,8 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const py = (e.clientY - r.top)  / r.height;
     const rotY = (px - 0.5) * 2 * TILT_MAX;
     const rotX = -(py - 0.5) * 2 * TILT_MAX;
-    card.style.transform =
-      `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${SCALE},${SCALE},${SCALE})`;
+    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${SCALE},${SCALE},${SCALE})`;
   }
 
   function onLeave(e) {
@@ -146,25 +145,21 @@ document.addEventListener("DOMContentLoaded", () => {
     modalOpen = true;
 
     const rect = card.getBoundingClientRect();
-
     cards.forEach(c => (c.style.transform = ""));
 
     const clone = card.cloneNode(true);
     clone.classList.remove("eco-card");
     clone.removeAttribute("data-color");
 
-    // ВСТАВЛЯЕМ СКОПИРОВАННЫЙ КОНТЕНТ В МОДАЛКУ
     modalBox.replaceChildren(clone);
 
     const color = card.dataset.color || "#1769E0";
-    
-    // Устанавливаем цвет только для свечения
     modalBox.style.setProperty("--eco-accent", color);
     
     overlay.hidden = false;
     modal.hidden = false;
 
-    // FLIP
+    // FLIP-анимация
     modalBox.style.transformOrigin = "top left";
     modalBox.style.transition = "none";
 
@@ -221,37 +216,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cards.forEach(card => {
     card.addEventListener("click", (e) => {
-      if (e.target.closest(".eco-btn")) return;
+      if (e.target.closest(".eco-btn")) return; // Если кликнули на кнопку внутри карточки — не открываем модалку
       openModal(card);
     });
   });
 
-  closeBtn.addEventListener("click", closeModal);
-  overlay.addEventListener("click", closeModal);
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (overlay) overlay.addEventListener("click", closeModal);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
-  });
-
-  // ---------- Параллакс ----------
-  modal.addEventListener("mousemove", (e) => {
-    if (!modalOpen) return;
-    const img = modalBox.querySelector(".mockup-img");
-    if (!img) return;
-    const x = (window.innerWidth / 2 - e.clientX) / 30;
-    const y = (window.innerHeight / 2 - e.clientY) / 30;
-    img.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
-  });
-  modal.addEventListener("mouseleave", () => {
-    const img = modalBox.querySelector(".mockup-img");
-    if (img) img.style.transform = "";
   });
 
   // ---------- Подсветка фона ----------
   function hexToRgba(hex, a) {
     const h = hex.replace("#", "");
-    const n = parseInt(h.length === 3
-      ? h.split("").map(c => c + c).join("")
-      : h, 16);
+    const n = parseInt(h.length === 3 ? h.split("").map(c => c + c).join("") : h, 16);
     return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
   }
 
@@ -259,8 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
     card.addEventListener("mouseenter", () => {
       if (!isDesktop() || modalOpen) return;
       const color = card.dataset.color || "#1769E0";
-      section.style.setProperty("--eco-bg",
-        `radial-gradient(circle at 50% 40%, ${hexToRgba(color, 0.08)}, transparent 70%)`);
+      section.style.setProperty("--eco-bg", `radial-gradient(circle at 50% 40%, ${hexToRgba(color, 0.08)}, transparent 70%)`);
     });
     card.addEventListener("mouseleave", () => {
       if (!isDesktop() || modalOpen) return;
@@ -270,6 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- Точки ----------
   function buildDots() {
+    if (!dotsBox) return;
     dotsBox.replaceChildren();
     if (isDesktop()) return;
 
@@ -277,7 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const b = document.createElement("button");
       b.type = "button";
       b.className = "eco-dot";
-      b.setAttribute("aria-label", `Слайд ${i + 1}`);
       if (i === 0) b.classList.add("active");
       b.addEventListener("click", () => {
         cards[i].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
@@ -287,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateActiveDot() {
-    if (isDesktop()) return;
+    if (!dotsBox || isDesktop()) return;
     const gridRect = grid.getBoundingClientRect();
     const center = gridRect.left + gridRect.width / 2;
     let best = 0, bestDist = Infinity;
@@ -310,50 +288,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ---------- Смена размера ----------
-  let lastDesktop = isDesktop();
   mqDesktop.addEventListener("change", (e) => {
-    const nowDesktop = e.matches;
-    if (nowDesktop === lastDesktop) return;
-    lastDesktop = nowDesktop;
-
-    cards.forEach(c => (c.style.transform = ""));
-
-    if (nowDesktop) {
-      dotsBox.replaceChildren();
+    if (e.matches) {
+      if (dotsBox) dotsBox.replaceChildren();
       closeModal();
     } else {
       buildDots();
       section.style.setProperty("--eco-bg", "transparent");
     }
-  });
-
-  // ---------- PWA-подсказка ----------
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".pwa-btn");
-    
-    if (btn) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-      // Ищем ближайшую обертку для подсказки
-      const wrapper = btn.closest(".pwa-wrapper");
-      const hint = wrapper ? wrapper.querySelector(".pwa-hint") : null;
-      
-      if (hint) {
-        document.querySelectorAll(".pwa-hint.show").forEach(h => {
-          if (h !== hint) h.classList.remove("show");
-        });
-        hint.classList.toggle("show");
-      }
-      return;
-    }
-
-    document.querySelectorAll(".pwa-hint.show").forEach(hint => {
-      if (!hint.contains(e.target)) {
-        hint.classList.remove("show");
-      }
-    });
   });
 
   buildDots();
@@ -430,4 +372,52 @@ document.addEventListener("DOMContentLoaded", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
+});
+
+// ============================================================
+//  3D-НАКЛОН ЭКОСИСТЕМЫ (СЛЕЖКА ЗА МЫШКОЙ)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const cards = document.querySelectorAll(".eco-card");
+
+  cards.forEach(card => {
+    // При движении мыши над карточкой
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left; // Позиция мыши по X внутри карточки
+      const y = e.clientY - rect.top;  // Позиция мыши по Y внутри карточки
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      // Вычисляем угол наклона (чем дальше от центра, тем больше наклон)
+      const rotateX = ((y - centerY) / centerY) * -10; // Максимальный наклон 10 градусов
+      const rotateY = ((x - centerX) / centerX) * 10;
+
+      // Применяем 3D-трансформацию
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+      
+      // Делаем превью внутри карточки чуть более объемным
+      const preview = card.querySelector('.eco-preview');
+      if (preview) {
+        preview.style.transform = `translateZ(20px)`; // Сдвигаем превью вперед
+      }
+    });
+
+    // Когда мышка уходит с карточки — плавно возвращаем её в исходное положение
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+      card.style.transition = "transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)";
+      
+      const preview = card.querySelector('.eco-preview');
+      if (preview) {
+        preview.style.transform = `translateZ(0)`;
+      }
+    });
+
+    // Когда мышка заходит на карточку — убираем задержку для мгновенной реакции
+    card.addEventListener("mouseenter", () => {
+      card.style.transition = "none";
+    });
+  });
 });
