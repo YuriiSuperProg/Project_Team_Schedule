@@ -421,3 +421,89 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// ============================================================
+//  МОБИЛЬНЫЙ ХАБ ЭКОСИСТЕМЫ
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const hub = document.getElementById("ecoMobileHub");
+  if (!hub) return;
+
+  const buttons = hub.querySelectorAll(".emh-btn");
+  const titleEl = document.getElementById("emhTitle");
+  const descEl  = document.getElementById("emhDesc");
+  const ctaEl   = document.getElementById("emhCta");
+  const contentBox = document.getElementById("emhContent");
+
+  // Модалка iOS
+  const iosModal = document.getElementById("iosInstallModal");
+  const closeInstallBtn = document.getElementById("closeInstallBtn");
+
+  // Данные для каждого таба
+  const data = {
+    web: { 
+      title: "Web / PWA", 
+      desc: "Работает в браузере. Можно установить на iPhone как приложение.", 
+      cta: "Как установить?", 
+      action: "modal" // Специальное действие для открытия модалки
+    },
+    android: { 
+      title: "Android", 
+      desc: "Скоро появится в Google Play", 
+      cta: "Скачать", 
+      link: "#" 
+    },
+    tg: { 
+      title: "Telegram-бот", 
+      desc: "Расписание прямо в мессенджере", 
+      cta: "Перейти", 
+      link: "#" 
+    }
+  };
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      const target = btn.dataset.target;
+      const info = data[target];
+
+      if (info) {
+        titleEl.textContent = info.title;
+        descEl.textContent = info.desc;
+        ctaEl.textContent = info.cta;
+
+        // Если это Web/iOS - вешаем открытие модалки
+        if (info.action === "modal") {
+          ctaEl.href = "javascript:void(0)";
+          ctaEl.onclick = (e) => {
+            e.preventDefault();
+            iosModal.classList.add("open");
+          };
+        } else {
+          // Для остальных - обычная ссылка
+          ctaEl.href = info.link || "#";
+          ctaEl.onclick = null;
+        }
+
+        // Анимация появления
+        contentBox.style.animation = "none";
+        contentBox.offsetHeight;
+        contentBox.style.animation = "emhFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards";
+      }
+    });
+  });
+
+  // Закрытие модалки
+  if (closeInstallBtn) {
+    closeInstallBtn.addEventListener("click", () => {
+      iosModal.classList.remove("open");
+    });
+  }
+  if (iosModal) {
+    iosModal.addEventListener("click", (e) => {
+      if (e.target === iosModal) iosModal.classList.remove("open");
+    });
+  }
+});

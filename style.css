@@ -194,6 +194,57 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
 @media (max-width: 900px) {
   .eco-card { flex: 0 0 85%; scroll-snap-align: center; }
   .eco-dots { display: flex; }
+    .emh-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 4px; /* Уменьшили отступы, чтобы поместилось 4 кнопки */
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Красивый кружок под эмодзи */
+  .emh-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: var(--bg); /* Легкий серый фон */
+    border-radius: 12px;
+    font-size: 1.4rem; /* Размер эмодзи */
+    line-height: 1;
+    transition: all 0.3s ease;
+  }
+
+  .emh-label {
+    font-size: 0.7rem; /* Шрифт чуть меньше, чтобы влезло */
+    font-weight: 600;
+    color: var(--muted);
+    transition: color 0.3s ease;
+  }
+
+  /* Эффект при нажатии (активная кнопка) */
+  .emh-btn.active {
+    border-color: var(--blue);
+    background: color-mix(in srgb, var(--blue) 8%, var(--card));
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue) 20%, transparent);
+  }
+
+  .emh-btn.active .emh-icon-wrap {
+    background: var(--blue-soft);
+    transform: scale(1.05);
+  }
+
+  .emh-btn.active .emh-label {
+    color: var(--blue);
+  }
 }
 
 /* Карточка */
@@ -471,3 +522,281 @@ html.dark .intro-sign:hover { box-shadow: 0 6px 16px rgba(23, 105, 224, 0.25); }
 .pwa-wrapper { position: relative; width: 100%; }
 .pwa-hint { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity 0.2s ease, transform 0.2s ease; z-index: 10; font-size: 0.8rem; color: var(--text); text-align: center; line-height: 1.4; }
 .pwa-hint.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+
+/* ============================================================
+   МОБИЛЬНЫЙ ХАБ ЭКОСИСТЕМЫ
+   ============================================================ */
+.eco-mobile-hub {
+  display: none; /* По умолчанию скрыт (на ПК) */
+}
+
+@media (max-width: 900px) {
+  /* На мобилке прячем старые карточки */
+  .eco-carousel-wrap {
+    display: none !important;
+  }
+
+  /* Показываем мобильный хаб */
+  .eco-mobile-hub {
+    display: block;
+    margin-top: 16px;
+  }
+
+  /* Сетка из 4 иконок */
+  .emh-nav {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .emh-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 8px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .emh-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+  }
+
+  .emh-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    transition: color 0.3s ease;
+  }
+
+  /* Состояние нажатой кнопки (неоновый эффект) */
+  .emh-btn.active {
+    border-color: var(--blue);
+    background: color-mix(in srgb, var(--blue) 10%, var(--card));
+    box-shadow: 0 0 15px color-mix(in srgb, var(--blue) 30%, transparent);
+  }
+
+  .emh-btn.active .emh-label {
+    color: var(--blue);
+  }
+
+  .emh-btn.active .emh-icon {
+    transform: scale(1.15);
+  }
+
+  /* Общее текстовое поле */
+  .emh-content {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--line);
+    /* Анимация появления контента */
+    animation: emhFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  @keyframes emhFadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .emh-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .emh-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .emh-cta {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    text-align: center;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .emh-cta:active {
+    background: var(--blue-2);
+    transform: scale(0.98);
+  }
+}
+
+/* ============================================================
+   МОДАЛКА ИНСТРУКЦИИ ДЛЯ iOS
+   ============================================================ */
+.install-modal {
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 20000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.install-modal.open { opacity: 1; pointer-events: auto; }
+.install-window {
+  background: var(--card);
+  width: 100%; max-width: 400px;
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.install-modal.open .install-window { transform: translateY(0) scale(1); }
+.install-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: none; background: var(--bg); color: var(--muted);
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: .15s;
+}
+.install-close:hover { background: var(--line); color: var(--text); }
+.install-icon { font-size: 3rem; text-align: center; margin-bottom: 16px; }
+.install-window h3 { font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 24px; color: var(--text); }
+.install-steps { display: flex; flex-direction: column; gap: 16px; }
+.step { display: flex; align-items: flex-start; gap: 12px; font-size: 0.95rem; line-height: 1.4; color: var(--text); }
+.step-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  background: var(--blue-soft); color: var(--blue);
+  border-radius: 50%; font-weight: 700; font-size: 0.8rem;
+  flex-shrink: 0; margin-top: 2px;
+}
+html.dark .install-window { background: #1A2338; }
+html.dark .install-close { background: #0F172A; }
+/* ============================================================
+   МОДАЛКА ИНСТРУКЦИИ ДЛЯ iOS
+   ============================================================ */
+.install-modal {
+  position: fixed; inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 20000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.install-modal.open { 
+  opacity: 1; 
+  pointer-events: auto; 
+}
+
+.install-window {
+  background: var(--card);
+  width: 100%; max-width: 400px;
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: var(--shadow-xl);
+  position: relative;
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.install-modal.open .install-window { 
+  transform: translateY(0) scale(1); 
+}
+
+.install-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: none; background: var(--bg); color: var(--muted);
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: .15s;
+}
+.install-close:hover { 
+  background: var(--line); 
+  color: var(--text); 
+}
+
+.install-icon { 
+  font-size: 3rem; 
+  text-align: center; 
+  margin-bottom: 16px; 
+}
+
+.install-window h3 { 
+  font-size: 1.4rem; 
+  font-weight: 800; 
+  text-align: center; 
+  margin-bottom: 24px; 
+  color: var(--text); 
+}
+
+.install-steps { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+}
+
+.step { 
+  display: flex; 
+  align-items: flex-start; 
+  gap: 12px; 
+  font-size: 0.95rem; 
+  line-height: 1.4; 
+  color: var(--text); 
+}
+
+.step-num {
+  display: flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px;
+  background: var(--blue-soft); color: var(--blue);
+  border-radius: 50%; font-weight: 700; font-size: 0.8rem;
+  flex-shrink: 0; margin-top: 2px;
+}
+
+/* Тёмная тема */
+html.dark .install-window { background: #1A2338; }
+html.dark .install-close { background: #0F172A; }
+
+  .emh-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--bg);
+    border-radius: 14px;
+    color: var(--muted); /* Цвет иконки по умолчанию (серый) */
+    transition: all 0.3s ease;
+  }
+
+  .emh-icon-wrap svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .emh-btn.active .emh-icon-wrap {
+    background: var(--blue-soft);
+    color: var(--blue); /* Синий цвет при активации */
+    transform: scale(1.05);
+  }

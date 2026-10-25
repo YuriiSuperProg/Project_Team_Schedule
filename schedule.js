@@ -145,7 +145,23 @@ function buildLessonCards() {
 function applyColor(spec) {
   const col = COLORS[spec] || { c: "#1769E0", soft: "#E8F1FF", text: "#1769E0" };
   const r = document.documentElement.style;
-  r.setProperty("--c", col.c); r.setProperty("--c-soft", col.soft); r.setProperty("--c-text", col.text);
+  r.setProperty("--c", col.c); 
+  r.setProperty("--c-soft", col.soft); 
+  r.setProperty("--c-text", col.text);
+
+  // Опционально: делаем тень под совой цветной
+  const owl = document.querySelector(".owl");
+  if (owl) {
+    owl.style.boxShadow = `0 10px 24px ${hexToRgba(col.c, 0.3)}`;
+  }
+}
+
+// Вспомогательная функция для перевода HEX в RGBA (если её нет)
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function buildSchedule(raw) {
