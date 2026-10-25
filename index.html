@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ПараЗвёзд — расписание ВолГУ</title>
+  <title>ПараЗвёзд — расписание ВФ ВолГУ</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
         </div>
         <div class="logo-text">
           <b>ПараЗвёзд <span class="star-sparkle">✨</span></b>
-          <small>Расписание ВолГУ</small>
+          <small>Расписание ВФ ВолГУ</small>
         </div>
       </a>
       
@@ -113,51 +113,127 @@
   </section>
 
   <section id="ecosystem">
-    <div class="container">
-      <div class="section-head">
-        <h2 class="section-title">Мы везде, где вам удобно</h2>
-        <p class="section-sub">Сайт, Telegram-бот и приложение — одно расписание</p>
-      </div>
+  <div class="container">
+    <div class="section-head">
+      <h2 class="section-title">Мы везде, где вам удобно</h2>
+      <p class="section-sub">Выбирайте платформу — расписание всегда под рукой</p>
+    </div>
+
+    <div class="eco-carousel-wrap">
+      <div class="eco-grid" id="ecoGrid">
+
+        <!-- 1. Сайт -->
+        <article class="eco-card" data-color="#1769E0" data-eco="site">
+          <div class="mockup browser-frame">
+            <div class="browser-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span class="browser-url">yuriisuperprog.github.io</span>
+            </div>
+            <div class="browser-content">
+              <img class="mockup-img" src="/img/web_app.png" alt="Сайт" loading="lazy">
+            </div>
+          </div>
+          <div class="eco-info">
+            <h3>Сайт</h3>
+            <p>Полная версия расписания в браузере</p>
+            <div class="eco-buttons">
+              <a class="eco-btn eco-btn--primary" href="schedule.html">Открыть</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2. Telegram -->
+        <article class="eco-card" data-color="#2AABEE" data-eco="tg">
+          <div class="mockup telegram-frame">
+            <div class="tg-header">
+              <div class="tg-avatar">📅</div>
+              <div>
+                <div class="tg-name">ВФ ВолГУ Расписание</div>
+              </div>
+            </div>
+            <div class="tg-content">
+              <img class="mockup-img" src="/img/tg_app.jpg" alt="Telegram-бот" loading="lazy">
+            </div>
+          </div>
+          <div class="eco-info">
+            <h3>Telegram-бот</h3>
+            <p>Расписание прямо в мессенджере</p>
+            <div class="eco-buttons">
+              <a class="eco-btn eco-btn--primary" href="https://t.me/VFStudentBot" target="_blank" rel="noopener">Перейти</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3. ВКонтакте -->
+        <article class="eco-card" data-color="#0077FF" data-eco="vk">
+          <div class="mockup vk-frame">
+            <div class="vk-header">
+              <div class="vk-avatar">VK</div>
+              <div>
+                <div class="vk-name">Расписание ВФ ВолГУ</div>
+              </div>
+            </div>
+            <div class="vk-content">
+              <img class="mockup-img" src="img/Vk_app.png" alt="ВКонтакте-бот" loading="lazy">
+            </div>
+          </div>
+          <div class="eco-info">
+            <h3>ВКонтакте</h3>
+            <p>Бот во ВКонтакте для студентов</p>
+            <div class="eco-buttons">
+              <a class="eco-btn eco-btn--primary" href="https://vk.com/" target="_blank" rel="noopener">Перейти</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4. Приложение -->
+      <!-- Было: data-color="#6ecf9b" -->
+<!-- 4. Приложение -->
+<article class="eco-card" data-color="#1769E0" data-eco="app">
+  <div class="mockup phone-frame">
+    <div class="phone-screen">
+      <div class="phone-notch"></div>
+      <div class="phone-app-icon">🎓</div>
+      <div class="phone-app-name">Расписание</div>
+    </div>
+  </div>
+  <div class="eco-info">
+    <h3>Приложение</h3>
+    <p>PWA — установите на телефон</p>
+    <div class="eco-buttons">
+      <a class="eco-btn eco-btn--primary" href="schedule.html">Открыть</a>
       
-      <div class="eco-grid">
-        <a href="schedule.html" class="eco-card">
-          <div class="eco-icon-wrap">
-            <span class="eco-icon">🌐</span>
-          </div>
-          <h3>Сайт</h3>
-          <p>Полная версия расписания с фильтрами и виджетом дня. Работает в любом браузере.</p>
-          <span class="eco-link">Открыть сайт →</span>
-        </a>
-
-        <a href="https://t.me/VFStudentBot" target="_blank" class="eco-card">
-          <div class="eco-icon-wrap">
-            <span class="eco-icon">✈️</span>
-          </div>
-          <h3>Telegram-бот</h3>
-          <p>Быстрый доступ к парам прямо в мессенджере. Удобно проверять на перемене.</p>
-          <span class="eco-link">Запустить бота →</span>
-        </a>
-
-        <div class="eco-card eco-card--app">
-          <div class="eco-icon-wrap">
-            <span class="eco-icon">📱</span>
-          </div>
-          <h3>Приложение</h3>
-          <p>Установите APK для Android или добавьте сайт на главный экран (PWA) для iOS и Android.</p>
-          
-          <div class="eco-buttons">
-            <a href="YOUR_APK_LINK" class="eco-btn eco-btn--primary">Android (APK)</a>
-            <button class="eco-btn eco-btn--ghost" id="pwaBtn">Добавить на экран</button>
-          </div>
-          
-          <div class="pwa-hint" id="pwaHint">
-            <strong>Как установить:</strong><br>
-            <span style="font-size:0.8rem;">На iPhone: Поделиться → На экран «Домой».<br>На Android: Меню → Установить приложение.</span>
-          </div>
+      <!-- Обертка для кнопки и подсказки -->
+      <div class="pwa-wrapper">
+        <button class="eco-btn eco-btn--ghost pwa-btn" type="button">Как установить?</button>
+        <div class="pwa-hint">
+          Откройте меню браузера → «Установить приложение» / «На главный экран».
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</article>
+
+      </div>
+
+      <!-- Точки (мобилка) -->
+      <div class="eco-dots" id="ecoDots" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- Оверлей и модалка — ЕДИНСТВЕННЫЕ, СНАРУЖИ сетки -->
+  <div class="eco-overlay" id="ecoOverlay" hidden></div>
+  <div class="eco-modal" id="ecoModal" hidden role="dialog" aria-modal="true" aria-labelledby="ecoModalTitle">
+    <div class="eco-modal__content" id="ecoModalContent"></div>
+    <button class="eco-modal__close" id="ecoModalClose" aria-label="Закрыть">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</section>
 
   <section id="team">
     <div class="container">
@@ -174,9 +250,8 @@
           <div class="member-body">
             <h3>Юрий</h3>
             <div class="role">Разработчик сайта, тестировщик</div>
-            <p class="desc">Сделал сайт удобного расписания для вас</p>
             <div class="team-socials">
-              <a href="https://vk.ru/id566690820" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
+               <a href="https://vk.ru/id566690820" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
               <a href="https://t.me/Yura1231qwerty" target="_blank" class="social-btn tg" title="Telegram"></a>
               <a href="https://github.com/YuriiSuperProg" target="_blank" class="social-btn gh" title="GitHub"></a>
             </div>
@@ -190,7 +265,6 @@
           <div class="member-body">
             <h3>Артур</h3>
             <div class="role">Разработчик бота и приложения</div>
-            <p class="desc">Сделал бота и приложение удобного расписания для вас</p>
             <div class="team-socials">
               <a href="https://vk.ru/aptypmorgan" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
               <a href="https://t.me/shadwGG" target="_blank" class="social-btn tg" title="Telegram"></a>
@@ -205,8 +279,7 @@
           </div>
           <div class="member-body">
             <h3>Дмитрий</h3>
-            <div class="role">Контент-мейкер, создатель всех лабораторных работ</div>
-            <p class="desc">Наша юридическая и текстовая поддержка</p>
+            <div class="role">Лаб-мейкер, создатель всех лабораторных работ</div>
             <div class="team-socials">
               <a href="https://vk.ru/virpitzstal" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
               <a href="https://t.me/VirpitzStal" target="_blank" class="social-btn tg" title="Telegram"></a>
@@ -222,12 +295,11 @@
           <div class="member-body">
             <h3>Иван</h3>
             <div class="role">Дизайнер</div>
-            <p class="desc">Создатель дизайна для всех приложений</p>
             <div class="team-socials">
-              <a href=" https://vk.ru/crom0v" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
+              <a href="https://vk.ru/crom0v" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
               <a href="https://t.me/crom0v" target="_blank" class="social-btn tg" title="Telegram"></a>
               <a href="https://github.com/VanyaOrlov2009" target="_blank" class="social-btn gh" title="GitHub"></a>
-            </div>
+             </div>
           </div>
         </article>
 
@@ -246,45 +318,48 @@
   </section>
 
   <footer>
-    <div class="container">
+  <div class="container">
+    
+    <div class="footer-support">
+      <h2>Остались вопросы?</h2>
+      <p>Напишите нам — мы всегда рады помочь студентам и преподавателям.</p>
       
-      <div class="footer-support">
-        <h2>Остались вопросы?</h2>
-        <p>Напишите нам — мы всегда рады помочь студентам и преподавателям.</p>
+      <!-- Контейнер открыт здесь -->
+      <div class="footer-contact">
         
-        <div class="footer-contact">
-          <a href="mailto:arturkuriev5@gmail.com" class="footer-btn" title="Написать на почту">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
-            arturkuriev5@gmail.com
-          </a>
-          
-          <a href="https://t.me/shadwGG" target="_blank" class="footer-btn footer-btn--tg" title="Написать в Telegram">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-            </svg>
-            Telegram
-          </a>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div>© ПараЗвёзд 2026. Все права защищены.</div>
-        <a href="#" class="footer-up-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 19V5M5 12l7-7 7 7"/>
+        <!-- Кнопка 1: Почта -->
+        <a href="mailto:arturkuriev5@gmail.com" class="footer-btn" title="Написать на почту">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
           </svg>
-          Наверх
+          arturkuriev5@gmail.com
         </a>
-      </div>
 
+        <!-- Кнопка 2: Telegram -->
+        <a href="https://t.me/shadwGG" target="_blank" class="footer-btn footer-btn--tg" title="Написать в Telegram">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+          Telegram
+        </a>
+
+      </div> <!-- Контейнер закрыт ПОСЛЕ кнопки Telegram -->
     </div>
-  </footer>
+
+    <div class="footer-bottom">
+      <div>© ПараЗвёзд 2026. Все права защищены.</div>
+      <a href="#" class="footer-up-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19V5M5 12l7-7 7 7"/>
+        </svg>
+        Наверх
+      </a>
+    </div>
+
+  </div>
+</footer>
 
   <script src="script.js"></script>
-  <script src="mobile.js"></script>
-  <script src="welcome.js"></script>
 </body>
 </html>
