@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".profile-tab");
   const panes = document.querySelectorAll(".profile-pane");
 
-  // Открытие / Закрытие
+      // Открытие / Закрытие профиля
   if (profileOverlay) {
     openProfileBtns.forEach(btn => {
       btn.addEventListener("click", (e) => {
@@ -208,22 +208,35 @@ document.addEventListener("DOMContentLoaded", () => {
         renderStats();
         unlockAchievement("profileOpened");
         profileOverlay.classList.add("open");
+        // Сова НЕ уезжает при открытии профиля
       });
     });
 
-    if (closeBtn) closeBtn.addEventListener("click", () => profileOverlay.classList.remove("open"));
+    const closeProfile = () => {
+      profileOverlay.classList.remove("open");
+      document.body.classList.remove("modal-open"); // Сова возвращается при закрытии
+    };
+
+    if (closeBtn) closeBtn.addEventListener("click", closeProfile);
     profileOverlay.addEventListener("click", (e) => {
-      if (e.target === profileOverlay) profileOverlay.classList.remove("open");
+      if (e.target === profileOverlay) closeProfile();
     });
   }
-
-  // Переключение вкладок
+       // Переключение вкладок
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
       panes.forEach(p => p.classList.remove("active"));
       tab.classList.add("active");
       document.getElementById("pane-" + tab.dataset.tab).classList.add("active");
+      
+      // Сова переезжает в правый угол ТОЛЬКО на вкладке "Секреты"
+      if (tab.dataset.tab === "secrets") {
+        document.body.classList.add("modal-open");
+      } else {
+        document.body.classList.remove("modal-open");
+      }
+
       if (tab.dataset.tab === "achievements") {
         unlockAchievement("achViewer");
       }
@@ -278,15 +291,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderAvatarPicker();
   }
 
-  // Достижения (17 штук)
+  // Достижения
   const ACHIEVEMENTS = [
-    // Базовые
+    // --- Обычные ---
     { id: "firstStep", icon: "🐣", title: "Первый шаг", desc: "Выбрана первая группа" },
     { id: "explorer", icon: "🔭", title: "Исследователь", desc: "Все специальности изучены" },
     { id: "earlyBird", icon: "🌅", title: "Ранняя пташка", desc: "Заход до 08:00" },
     { id: "nightOwl", icon: "🦉", title: "Полуночник", desc: "Заход после 23:00" },
     { id: "loyal", icon: "🔥", title: "Постоянный гость", desc: "3 дня подряд" },
-    // Новые
     { id: "weekend", icon: "🎉", title: "Трудяга", desc: "Заход в выходной день" },
     { id: "themeSwitcher", icon: "🌓", title: "Хамелеон", desc: "Сменил тему оформления" },
     { id: "profileOpened", icon: "👤", title: "Это я!", desc: "Открыл свой профиль" },
@@ -297,10 +309,57 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "weekShift", icon: "🗓", title: "Путешественник", desc: "Переключил неделю" },
     { id: "dateSearch", icon: "🔍", title: "Детектив", desc: "Нашёл день через поиск" },
     { id: "bellSchedule", icon: "🔔", title: "Звонок", desc: "Посмотрел расписание звонков" },
-    // Пасхалки
     { id: "consoleOpen", icon: "🕵️", title: "Хакер", desc: "Открыл секретную консоль" },
-    { id: "logoSpinner", icon: "💫", title: "Круть", desc: "Закрутил логотип" }
+    { id: "logoSpinner", icon: "💫", title: "Круть", desc: "Закрутил логотип" },
+
+    // --- Секретные ---
+    { 
+      id: "handshake_dev", 
+      icon: "🤝", 
+      title: "Рукопожатие", 
+      desc: "Пожми руку разработчику (Юрию) и спроси секретный код.",
+      secret: true 
+    },
+    { 
+      id: "beta_tester", 
+      icon: "🧪", 
+      title: "Бета-тестер", 
+      desc: "Найди баг на сайте и сообщи о нем. Разработчик даст код.",
+      secret: true 
+    },
+    { 
+      id: "inspirer", 
+      icon: "💡", 
+      title: "Вдохновитель", 
+      desc: "Предложи идею, которую добавят на сайт. Получи код.",
+      secret: true 
+    },
+    { 
+      id: "admin", 
+      icon: "👑", 
+      title: "Админ", 
+      desc: "Секретный доступ только для избранных.",
+      secret: true 
+    },
+    // --- ЛЕГЕНДАРНОЕ ---
+    { 
+      id: "legend_isp241", 
+      icon: "🏆", 
+      title: "Легенда ИСП-241", 
+      desc: "Выдаётся лично разработчиком за особые заслуги перед группой.",
+      secret: true,
+      legendary: true
+    }
   ];
+
+  // Секретные коды
+  const SECRET_CODES = {
+    "HANDSHAKE_DEV_YURIY": "handshake_dev",
+    "I_FOUND_A_BUG": "beta_tester",
+    "COOL_IDEA_2026": "inspirer",
+    "SUPER_ADMIN": "admin",
+    "LEGEND_241": "legend_isp241"
+  };
 
   function getUnlocked() {
     try { return JSON.parse(localStorage.getItem("achievements") || "[]"); } catch { return []; }
@@ -332,7 +391,13 @@ document.addEventListener("DOMContentLoaded", () => {
     ACHIEVEMENTS.forEach(ach => {
       const isUnlocked = unlocked.includes(ach.id);
       const el = document.createElement("div");
-      el.className = "ach-item" + (isUnlocked ? " unlocked" : "");
+      
+      let classes = "ach-item";
+      if (isUnlocked) classes += " unlocked";
+      if (ach.legendary) classes += " ach-item-legendary";
+      
+      el.className = classes;
+      
       el.innerHTML = `
         <div class="ach-icon">${isUnlocked ? ach.icon : "🔒"}</div>
         <div class="ach-info">
@@ -341,6 +406,35 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
       grid.appendChild(el);
+    });
+  }
+
+  // Логика ввода секретного кода
+  const saveSecretBtn = document.getElementById("saveSecretBtn");
+  const secretCodeInput = document.getElementById("secretCodeInput");
+
+  if (saveSecretBtn && secretCodeInput) {
+    saveSecretBtn.addEventListener("click", () => {
+      const code = secretCodeInput.value.trim().toUpperCase();
+      
+      if (SECRET_CODES[code]) {
+        const achId = SECRET_CODES[code];
+        unlockAchievement(achId);
+        
+        showToast(`🤫 Секретный код активирован!`);
+        secretCodeInput.value = "";
+        
+        const achTab = document.querySelector('.profile-tab[data-tab="achievements"]');
+        if (achTab) achTab.click();
+      } else {
+        secretCodeInput.style.borderColor = "#ef4444";
+        secretCodeInput.value = "";
+        secretCodeInput.placeholder = "Неверный код!";
+        setTimeout(() => {
+          secretCodeInput.style.borderColor = "";
+          secretCodeInput.placeholder = "НАПРИМЕР: HANDSHAKE";
+        }, 2000);
+      }
     });
   }
 

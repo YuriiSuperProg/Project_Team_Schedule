@@ -201,7 +201,7 @@
         </div>
       </div>
 
-            <div class="profile-tabs">
+              <div class="profile-tabs">
         <button class="profile-tab active" data-tab="achievements">
           <span>🏆</span>
           <span class="tab-text">Достижения</span>
@@ -213,6 +213,11 @@
         <button class="profile-tab" data-tab="settings">
           <span>⚙️</span>
           <span class="tab-text">Настройки</span>
+        </button>
+        <!-- НОВАЯ ВКЛАДКА -->
+        <button class="profile-tab" data-tab="secrets">
+          <span>🤫</span>
+          <span class="tab-text">Секреты</span>
         </button>
       </div>
 
@@ -252,9 +257,28 @@
             <div class="avatar-picker" id="avatarPicker"></div>
           </div>
         </div>
+
+        <!-- НОВАЯ ПАНЕЛЬ: СЕКРЕТЫ -->
+        <div class="profile-pane" id="pane-secrets">
+          <div class="settings-form">
+            <h3 style="margin-bottom: 10px; font-size: 1.2rem; color: var(--text);">🤫 Секретные достижения</h3>
+            <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5;">
+              Некоторые достижения нельзя получить просто так. За ними нужно охотиться!<br><br>
+              <b>Как это работает:</b><br>
+              1. Выполни секретное задание.<br>
+              2. Разработчик даст тебе <b>уникальный код</b>.<br>
+              3. Введи его в поле ниже.<br><br>
+              <i>Подсказки ищи в описаниях закрытых достижений.</i>
+            </p>
+            
+            <label class="settings-label">Введите секретный код</label>
+            <div class="settings-input-wrap">
+              <input type="text" id="secretCodeInput" class="settings-input" placeholder="НАПРИМЕР: HANDSHAKE" maxlength="30">
+              <button class="settings-btn" id="saveSecretBtn">Активировать</button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
   <!-- МАСКОТ СОВА -->
   <div class="mascot" id="mascot" title="Привет! Я твой помощник.">
