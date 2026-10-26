@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,8 +32,6 @@
       </a>
 
       <div class="nav-actions">
-        
-
         <button class="nav-burger-btn" id="menuBtn" aria-label="Меню">
           <div class="burger-icon">
             <span></span><span></span><span></span>
@@ -92,9 +92,12 @@
     </div>
 
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
-      <div class="greeting" id="greeting">
+        <div class="greeting" id="greeting">
         <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
-        <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
+        <div class="greeting-actions">
+          <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
+          <button class="btn-report" id="reportNameBtn" title="Пожаловаться на имя" style="display: none;">🚩</button>
+        </div>
       </div>
 
       <div class="wish" id="wish">
@@ -122,7 +125,7 @@
         <button class="ds-btn" id="dateFind">Найти</button>
       </div>
 
-        <div class="weekbar">
+      <div class="weekbar">
         <b id="weekInfo">Выберите группу</b>
         
         <div class="weekbar-controls">
@@ -201,7 +204,7 @@
         </div>
       </div>
 
-              <div class="profile-tabs">
+      <div class="profile-tabs">
         <button class="profile-tab active" data-tab="achievements">
           <span>🏆</span>
           <span class="tab-text">Достижения</span>
@@ -214,7 +217,6 @@
           <span>⚙️</span>
           <span class="tab-text">Настройки</span>
         </button>
-        <!-- НОВАЯ ВКЛАДКА -->
         <button class="profile-tab" data-tab="secrets">
           <span>🤫</span>
           <span class="tab-text">Секреты</span>
@@ -258,7 +260,6 @@
           </div>
         </div>
 
-        <!-- НОВАЯ ПАНЕЛЬ: СЕКРЕТЫ -->
         <div class="profile-pane" id="pane-secrets">
           <div class="settings-form">
             <h3 style="margin-bottom: 10px; font-size: 1.2rem; color: var(--text);">🤫 Секретные достижения</h3>
@@ -279,6 +280,24 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- МОДАЛКА ИЗМЕНЕНИЯ ИМЕНИ (ВЫНЕСЕНА ИЗ ПРОФИЛЯ) -->
+  <div class="name-modal-overlay" id="nameModal">
+    <div class="name-modal-window">
+      <h3 class="name-modal-title">Как тебя зовут?</h3>
+      
+      <div class="name-modal-input-wrap">
+        <input type="text" id="nameModalInput" class="name-modal-input" placeholder="Введи имя..." maxlength="20" autocomplete="off">
+      </div>
+      
+      <div class="name-modal-actions">
+        <button class="name-modal-btn name-modal-btn-cancel" id="nameModalCancel">Отмена</button>
+        <button class="name-modal-btn name-modal-btn-save" id="nameModalSave">Сохранить</button>
+      </div>
+    </div>
+  </div>
 
   <!-- МАСКОТ СОВА -->
   <div class="mascot" id="mascot" title="Привет! Я твой помощник.">

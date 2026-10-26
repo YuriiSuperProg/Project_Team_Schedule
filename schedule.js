@@ -1,4 +1,46 @@
 // ============================================================
+//  ЗАГРУЗКА СЛОВАРЯ МАТОВ (JSON)
+// ============================================================
+let BAD_WORDS = [];
+
+fetch("bad-words.json")
+  .then(res => res.json())
+  .then(data => {
+    BAD_WORDS = data;
+    console.log("✅ Словарь матов загружен:", BAD_WORDS.length, "слов");
+  })
+  .catch(() => {
+    console.warn("⚠️ Не удалось загрузить bad-words.json. Фильтр будет отключен.");
+  });
+
+// Умная проверка (с учетом латиницы и повторов)
+function isNameClean(raw) {
+  if (!raw || !raw.trim()) return false;
+  if (BAD_WORDS.length === 0) return true; // Если словарь не загрузился — не блокируем
+
+  let clean = raw.trim().replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "").toLowerCase();
+
+  // Меняем латинские буквы на русские (для обхода мата латиницей)
+  const map = { "a":"а", "e":"е", "o":"о", "p":"р", "c":"с", "y":"у", "x":"х", "k":"к", "b":"в", "m":"м", "h":"н", "t":"т" };
+  clean = clean.split("").map(ch => map[ch] || ch).join("");
+
+  // Схлопываем повторные буквы (сссууукккааа -> сука)
+  clean = clean.replace(/(.)\1+/g, "$1");
+
+  // Ищем мат по корням
+  return !BAD_WORDS.some(word => clean.includes(word));
+}
+
+// Основная функция валидации имени
+function validateName(raw) {
+  if (!raw || !raw.trim()) return null;
+  const clean = raw.trim().replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
+  if (clean.length < 2 || clean.length > 20) return null;
+  if (!isNameClean(raw)) return null; // Если мат — отказ
+  return clean;
+}
+
+// ============================================================
 //  СЕТКА ЗВОНКОВ И ДНИ (WEEKS берется из data.js)
 // ============================================================
 const BELLS = { 1: "08:30–10:00", 2: "10:10–11:40", 3: "12:10–13:40", 4: "13:50–15:20", 5: "15:30–17:00" };
@@ -39,10 +81,53 @@ function applyName() {
   const el = document.getElementById("userName");
   if (el) el.textContent = saved || "друг";
 }
-function askName() {
-  const entered = prompt("Как тебя зовут?", localStorage.getItem("userName") || "");
-  if (entered && entered.trim()) { localStorage.setItem("userName", entered.trim()); applyName(); }
+
+// ============================================================
+//  ИЗМЕНЕНИЕ ИМЕНИ (ЧЕРЕЗ КРАСИВУЮ МОДАЛКУ)
+// ============================================================
+function openNameModal() {
+  const modal = document.getElementById("nameModal");
+  const input = document.getElementById("nameModalInput");
+  const saveBtn = document.getElementById("nameModalSave");
+  const cancelBtn = document.getElementById("nameModalCancel");
+
+  if (!modal || !input || !saveBtn || !cancelBtn) {
+    console.warn("Модалка имени не найдена в HTML");
+    return;
+  }
+
+  input.value = localStorage.getItem("userName") || "";
+  modal.classList.add("open");
+  setTimeout(() => input.focus(), 100);
+
+  saveBtn.onclick = () => {
+    const raw = input.value.trim();
+    const name = validateName(raw);
+    
+    if (!name) {
+      input.style.borderColor = "#ef4444";
+      input.placeholder = "Только буквы (2-20 символов, без мата)";
+      setTimeout(() => {
+        input.style.borderColor = "";
+        input.placeholder = "Введи имя...";
+      }, 2500);
+      return;
+    }
+
+    localStorage.setItem("userName", name);
+    applyName();
+    if (window.unlockAchievement) window.unlockAchievement("nameChanged");
+    modal.classList.remove("open");
+  };
+
+  cancelBtn.onclick = () => modal.classList.remove("open");
+  modal.onclick = (e) => { if (e.target === modal) modal.classList.remove("open"); };
+  input.onkeydown = (e) => {
+    if (e.key === "Enter") { e.preventDefault(); saveBtn.click(); }
+  };
 }
+
+function askName() { openNameModal(); }
 
 let lastWishIndex = {};
 function showRandomWish(force = false) {
@@ -149,14 +234,12 @@ function applyColor(spec) {
   r.setProperty("--c-soft", col.soft); 
   r.setProperty("--c-text", col.text);
 
-  // Опционально: делаем тень под совой цветной
   const owl = document.querySelector(".owl");
   if (owl) {
     owl.style.boxShadow = `0 10px 24px ${hexToRgba(col.c, 0.3)}`;
   }
 }
 
-// Вспомогательная функция для перевода HEX в RGBA (если её нет)
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -401,7 +484,13 @@ document.addEventListener("DOMContentLoaded", () => {
   initTheme(); applyName();
 
   const nameEditBtn = $("nameEdit");
-  if (nameEditBtn) nameEditBtn.addEventListener("click", askName);
+  if (nameEditBtn) {
+    nameEditBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openNameModal();
+    });
+  }
+
   const wishBtn = $("wishRefresh");
   if (wishBtn) wishBtn.addEventListener("click", () => showRandomWish(true));
   const themeToggleMenu = $("themeToggleMenu");
@@ -499,21 +588,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let bubbleTimeout;
 
-  // Функция для показа текста в облачке
   function say(text, duration = 3000) {
     bubble.textContent = text;
     bubble.classList.add("show");
-    
-    // Сбрасываем предыдущий таймер, если он был
     clearTimeout(bubbleTimeout);
-    
-    // Прячем облачко через заданное время
     bubbleTimeout = setTimeout(() => {
       bubble.classList.remove("show");
     }, duration);
   }
 
-  // 1. Приветствие при загрузке страницы
   setTimeout(() => {
     if (localStorage.getItem("savedGroup")) {
       say("О, ты вернулся! 👋");
@@ -522,7 +605,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 1500);
 
-  // 2. Массив фраз для случайного выбора
   const phrases = [
     "Учись хорошо! 📚",
     "Не забудь про перемену! ☕",
@@ -533,21 +615,36 @@ document.addEventListener("DOMContentLoaded", () => {
     "Отдохни немного, ты много работаешь 😉"
   ];
   
-  // 3. Обработчик клика по сове
   mascot.addEventListener("click", () => {
     const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
     say(randomPhrase);
-    
-    // Анимация "подпрыгивания" при клике
     mascot.style.transform = "scale(0.9) translateY(5px)";
     setTimeout(() => {
       mascot.style.transform = "";
     }, 150);
   });
 
-  // 4. Реакция на смену специальности (когда кликаешь по чипсам ИСП, ЮСП и т.д.)
   window.addEventListener("specChanged", (e) => {
     const specName = e.detail;
     say(`О, ${specName} — крутой выбор! 🚀`);
   });
+});
+
+// ============================================================
+//  АВТОМАТИЧЕСКАЯ ЧИСТКА ИМЕНИ ПРИ ЗАГРУЗКЕ
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    const savedName = localStorage.getItem("userName");
+    if (savedName && savedName.trim().length > 0) {
+      if (!isNameClean(savedName)) {
+        localStorage.setItem("userName", "Пользователь");
+        const nameEl = document.getElementById("userName");
+        if (nameEl) nameEl.textContent = "Пользователь";
+        if (window.showGlobalToast) {
+          window.showGlobalToast("⚠️ Ваше имя содержало недопустимые слова и было изменено.");
+        }
+      }
+    }
+  }, 1000);
 });

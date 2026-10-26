@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".profile-tab");
   const panes = document.querySelectorAll(".profile-pane");
 
-      // Открытие / Закрытие профиля
+  // Открытие / Закрытие профиля
   if (profileOverlay) {
     openProfileBtns.forEach(btn => {
       btn.addEventListener("click", (e) => {
@@ -222,7 +222,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target === profileOverlay) closeProfile();
     });
   }
-       // Переключение вкладок
+
+  // Переключение вкладок
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
@@ -454,17 +455,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sSpecs) sSpecs.textContent = visitedSpecs.length;
   }
 
-  // Настройки (Имя)
+  // Настройки (Имя) — С ПРОВЕРКОЙ
   const saveNameBtn = document.getElementById("saveNameBtn");
   if (saveNameBtn) {
     saveNameBtn.addEventListener("click", () => {
-      const newName = document.getElementById("settingsName").value.trim();
-      if (newName.length < 2) return;
-      localStorage.setItem("userName", newName);
+      const raw = document.getElementById("settingsName").value;
+      
+      // Используем validateName из schedule.js (глобальная функция)
+      const name = validateName(raw);
+      
+      if (!name) {
+        showToast("❌ Имя должно быть от 2 до 20 букв.");
+        return;
+      }
+      
+      localStorage.setItem("userName", name);
       unlockAchievement("nameChanged");
       updateProfileData();
       const greetName = document.getElementById("userName");
-      if (greetName) greetName.textContent = newName;
+      if (greetName) greetName.textContent = name;
       saveNameBtn.textContent = "Сохранено!";
       setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
     });
