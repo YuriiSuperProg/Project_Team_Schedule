@@ -7,7 +7,6 @@ fetch("bad-words.json")
   .then(res => res.json())
   .then(data => {
     BAD_WORDS = data;
-    console.log("✅ Словарь матов загружен:", BAD_WORDS.length, "слов");
   })
   .catch(() => {
     console.warn("⚠️ Не удалось загрузить bad-words.json. Фильтр будет отключен.");
@@ -16,18 +15,11 @@ fetch("bad-words.json")
 // Умная проверка (с учетом латиницы и повторов)
 function isNameClean(raw) {
   if (!raw || !raw.trim()) return false;
-  if (BAD_WORDS.length === 0) return true; // Если словарь не загрузился — не блокируем
-
+  if (BAD_WORDS.length === 0) return true;
   let clean = raw.trim().replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "").toLowerCase();
-
-  // Меняем латинские буквы на русские (для обхода мата латиницей)
   const map = { "a":"а", "e":"е", "o":"о", "p":"р", "c":"с", "y":"у", "x":"х", "k":"к", "b":"в", "m":"м", "h":"н", "t":"т" };
   clean = clean.split("").map(ch => map[ch] || ch).join("");
-
-  // Схлопываем повторные буквы (сссууукккааа -> сука)
   clean = clean.replace(/(.)\1+/g, "$1");
-
-  // Ищем мат по корням
   return !BAD_WORDS.some(word => clean.includes(word));
 }
 
@@ -36,12 +28,12 @@ function validateName(raw) {
   if (!raw || !raw.trim()) return null;
   const clean = raw.trim().replace(/[^a-zA-Zа-яА-ЯёЁ\s]/g, "");
   if (clean.length < 2 || clean.length > 20) return null;
-  if (!isNameClean(raw)) return null; // Если мат — отказ
+  if (!isNameClean(raw)) return null;
   return clean;
 }
 
 // ============================================================
-//  СЕТКА ЗВОНКОВ И ДНИ (WEEKS берется из data.js)
+//  СЕТКА ЗВОНКОВ И ДНИ
 // ============================================================
 const BELLS = { 1: "08:30–10:00", 2: "10:10–11:40", 3: "12:10–13:40", 4: "13:50–15:20", 5: "15:30–17:00" };
 const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
@@ -83,7 +75,7 @@ function applyName() {
 }
 
 // ============================================================
-//  ИЗМЕНЕНИЕ ИМЕНИ (ЧЕРЕЗ КРАСИВУЮ МОДАЛКУ)
+//  ИЗМЕНЕНИЕ ИМЕНИ (ОЧИЩЕНО ОТ ТЕСТОВОГО КОДА)
 // ============================================================
 function openNameModal() {
   const modal = document.getElementById("nameModal");
@@ -92,11 +84,14 @@ function openNameModal() {
   const cancelBtn = document.getElementById("nameModalCancel");
 
   if (!modal || !input || !saveBtn || !cancelBtn) {
-    console.warn("Модалка имени не найдена в HTML");
+    console.error("ОШИБКА: Элементы модалки #nameModal не найдены в HTML!");
     return;
   }
 
   input.value = localStorage.getItem("userName") || "";
+  input.style.borderColor = "";
+  input.placeholder = "Введи имя...";
+  
   modal.classList.add("open");
   setTimeout(() => input.focus(), 100);
 
@@ -106,11 +101,11 @@ function openNameModal() {
     
     if (!name) {
       input.style.borderColor = "#ef4444";
-      input.placeholder = "Только буквы (2-20 символов, без мата)";
+      input.placeholder = "Только буквы (2-20 символов)";
       setTimeout(() => {
         input.style.borderColor = "";
         input.placeholder = "Введи имя...";
-      }, 2500);
+      }, 2000);
       return;
     }
 
@@ -124,6 +119,7 @@ function openNameModal() {
   modal.onclick = (e) => { if (e.target === modal) modal.classList.remove("open"); };
   input.onkeydown = (e) => {
     if (e.key === "Enter") { e.preventDefault(); saveBtn.click(); }
+    if (e.key === "Escape") { modal.classList.remove("open"); }
   };
 }
 
@@ -483,6 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
   state.week = currentWeek();
   initTheme(); applyName();
 
+  // Кнопка изменения имени
   const nameEditBtn = $("nameEdit");
   if (nameEditBtn) {
     nameEditBtn.addEventListener("click", (e) => {
@@ -568,7 +565,18 @@ document.addEventListener("DOMContentLoaded", () => {
       dynamicNav.appendChild(btnForgetGroup);
     }
     
-    const linkHome = document.createElement("a"); linkHome.href = "index.html"; linkHome.className = "fs-link"; linkHome.style = "--i: 4;"; linkHome.innerHTML = "← На главную"; linkHome.onclick = () => { mobileMenu.classList.remove("open"); menuBtn.classList.remove("open"); document.body.style.overflow = ""; }; dynamicNav.appendChild(linkHome);
+  const linkHome = document.createElement("a"); 
+  linkHome.href = "index.html"; 
+  linkHome.className = "fs-link"; 
+  linkHome.style = "--i: 4;"; 
+  linkHome.innerHTML = "← На главную"; 
+  linkHome.onclick = (e) => { 
+  // Не мешаем браузеру переходить по ссылке!
+  if (mobileMenu) mobileMenu.classList.remove("open"); 
+  if (menuBtn) menuBtn.classList.remove("open"); 
+  document.body.style.overflow = ""; 
+}; 
+dynamicNav.appendChild(linkHome);
   }
 
   buildMenu();

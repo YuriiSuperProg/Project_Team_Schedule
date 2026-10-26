@@ -2,7 +2,6 @@
   margin: 0; 
   padding: 0; 
   box-sizing: border-box; 
-  max-width: 100%; /* <--- ВОТ ЭТО ГЛАВНОЕ ИСПРАВЛЕНИЕ */
 }
 /* Анти-мигание: если роль выбрана, сразу скрываем экран выбора */
 .role-selected #roleScreen { display: none !important; }
@@ -64,7 +63,7 @@ body {
   padding: 0 24px; 
   width: 100%; 
   box-sizing: border-box; 
-  overflow: hidden; /* <--- На всякий случай */
+  max-width: 100%; /* Добавлено */
 }
 
 /* ============================================================
