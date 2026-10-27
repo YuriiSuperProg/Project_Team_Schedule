@@ -1,15 +1,25 @@
-// ============================================================
-//  ЗАГРУЗКА СЛОВАРЯ МАТОВ (JSON)
-// ============================================================
 let BAD_WORDS = [];
+let ALLOWED_NAMES = [];
 
+// Загружаем маты
 fetch("bad-words.json")
   .then(res => res.json())
   .then(data => {
     BAD_WORDS = data;
   })
   .catch(() => {
-    console.warn("⚠️ Не удалось загрузить bad-words.json. Фильтр будет отключен.");
+    console.warn("⚠️ Не удалось загрузить bad-words.json.");
+  });
+
+// Загружаем словарь имён
+fetch("names.json")
+  .then(res => res.json())
+  .then(data => {
+    ALLOWED_NAMES = data;
+    console.log("✅ Словарь имён загружен:", ALLOWED_NAMES.length, "имён");
+  })
+  .catch(() => {
+    console.warn("⚠️ Не удалось загрузить names.json. Проверка на реальные имена отключена.");
   });
 
 // Умная проверка (с учетом латиницы и повторов)
@@ -33,8 +43,8 @@ function validateName(raw) {
 
   if (clean.length < 2) return null;
   
-  // Проверка на повторение (ЮрийЮрийЮрий)
-  const repeatPattern = /^(.{2,})\1{2,}$/; 
+  // 1. Проверка на повторение (ЮрийЮрий -> Юрий)
+  const repeatPattern = /^(.{2,})\1+$/; 
   const isRepeat = repeatPattern.test(clean);
   
   if (isRepeat) {
@@ -42,16 +52,50 @@ function validateName(raw) {
     return { value: baseName, tooLong: false, isRepeat: true };
   }
 
+  // 2. Проверка на длину
   if (clean.length > 20) {
-    return { value: clean, tooLong: true, isRepeat: false };
+    return { value: clean.slice(0, 20), tooLong: true, isRepeat: false };
   }
   
+  // 3. Проверка на маты
   if (typeof isNameClean === "function" && !isNameClean(clean)) {
     return null; 
   }
-  
-  // ВСЕГДА возвращаем объект с полем value
+
+  // 4. Проверка на "читаемость" (наша старая проверка)
+  const vowels = (clean.match(/[аеёиоуыэюяaeiouy]/gi) || []).length;
+  const vowelRatio = vowels / clean.length;
+  const hasLongConsonantRun = /[бвгджзйклмнпрстфхцчшщbcdfghjklmnpqrstvwxz]{5,}/i.test(clean);
+
+  if (vowelRatio < 0.25 || hasLongConsonantRun) {
+    return null;
+  }
+
+  // 5. Строгая проверка по словарю имён
   const finalName = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  const lowerClean = clean.toLowerCase();
+
+  if (ALLOWED_NAMES.length > 0) {
+    // Ищем ТОЧНОЕ совпадение (или имя, от которого наше является уменьшительным, длиной до 4 букв)
+    const isAllowed = ALLOWED_NAMES.some(n => {
+      // Точное совпадение
+      if (lowerClean === n) return true;
+      // Разрешаем уменьшительные формы (например, "Юра" от "Юрий"), но не длиннее 4 букв
+      if (lowerClean.length <= 4 && n.startsWith(lowerClean)) return true;
+      return false;
+    });
+
+    if (!isAllowed) {
+      // Если имени нет в словаре, но оно короткое (2-3 буквы, например "Ян") — разрешаем
+      if (clean.length <= 3) {
+        return { value: finalName, tooLong: false, isRepeat: false };
+      }
+      // Иначе — отказ (это абракадабра)
+      return null;
+    }
+  }
+  
+  // Всё ок
   return { value: finalName, tooLong: false, isRepeat: false };
 }
 
@@ -121,9 +165,9 @@ function openNameModal() {
 
   saveBtn.onclick = () => {
     const raw = input.value.trim();
-    const name = validateName(raw);
+    const result = validateName(raw);
     
-    if (!name) {
+    if (!result) {
       input.style.borderColor = "#ef4444";
       input.placeholder = "Только буквы (2-20 символов)";
       setTimeout(() => {
@@ -133,6 +177,28 @@ function openNameModal() {
       return;
     }
 
+    // Берем строку из объекта
+    const name = result.value;
+
+    // Уведомление про повторение (ЮрийЮрий)
+    if (result.isRepeat) {
+      if (window.showGlobalToast) window.showGlobalToast(`🤖 Да ты циклическая программа! Оставили только "${name}".`);
+    }
+
+    // Шутка про длинное имя
+    if (result.tooLong) {
+      const jokes = [
+        "😅 Ого, да ты графоман! Мы обрезали имя до 20 символов.",
+        "📜 Это имя или глава из «Войны и мира»? Оставили только 20 букв.",
+        "✂️ Ножницы судьбы сказали: «Хватит!». Имя обрезано до 20 символов.",
+        "🤯 Длинновато будет! Оставили только самое главное.",
+        "🤖 Мой процессор чуть не завис. Укоротили до 20 буковок."
+      ];
+      const joke = jokes[Math.floor(Math.random() * jokes.length)];
+      if (window.showGlobalToast) window.showGlobalToast(joke);
+    }
+
+    // СОХРАНЯЕМ СТРОКУ
     localStorage.setItem("userName", name);
     applyName();
     if (window.unlockAchievement) window.unlockAchievement("nameChanged");

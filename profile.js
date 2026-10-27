@@ -444,7 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sSpecs) sSpecs.textContent = visitedSpecs.length;
   }
 
-     const saveNameBtn = document.getElementById("saveNameBtn");
+       const saveNameBtn = document.getElementById("saveNameBtn");
   if (saveNameBtn) {
     saveNameBtn.addEventListener("click", () => {
       const input = document.getElementById("settingsName");
@@ -458,64 +458,29 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // СЛУЧАЙ 1: СЛИШКОМ ДЛИННОЕ (тряска + шутка)
+      const name = result.value;
+
+      if (result.isRepeat) {
+        showToast(`🤖 Да ты циклическая программа! Оставили только "${name}".`);
+      }
+
       if (result.tooLong) {
-        // 1. Трясем поле
-        input.style.animation = "shake 0.5s ease-in-out";
-        setTimeout(() => input.style.animation = "", 500);
-        
-        // 2. Показываем случайную шутку
         const jokes = [
           "😅 Ого, да ты графоман! Мы обрезали имя до 20 символов.",
           "📜 Это имя или глава из «Войны и мира»? Оставили только 20 букв.",
           "✂️ Ножницы судьбы сказали: «Хватит!». Имя обрезано до 20 символов.",
           "🤯 Длинновато будет! Оставили только самое главное.",
-          "🤖 Мой процессор чуть не завис. Укоротили до 20 буковок.",
-          "🎢 Вот это размах! Но в профиль влезает только 20 символов.",
-          "🗿 Каменный век? Нет, 2026. А имя все равно длинное, обрезали.",
-          "🍔 Как бургер на 10 этажей. Вкусно, но мы откусили лишнее."
+          "🤖 Мой процессор чуть не завис. Укоротили до 20 буковок."
         ];
-        const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
-        showToast(randomJoke);
-        
-        // 3. Ставим обрезанное имя
-        input.value = result.value.slice(0, 20);
-        
-        // 4. Сохраняем
-        localStorage.setItem("userName", result.value.slice(0, 20));
-        unlockAchievement("nameChanged");
-        updateProfileData();
-        const greetName = document.getElementById("userName");
-        if (greetName) greetName.textContent = result.value.slice(0, 20);
-        
-        saveNameBtn.textContent = "Сохранено!";
-        setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
-        return;
+        showToast(jokes[Math.floor(Math.random() * jokes.length)]);
       }
 
-      // СЛУЧАЙ 2: ПОВТОРЕНИЕ (ЮрийЮрийЮрий)
-      if (result.isRepeat) {
-        showToast(`🤖 Да ты циклическая программа! Оставили только "${result.value}".`);
-        input.value = result.value;
-        
-        localStorage.setItem("userName", result.value);
-        unlockAchievement("nameChanged");
-        updateProfileData();
-        const greetName = document.getElementById("userName");
-        if (greetName) greetName.textContent = result.value;
-        
-        saveNameBtn.textContent = "Сохранено!";
-        setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
-        return;
-      }
-
-      // СЛУЧАЙ 3: ВСЁ ОК
-      localStorage.setItem("userName", result.value);
+      localStorage.setItem("userName", name);
       unlockAchievement("nameChanged");
       updateProfileData();
       const greetName = document.getElementById("userName");
-      if (greetName) greetName.textContent = result.value;
-      if (input) input.value = result.value;
+      if (greetName) greetName.textContent = name;
+      if (input) input.value = name;
 
       saveNameBtn.textContent = "Сохранено!";
       setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
