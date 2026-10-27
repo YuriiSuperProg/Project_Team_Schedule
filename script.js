@@ -449,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     android: { 
       title: "Android", 
-      desc: "Скоро появится в Google Play", 
+      desc: "В разработке", 
       cta: "Скачать", 
       link: "#" 
     },
@@ -457,7 +457,13 @@ document.addEventListener("DOMContentLoaded", () => {
       title: "Telegram-бот", 
       desc: "Расписание прямо в мессенджере", 
       cta: "Перейти", 
-      link: "#" 
+      link: "https://t.me/VFStudentBot" 
+    },
+    vk: { 
+      title: "VK-бот", 
+      desc: "Уведомления и расписание во ВКонтакте", 
+      cta: "Перейти", 
+      link: "https://vk.ru/vfstudentbot" 
     }
   };
 
