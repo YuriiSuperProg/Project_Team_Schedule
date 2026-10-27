@@ -1,5 +1,5 @@
 // ============================================================
-//  ЛИЧНЫЙ КАБИНЕТ + SVG-ПЕРСОНАЖИ + ДОСТИЖЕНИЯ + ПАСХАЛКИ
+//  ЛИЧНЫЙ КАБИНЕТ + SVG-ПЕРСОНАЖИ + ДОСТИЖЕНИЯ + ДРУЗЬЯ + ГРУППА + ПАСХАЛКИ
 // ============================================================
 
 // --- 1. SVG-РИСУНКИ ПЕРСОНАЖЕЙ ---
@@ -208,13 +208,14 @@ document.addEventListener("DOMContentLoaded", () => {
         renderStats();
         unlockAchievement("profileOpened");
         profileOverlay.classList.add("open");
-        // Сова НЕ уезжает при открытии профиля
+        document.body.classList.add("profile-open");
       });
     });
 
     const closeProfile = () => {
       profileOverlay.classList.remove("open");
-      document.body.classList.remove("modal-open"); // Сова возвращается при закрытии
+      document.body.classList.remove("modal-open");
+      document.body.classList.remove("profile-open");
     };
 
     if (closeBtn) closeBtn.addEventListener("click", closeProfile);
@@ -231,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
       tab.classList.add("active");
       document.getElementById("pane-" + tab.dataset.tab).classList.add("active");
       
-      // Сова переезжает в правый угол ТОЛЬКО на вкладке "Секреты"
       if (tab.dataset.tab === "secrets") {
         document.body.classList.add("modal-open");
       } else {
@@ -294,7 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Достижения
   const ACHIEVEMENTS = [
-    // --- Обычные ---
     { id: "firstStep", icon: "🐣", title: "Первый шаг", desc: "Выбрана первая группа" },
     { id: "explorer", icon: "🔭", title: "Исследователь", desc: "Все специальности изучены" },
     { id: "earlyBird", icon: "🌅", title: "Ранняя пташка", desc: "Заход до 08:00" },
@@ -312,54 +311,35 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "bellSchedule", icon: "🔔", title: "Звонок", desc: "Посмотрел расписание звонков" },
     { id: "consoleOpen", icon: "🕵️", title: "Хакер", desc: "Открыл секретную консоль" },
     { id: "logoSpinner", icon: "💫", title: "Круть", desc: "Закрутил логотип" },
-
-    // --- Секретные ---
-    { 
-      id: "handshake_dev", 
-      icon: "🤝", 
-      title: "Рукопожатие", 
-      desc: "Пожми руку разработчику (Юрию) и спроси секретный код.",
-      secret: true 
-    },
-    { 
-      id: "beta_tester", 
-      icon: "🧪", 
-      title: "Бета-тестер", 
-      desc: "Найди баг на сайте и сообщи о нем. Разработчик даст код.",
-      secret: true 
-    },
-    { 
-      id: "inspirer", 
-      icon: "💡", 
-      title: "Вдохновитель", 
-      desc: "Предложи идею, которую добавят на сайт. Получи код.",
-      secret: true 
-    },
-    { 
-      id: "admin", 
-      icon: "👑", 
-      title: "Админ", 
-      desc: "Секретный доступ только для избранных.",
-      secret: true 
-    },
-    // --- ЛЕГЕНДАРНОЕ ---
-    { 
-      id: "legend_isp241", 
-      icon: "🏆", 
-      title: "Легенда ИСП-241", 
-      desc: "Выдаётся лично разработчиком за особые заслуги перед группой.",
-      secret: true,
-      legendary: true
-    }
+    { id: "handshake_dev", icon: "🤝", title: "Рукопожатие", desc: "Пожми руку разработчику (Юрию) и спроси секретный код.", secret: true },
+    { id: "beta_tester", icon: "🧪", title: "Бета-тестер", desc: "Найди баг на сайте и сообщи о нем. Разработчик даст код.", secret: true },
+    { id: "inspirer", icon: "💡", title: "Вдохновитель", desc: "Предложи идею, которую добавят на сайт. Получи код.", secret: true },
+    { id: "admin", icon: "👑", title: "Админ", desc: "Секретный доступ только для избранных.", secret: true },
+    { id: "legend_isp241", icon: "🏆", title: "Легенда ИСП-241", desc: "Выдаётся лично разработчиком за особые заслуги перед группой.", secret: true, legendary: true }
   ];
 
-  // Секретные коды
-  const SECRET_CODES = {
-    "HANDSHAKE_DEV_YURIY": "handshake_dev",
-    "I_FOUND_A_BUG": "beta_tester",
-    "COOL_IDEA_2026": "inspirer",
-    "SUPER_ADMIN": "admin",
-    "LEGEND_241": "legend_isp241"
+  // ============================================================
+  //  СЕКРЕТНЫЕ КОДЫ (ЗАЩИТА ЧЕРЕЗ МАТЕМАТИЧЕСКУЮ ФОРМУЛУ)
+  // ============================================================
+
+  // Функция, которая превращает слово в число (наш "хеш")
+  function wordToHash(word) {
+    if (!word) return 0;
+    const clean = word.trim().toUpperCase();
+    let sum = 0;
+    for (let i = 0; i < clean.length; i++) {
+      sum += clean.charCodeAt(i);
+    }
+    return sum * 7 + clean.length; // Формула: (сумма кодов букв * 7) + длина слова
+  }
+
+  // База. Слева — ЧИСЛО (результат формулы), справа — ID достижения.
+  const SECRET_HASHES = {
+    "2251": "handshake_dev",   // Слово: YURA
+    "1992": "beta_tester",     // Слово: BETA
+    "2798": "inspirer",        // Слово: SUPER
+    "2111": "admin",           // Слово: COOL
+    "3023": "legend_isp241"    // Слово: LEGEND
   };
 
   function getUnlocked() {
@@ -416,10 +396,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (saveSecretBtn && secretCodeInput) {
     saveSecretBtn.addEventListener("click", () => {
-      const code = secretCodeInput.value.trim().toUpperCase();
+      const input = secretCodeInput.value.trim();
       
-      if (SECRET_CODES[code]) {
-        const achId = SECRET_CODES[code];
+      if (!input) {
+        showToast("⚠️ Введите код.");
+        return;
+      }
+      
+      // Считаем хеш от того, что ввёл студент
+      const inputHash = wordToHash(input);
+      
+      // Ищем этот хеш в базе
+      if (SECRET_HASHES[String(inputHash)]) {
+        const achId = SECRET_HASHES[String(inputHash)];
         unlockAchievement(achId);
         
         showToast(`🤫 Секретный код активирован!`);
@@ -456,18 +445,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Настройки (Имя) — С ПРОВЕРКОЙ
-    // Настройки (Имя) — С ПРОВЕРКОЙ
   const saveNameBtn = document.getElementById("saveNameBtn");
   if (saveNameBtn) {
     saveNameBtn.addEventListener("click", () => {
-      const raw = document.getElementById("settingsName").value;
+      const input = document.getElementById("settingsName");
+      const raw = input.value;
       
       // Используем validateName из schedule.js (глобальная функция)
       const name = validateName(raw);
       
       if (!name) {
         // Если имя не прошло валидацию, показываем ошибку и красим поле в красный
-        const input = document.getElementById("settingsName");
         input.style.borderColor = "#ef4444";
         showToast("❌ Имя должно быть от 2 до 20 букв, без HTML-тегов и матов.");
         setTimeout(() => {
@@ -484,8 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (greetName) greetName.textContent = name;
       
       // Если введенное имя отличалось от сохраненного (была цензура), обновляем поле ввода
-      const settingsName = document.getElementById("settingsName");
-      if (settingsName) settingsName.value = name;
+      if (input) input.value = name;
 
       saveNameBtn.textContent = "Сохранено!";
       setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
@@ -605,7 +592,266 @@ document.addEventListener("DOMContentLoaded", () => {
   checkAchievementsOnLoad();
 
   // ============================================================
-  //  3. СОВА (ГЛАЗА)
+  //  3. ДРУЗЬЯ (СОЗВЕЗДИЕ) И ГРУППА
+  // ============================================================
+  
+  function renderFriendsNetwork() {
+    const container = document.getElementById("friendsNetwork");
+    if (!container) return;
+
+    let friends = [];
+    try {
+      friends = JSON.parse(localStorage.getItem("friendsNetwork") || "[]");
+    } catch (e) {}
+
+    if (friends.length === 0) {
+      container.innerHTML = `
+        <div class="friends-empty">
+          <div style="font-size: 3rem; margin-bottom: 10px;">🌌</div>
+          Твоя сеть пока пуста.<br>
+          Нажми «Поделиться», чтобы отправить другу ссылку, или добавь его через ссылку.
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = "";
+    
+    const myAvatar = localStorage.getItem("userAvatar") || "🎓";
+    const myName = localStorage.getItem("userName") || "Я";
+    const centerNode = document.createElement("div");
+    centerNode.className = "friend-node center";
+    const mySvg = getAvatarSVG(myAvatar);
+    centerNode.innerHTML = mySvg || myAvatar;
+    centerNode.title = myName;
+    centerNode.style.left = "50%";
+    centerNode.style.top = "50%";
+    container.appendChild(centerNode);
+
+    const centerX = container.offsetWidth / 2;
+    const centerY = container.offsetHeight / 2;
+    const radius = 120;
+
+    friends.forEach((friend, index) => {
+      const angle = (index / friends.length) * 2 * Math.PI - Math.PI / 2;
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      const line = document.createElement("div");
+      line.className = "friend-line";
+      const length = Math.hypot(x - centerX, y - centerY);
+      line.style.width = `${length}px`;
+      line.style.left = `${centerX}px`;
+      line.style.top = `${centerY}px`;
+      line.style.transform = `rotate(${angle}rad)`;
+      container.appendChild(line);
+
+      const friendNode = document.createElement("div");
+      friendNode.className = "friend-node";
+      friendNode.style.left = `${x}px`;
+      friendNode.style.top = `${y}px`;
+      friendNode.title = friend.title || "Друг";
+      
+      const friendSvg = getAvatarSVG(friend.avatar);
+      friendNode.innerHTML = friendSvg || friend.avatar || "❓";
+      
+      friendNode.onclick = () => {
+        if (friend.avatar === "❓") {
+          if (confirm(`Удалить ${friend.title} из созвездия?`)) {
+            let currentFriends = JSON.parse(localStorage.getItem("friendsNetwork") || "[]");
+            currentFriends = currentFriends.filter(f => f.id !== friend.id);
+            localStorage.setItem("friendsNetwork", JSON.stringify(currentFriends));
+            renderFriendsNetwork();
+          }
+        } else {
+          showToast(`👤 ${friend.title}`);
+        }
+      };
+      
+      container.appendChild(friendNode);
+    });
+  }
+
+  // --- Секретный ключ для подписи (генерируется один раз) ---
+  function getSecretKey() {
+    let key = localStorage.getItem("friendSecretKey");
+    if (!key) {
+      key = Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("friendSecretKey", key);
+    }
+    return key;
+  }
+
+  // --- Генерация подписи (хеш от имени + аватар + времени + ключа) ---
+  function generateSignature(name, avatar, timestamp) {
+    const secret = getSecretKey();
+    return wordToHash(name + avatar + timestamp + secret);
+  }
+
+  // --- Ссылка-приглашение (С ЗАЩИТОЙ 2 МИНУТЫ + 1 РАЗ) ---
+  const shareBtn = document.getElementById("shareProfileBtn");
+  if (shareBtn) {
+    shareBtn.addEventListener("click", () => {
+      const myName = localStorage.getItem("userName") || "Студент";
+      const myAvatar = localStorage.getItem("userAvatar") || "🎓";
+      const timestamp = Date.now();
+      
+      // Генерируем подпись
+      const sig = generateSignature(myName, myAvatar, timestamp);
+      
+      // Генерируем ID (безопасный для русских букв)
+      const myId = btoa(encodeURIComponent(myName) + timestamp).slice(0, 10);
+      
+      const url = `${window.location.origin}${window.location.pathname}#addFriend=true&name=${encodeURIComponent(myName)}&avatar=${encodeURIComponent(myAvatar)}&id=${myId}&t=${timestamp}&sig=${sig}`;
+      
+      navigator.clipboard.writeText(url).then(() => {
+        showToast("🔗 Ссылка скопирована! Она действует 45 секунд и только 1 раз.");
+      }).catch(() => {
+        prompt("Скопируй ссылку и отправь другу (действует 45 секунд, 1 раз):", url);
+      });
+    });
+  }
+
+  // --- Проверка входящей ссылки (С ЗАЩИТОЙ 2 МИНУТЫ + 1 РАЗ) ---
+  function checkInviteLink() {
+    const hash = window.location.hash;
+    if (hash.startsWith("#addFriend=")) {
+      const params = new URLSearchParams(hash.slice(1));
+      const name = params.get("name");
+      const avatar = params.get("avatar");
+      const id = params.get("id");
+      const timestamp = parseInt(params.get("t"), 10);
+      const sig = parseInt(params.get("sig"), 10);
+
+      // 1. Проверка времени (ссылка живет 2 минуты)
+      const fortyFiveSeconds = 45 * 1000;
+      if (!timestamp || (Date.now() - timestamp > fortyFiveSeconds)) {
+        showToast("⌛ Срок действия этой ссылки истек (больше 45 секунд). Попроси друга создать новую.");
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        return;
+      }
+
+      // 2. Проверка подписи (не подделана ли ссылка)
+      const expectedSig = generateSignature(name, avatar, timestamp);
+      if (sig !== expectedSig) {
+        showToast("⚠️ Эта ссылка была подделана или повреждена. Добавление отменено.");
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        return;
+      }
+
+      // 3. Проверка: не использовалась ли ссылка раньше (1 раз)
+      const usedLinks = JSON.parse(localStorage.getItem("usedInviteLinks") || "[]");
+      if (usedLinks.includes(id)) {
+        showToast("🚫 Эта ссылка уже была использована. Попроси друга создать новую.");
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+        return;
+      }
+
+      // 4. Если проверки прошли — добавляем друга
+      if (name && id) {
+        let friends = [];
+        try { friends = JSON.parse(localStorage.getItem("friendsNetwork") || "[]"); } catch(e) {}
+        
+        if (!friends.some(f => f.id === id)) {
+          friends.push({ id: id, avatar: avatar, title: name });
+          localStorage.setItem("friendsNetwork", JSON.stringify(friends));
+          
+          // Помечаем ссылку как использованную
+          usedLinks.push(id);
+          localStorage.setItem("usedInviteLinks", JSON.stringify(usedLinks));
+          
+          showToast(`🎉 ${name} добавлен в твоё созвездие!`);
+          renderFriendsNetwork();
+        } else {
+          showToast(`👤 ${name} уже есть в твоём созвездии.`);
+        }
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    }
+  }
+  checkInviteLink();
+
+  // --- ГРУППА ---
+  function renderGroupTab() {
+    const groupNameDisplay = document.getElementById("groupNameDisplay");
+    const groupRankDisplay = document.getElementById("groupRankDisplay");
+    const groupScoreBadge = document.getElementById("groupScoreBadge");
+    const groupMembersList = document.getElementById("groupMembersList");
+    const groupTotem = document.getElementById("groupTotem");
+
+    if (!groupNameDisplay) return;
+
+    let groupData = null;
+    try {
+      groupData = JSON.parse(localStorage.getItem("savedGroup"));
+    } catch (e) {}
+
+    if (!groupData || !groupData.group) {
+      groupNameDisplay.textContent = "Группа не выбрана";
+      groupRankDisplay.textContent = "Выбери группу в расписании, чтобы участвовать в битве.";
+      groupScoreBadge.textContent = "0 XP";
+      groupMembersList.innerHTML = `<div style="color: var(--muted); font-size: 0.9rem;">Сначала выбери группу в расписании.</div>`;
+      groupTotem.style.opacity = "0.5";
+      return;
+    }
+
+    const myGroup = groupData.group;
+    groupNameDisplay.textContent = myGroup;
+    groupTotem.style.opacity = "1";
+
+    let groupScore = parseInt(localStorage.getItem(`groupScore_${myGroup}`) || "0", 10);
+    groupScoreBadge.textContent = `${groupScore} XP`;
+    groupRankDisplay.textContent = `Твой вклад: ${groupScore} очков. Топ обновляется через QR-дуэли!`;
+
+    let friends = [];
+    try {
+      friends = JSON.parse(localStorage.getItem("friendsNetwork") || "[]");
+    } catch (e) {}
+
+    const groupMates = friends.filter(f => f.group === myGroup);
+    groupMembersList.innerHTML = "";
+    
+    const myAvatar = localStorage.getItem("userAvatar") || "🎓";
+    const mySvg = getAvatarSVG(myAvatar);
+    const myNode = document.createElement("div");
+    myNode.className = "group-member-avatar";
+    myNode.style.borderColor = "var(--c, var(--blue))";
+    myNode.innerHTML = mySvg || myAvatar;
+    myNode.title = "Это ты";
+    groupMembersList.appendChild(myNode);
+
+    if (groupMates.length > 0) {
+      groupMates.forEach(f => {
+        const fNode = document.createElement("div");
+        fNode.className = "group-member-avatar";
+        const fSvg = getAvatarSVG(f.avatar);
+        fNode.innerHTML = fSvg || f.avatar || "❓";
+        fNode.title = f.title || "Одногруппник";
+        groupMembersList.appendChild(fNode);
+      });
+    } else {
+      for (let i = 0; i < 3; i++) {
+        const emptyNode = document.createElement("div");
+        emptyNode.className = "group-member-avatar empty";
+        emptyNode.innerHTML = "?";
+        emptyNode.title = "Пригласи друга в группу";
+        groupMembersList.appendChild(emptyNode);
+      }
+    }
+  }
+
+  // --- Обработчики кликов по вкладкам ---
+  const friendsTab = document.querySelector('.profile-tab[data-tab="friends"]');
+  if (friendsTab) {
+    friendsTab.addEventListener("click", () => renderFriendsNetwork());
+  }
+  const groupTab = document.querySelector('.profile-tab[data-tab="group"]');
+  if (groupTab) {
+    groupTab.addEventListener("click", () => renderGroupTab());
+  }
+
+  // ============================================================
+  //  4. СОВА (ГЛАЗА)
   // ============================================================
   const owlPupils = document.querySelectorAll(".owl-pupil");
 
@@ -647,7 +893,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-//  4. ПАСХАЛКИ
+//  5. ПАСХАЛКИ
 // ============================================================
 
 // 1. Секрет в консоли

@@ -225,6 +225,14 @@
           <span>🤫</span>
           <span class="tab-text">Секреты</span>
         </button>
+        <button class="profile-tab" data-tab="friends">
+          <span>🤝</span>
+          <span class="tab-text">Друзья</span>
+        </button>
+        <button class="profile-tab" data-tab="group">
+          <span>🏫</span>
+          <span class="tab-text">Группа</span>
+        </button>
       </div>
 
       <div class="profile-content">
@@ -283,6 +291,44 @@
             </div>
           </div>
         </div>
+
+        <!-- НОВАЯ ПАНЕЛЬ: ДРУЗЬЯ -->
+        <div class="profile-pane" id="pane-friends">
+          <div class="friends-header">
+            <h3>Моя сеть контактов</h3>
+            <button class="settings-btn" id="shareProfileBtn" style="padding: 8px 16px; font-size: 0.9rem;">🔗 Поделиться</button>
+          </div>
+          <div class="friends-network" id="friendsNetwork">
+            <!-- Сюда будем рендерить созвездие -->
+          </div>
+        </div>
+
+        <!-- НОВАЯ ПАНЕЛЬ: ГРУППА -->
+        <div class="profile-pane" id="pane-group">
+          <div class="group-header">
+            <h3>Моя группа</h3>
+            <span class="group-score-badge" id="groupScoreBadge">0 XP</span>
+          </div>
+          
+          <div class="group-totem-wrap">
+            <div class="group-totem" id="groupTotem">
+              <div class="totem-icon">🔥</div>
+              <div class="totem-glow"></div>
+            </div>
+            <div class="group-info">
+              <div class="group-name" id="groupNameDisplay">Группа не выбрана</div>
+              <div class="group-rank" id="groupRankDisplay">Место в топе: —</div>
+            </div>
+          </div>
+
+          <div class="group-members">
+            <h4>Одногруппники в созвездии</h4>
+            <div class="group-members-list" id="groupMembersList">
+              <!-- Сюда будем добавлять аватары -->
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
