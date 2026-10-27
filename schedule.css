@@ -1245,3 +1245,69 @@ body.profile-open .mascot {
     line-height: 1.3 !important;
   }
 }
+
+.profile-name { 
+  font-size: 1.8rem; 
+  font-weight: 800; 
+  margin-bottom: 4px; 
+  letter-spacing: -0.02em;
+  padding-right: 40px; /* Отступ справа от крестика */
+  word-break: break-word; /* Если имя длинное — переносим */
+}
+
+/* На мобилке имя должно быть чуть меньше */
+@media (max-width: 640px) {
+  .profile-name {
+    font-size: 1.4rem !important;
+    padding-right: 44px; /* Крестик на мобилке меньше, отступ тоже */
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-tabs {
+    display: flex !important;
+    flex-wrap: wrap !important; /* Разрешаем перенос */
+    justify-content: center !important;
+    gap: 4px !important;
+    padding: 4px !important;
+  }
+
+  .profile-tab {
+    flex: 0 0 auto !important;
+    width: calc(33.33% - 8px) !important; /* По 3 штуки в ряд */
+    padding: 10px 4px !important;
+    font-size: 0.7rem !important;
+    gap: 4px !important;
+    border-bottom-width: 2px !important;
+  }
+
+  .profile-tab span:first-child {
+    font-size: 1.2rem !important;
+  }
+  
+  .profile-tab .tab-text {
+    display: block !important;
+    font-size: 0.7rem !important;
+    line-height: 1.1 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .friends-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  .friends-header h3 {
+    font-size: 1.1rem !important;
+    margin-bottom: 0 !important;
+  }
+
+  .friends-header .settings-btn {
+    width: 100% !important; /* Кнопка на всю ширину */
+    justify-content: center !important;
+    padding: 10px 16px !important;
+  }
+}

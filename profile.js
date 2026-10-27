@@ -269,9 +269,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const level = Math.floor(visits / 5) + 1;
     const xpInLevel = (visits % 5) * 20;
 
+    // --- СКРЫВАЕМ ДУБЛЬ СПЕЦИАЛЬНОСТИ ---
     if (elName) elName.textContent = name;
     if (elGroup) elGroup.textContent = group;
-    if (elSpec) elSpec.textContent = spec;
+    
+    if (elSpec) {
+      // Если специальность уже есть в названии группы (например, ЮСП-263) или это прочерк
+      if (group.includes(spec) || spec === "—") {
+        elSpec.style.display = "none"; // Скрываем
+      } else {
+        elSpec.style.display = "inline"; // Показываем
+        elSpec.textContent = spec;
+      }
+    }
+
     if (elLevel) elLevel.textContent = `LVL ${level}`;
     if (elXpBar) elXpBar.style.width = `${xpInLevel}%`;
     if (elXpText) elXpText.textContent = `${xpInLevel} / 100 XP`;
