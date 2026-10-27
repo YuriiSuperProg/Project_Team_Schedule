@@ -47,7 +47,8 @@ const WISHES = {
 };
 
 let SCHEDULE = {};
-let state = { spec: null, course: null, group: null, week: 0, mode: "student", viewTeacher: false, teacher: null };
+// Добавили subgroup: null в state
+let state = { spec: null, course: null, group: null, subgroup: null, week: 0, mode: "student", viewTeacher: false, teacher: null };
 const $ = id => document.getElementById(id);
 
 function toMin(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
@@ -75,7 +76,7 @@ function applyName() {
 }
 
 // ============================================================
-//  ИЗМЕНЕНИЕ ИМЕНИ (ОЧИЩЕНО ОТ ТЕСТОВОГО КОДА)
+//  ИЗМЕНЕНИЕ ИМЕНИ
 // ============================================================
 function openNameModal() {
   const modal = document.getElementById("nameModal");
@@ -198,26 +199,54 @@ function buildLessonCards() {
         const parsed = parseText(p.text);
         const stars = p.star ? [p.star] : ["*", "**"];
         stars.forEach(star => {
-          const key = lessonKey(dayIndex, p, parsed, star);
+          
+          // Берем подгруппу из любого поля (subgroup или subgroups)
+          const subValue = p.subgroup || p.subgroups || null;
+          
+          // Ключ склейки: время, предмет, аудитория, преподаватель, группа.
+          // Подгруппу НЕ включаем в ключ, чтобы лекции не дублировались.
+          const key = [dayIndex, p.number, star, parsed.subject.trim(), parsed.room.trim(), parsed.teacher, group].join("§");
+          
           if (!byDay[dayIndex]) byDay[dayIndex] = {};
           if (!byDay[dayIndex][star]) byDay[dayIndex][star] = {};
           const bucket = byDay[dayIndex][star];
+          
           if (!bucket[key]) {
-            bucket[key] = { time, number: p.number, subject: parsed.subject, room: parsed.room, teachers: [], groups: [], subgroup: p.subgroup || null, dates: p.dates || null, _tSet: new Set(), _gSet: new Set() };
+            bucket[key] = { 
+              time, number: p.number, subject: parsed.subject, room: parsed.room, 
+              teachers: [], groups: [], subgroups: new Set(), 
+              dates: p.dates || null, _tSet: new Set(), _gSet: new Set() 
+            };
           }
+          
           const card = bucket[key];
-          if (parsed.teacher && !card._tSet.has(parsed.teacher)) { card._tSet.add(parsed.teacher); card.teachers.push(parsed.teacher); }
+          if (subValue) card.subgroups.add(subValue);
+          
+          if (parsed.teacher && !card._tSet.has(parsed.teacher)) { 
+            card._tSet.add(parsed.teacher); 
+            card.teachers.push(parsed.teacher); 
+          }
+          
           const gKey = spec + "|" + group;
-          if (!card._gSet.has(gKey)) { card._gSet.add(gKey); card.groups.push({ spec, group }); }
+          if (!card._gSet.has(gKey)) { 
+            card._gSet.add(gKey); 
+            card.groups.push({ spec, group }); 
+          }
         });
       });
     });
   });
+  
   const result = {};
   Object.keys(byDay).forEach(d => {
     result[d] = {};
     Object.keys(byDay[d]).forEach(star => {
-      result[d][star] = Object.values(byDay[d][star]).map(c => { delete c._tSet; delete c._gSet; return c; }).sort((a, b) => a.number - b.number);
+      result[d][star] = Object.values(byDay[d][star]).map(c => { 
+        c.subgroups = Array.from(c.subgroups); // Set -> Array
+        delete c._tSet; 
+        delete c._gSet; 
+        return c; 
+      }).sort((a, b) => a.number - b.number);
     });
   });
   return result;
@@ -273,27 +302,65 @@ function renderChips(containerId, items, current, onClick, label = x => x) {
 function renderFilters() {
   if (window.__renderTeacherFilters && state.viewTeacher) return window.__renderTeacherFilters();
   renderChips("specs", Object.keys(SCHEDULE), state.spec, spec => {
-    state.spec = spec; state.course = null; state.group = null; state.week = currentWeek();
+    state.spec = spec; state.course = null; state.group = null; state.subgroup = null; state.week = currentWeek();
     applyColor(spec);
     if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
     showRandomWish(true);
     renderAll();
     window.dispatchEvent(new CustomEvent("specChanged", { detail: spec }));
   });
+  
   if (state.spec) {
     renderChips("courses", Object.keys(SCHEDULE[state.spec]).sort(), state.course, course => {
-      state.course = course; state.group = null;
+      state.course = course; state.group = null; state.subgroup = null;
       if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
       renderAll();
     }, c => c + " курс");
   } else $("courses").innerHTML = "";
+  
   if (state.spec && state.course) {
     renderChips("groups", Object.keys(SCHEDULE[state.spec][state.course]).sort(), state.group, group => {
       state.group = group;
+      state.subgroup = null;
       if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
       renderAll();
     });
   } else $("groups").innerHTML = "";
+
+  // ЛОГИКА ПОДГРУПП
+  const rowSub = $("rowSubgroups");
+  const subgroupsBox = $("subgroups");
+  
+  if (state.spec && state.course && state.group) {
+    const groupData = SCHEDULE[state.spec][state.course][state.group];
+    // Проверяем и p.subgroup, и p.subgroups!
+    const hasSubgroups = Object.values(groupData).some(pairs => 
+      pairs.some(p => p.subgroup || p.subgroups)
+    );
+
+    if (hasSubgroups && subgroupsBox) {
+      rowSub.style.display = "flex";
+      subgroupsBox.innerHTML = "";
+      
+      [1, 2].forEach(sub => {
+        const b = document.createElement("button");
+        b.className = "chip" + (state.subgroup === sub ? " on" : "");
+        b.textContent = `Подгруппа ${sub}`;
+        b.onclick = () => {
+          state.subgroup = sub;
+          renderFilters();
+          renderSchedule();
+          renderDayProgress();
+          renderTomorrow();
+        };
+        subgroupsBox.appendChild(b);
+      });
+    } else {
+      rowSub.style.display = "none";
+    }
+  } else {
+    if (rowSub) rowSub.style.display = "none";
+  }
 }
 
 function renderSchedule() {
@@ -304,14 +371,27 @@ function renderSchedule() {
   info.innerHTML = `Неделя ${w.star}<br><span style="font-size:0.9em; white-space:nowrap;">(${w.start} – ${w.end})</span>`;
   out.innerHTML = "";
   const cardsByDay = buildLessonCards();
+  
   DAYS.forEach((day, index) => {
     const block = document.createElement("section");
     block.className = "day";
     const h2 = document.createElement("h2");
     h2.textContent = DAY_NAMES[day];
     block.appendChild(h2);
+    
     let dayCards = (cardsByDay[index] && cardsByDay[index][w.star]) || [];
+    
+    // 1. Фильтр по группе
     dayCards = dayCards.filter(card => card.groups.some(g => g.group === state.group));
+
+    // 2. Фильтр по подгруппе
+    if (state.subgroup) {
+      dayCards = dayCards.filter(card => {
+        if (!card.subgroups || card.subgroups.length === 0) return true;
+        return card.subgroups.includes(state.subgroup);
+      });
+    }
+
     if (!dayCards.length) {
       const empty = document.createElement("div"); empty.className = "day-empty"; empty.textContent = "Выходной";
       block.appendChild(empty); out.appendChild(block); return;
@@ -320,13 +400,14 @@ function renderSchedule() {
     dayCards.forEach(card => {
       const el = document.createElement("article"); el.className = "card";
       const teachers = card.teachers.length ? card.teachers.join(", ") : "";
-      const subNote = card.subgroup ? ` <small style="color:#6b6b6b;font-weight:400">(подгр. ${card.subgroup})</small>` : "";
       const chips = card.groups.map(g => {
         const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
         const isMine = (g.group === state.group);
         return `<span class="group-chip${isMine ? " mine" : ""}" style="--chip-c:${col}">${g.group}</span>`;
       }).join("");
-      el.innerHTML = `<div class="t">${card.time}</div><div class="s">${card.subject}${subNote}</div><div class="m">${card.room}${teachers ? " · " + teachers : ""}</div>${card.groups.length > 1 ? `<div class="card-groups">${chips}</div>` : ""}`;
+      
+      // Убрали вывод "(подгр. X)" из карточки
+      el.innerHTML = `<div class="t">${card.time}</div><div class="s">${card.subject}</div><div class="m">${card.room}${teachers ? " · " + teachers : ""}</div>${card.groups.length > 1 ? `<div class="card-groups">${chips}</div>` : ""}`;
       grid.appendChild(el);
     });
     block.appendChild(grid); out.appendChild(block);
@@ -479,7 +560,6 @@ document.addEventListener("DOMContentLoaded", () => {
   state.week = currentWeek();
   initTheme(); applyName();
 
-  // Кнопка изменения имени
   const nameEditBtn = $("nameEdit");
   if (nameEditBtn) {
     nameEditBtn.addEventListener("click", (e) => {
@@ -493,13 +573,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleMenu = $("themeToggleMenu");
   if (themeToggleMenu) themeToggleMenu.addEventListener("click", toggleTheme);
 
-  // Меню (бургер)
   const menuBtn = $("menuBtn"), mobileMenu = $("mobileMenu"), closeMenuBtn = $("closeMenuBtn");
   if (menuBtn && mobileMenu) menuBtn.addEventListener("click", () => { mobileMenu.classList.add("open"); menuBtn.classList.add("open"); document.body.style.overflow = "hidden"; });
   if (closeMenuBtn && mobileMenu) closeMenuBtn.addEventListener("click", () => { mobileMenu.classList.remove("open"); menuBtn.classList.remove("open"); document.body.style.overflow = ""; });
   if (mobileMenu) mobileMenu.addEventListener("click", (e) => { if (e.target === mobileMenu) { mobileMenu.classList.remove("open"); menuBtn.classList.remove("open"); document.body.style.overflow = ""; } });
 
-  // Выбор роли
   const roleCards = document.querySelectorAll(".role-card");
   roleCards.forEach(card => {
     card.addEventListener("click", () => {
@@ -525,7 +603,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Восстановление сессии
   const savedRole = localStorage.getItem("role");
   if (savedRole) {
     const roleScreen = $("roleScreen");
@@ -545,7 +622,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Меню навигации
   function buildMenu() {
     const dynamicNav = $("dynamicMenuNav");
     if (!dynamicNav) return;
@@ -561,22 +637,21 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (!isTeacher) {
       const btnForgetGroup = document.createElement("button"); btnForgetGroup.className = "fs-link"; btnForgetGroup.style = "--i: 3;"; btnForgetGroup.innerHTML = "🗑 Забыть группу";
-      btnForgetGroup.onclick = () => { if (window.clearUserGroup) window.clearUserGroup(); state.spec = null; state.course = null; state.group = null; state.week = currentWeek(); applyColor("ИСП"); renderAll(); if (mobileMenu) mobileMenu.classList.remove("open"); if (menuBtn) menuBtn.classList.remove("open"); document.body.style.overflow = ""; buildMenu(); };
+      btnForgetGroup.onclick = () => { if (window.clearUserGroup) window.clearUserGroup(); state.spec = null; state.course = null; state.group = null; state.subgroup = null; state.week = currentWeek(); applyColor("ИСП"); renderAll(); if (mobileMenu) mobileMenu.classList.remove("open"); if (menuBtn) menuBtn.classList.remove("open"); document.body.style.overflow = ""; buildMenu(); };
       dynamicNav.appendChild(btnForgetGroup);
     }
     
-  const linkHome = document.createElement("a"); 
-  linkHome.href = "index.html"; 
-  linkHome.className = "fs-link"; 
-  linkHome.style = "--i: 4;"; 
-  linkHome.innerHTML = "← На главную"; 
-  linkHome.onclick = (e) => { 
-  // Не мешаем браузеру переходить по ссылке!
-  if (mobileMenu) mobileMenu.classList.remove("open"); 
-  if (menuBtn) menuBtn.classList.remove("open"); 
-  document.body.style.overflow = ""; 
-}; 
-dynamicNav.appendChild(linkHome);
+    const linkHome = document.createElement("a"); 
+    linkHome.href = "index.html"; 
+    linkHome.className = "fs-link"; 
+    linkHome.style = "--i: 4;"; 
+    linkHome.innerHTML = "← На главную"; 
+    linkHome.onclick = (e) => { 
+      if (mobileMenu) mobileMenu.classList.remove("open"); 
+      if (menuBtn) menuBtn.classList.remove("open"); 
+      document.body.style.overflow = ""; 
+    }; 
+    dynamicNav.appendChild(linkHome);
   }
 
   buildMenu();
@@ -586,7 +661,7 @@ dynamicNav.appendChild(linkHome);
 });
 
 // ============================================================
-//  МАСКОТ СОВА: ФРАЗЫ, КЛИКИ И ОБЛАЧКО
+//  МАСКОТ СОВА
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
   const mascot = document.getElementById("mascot");
