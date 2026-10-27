@@ -1176,3 +1176,61 @@ body.profile-open .mascot {
     transform: none;
   }
 }
+
+/* ============================================================
+   АДАПТИВ ДЛЯ КАРТОЧЕК РОЛИ (МОБИЛКА)
+   ============================================================ */
+@media (max-width: 640px) {
+  .role-screen {
+    padding: 40px 0 20px;
+  }
+  
+  .role-title {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+  
+  .role-sub {
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+    padding: 0 10px;
+  }
+
+  /* Переделываем сетку в одну колонку */
+  .role-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 16px;
+    box-sizing: border-box;
+  }
+
+  /* Карточка на всю ширину */
+  .role-card {
+    width: 100%;
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 16px;
+    box-sizing: border-box;
+  }
+
+  /* Иконка слева */
+  .rc-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  /* Текст справа */
+  .rc-title {
+    font-size: 1.05rem;
+    margin-bottom: 2px;
+  }
+  .rc-desc {
+    font-size: 0.8rem;
+  }
+}
