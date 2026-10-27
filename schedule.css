@@ -1205,50 +1205,43 @@ body.profile-open .mascot {
     margin: 0 !important;
   }
 
-  /* Карточка: flex-контейнер с переносом */
+  /* Карточка: всё по центру, в столбик */
   .role-card {
     width: 100% !important;
-    padding: 16px 20px !important;
+    padding: 24px 20px !important;
     display: flex !important;
-    flex-wrap: wrap !important; /* РАЗРЕШАЕМ ПЕРЕНОС */
-    align-items: center !important;
-    text-align: left !important;
-    gap: 4px 16px !important;
+    flex-direction: column !important; /* Всё в столбик */
+    align-items: center !important;    /* По центру */
+    text-align: center !important;
+    gap: 8px !important;
     box-sizing: border-box !important;
   }
 
-  /* Иконка */
+  /* Иконка сверху */
   .rc-icon {
-    font-size: 2rem !important;
-    margin-bottom: 0 !important;
-    flex-shrink: 0 !important;
-    width: 48px !important;
-    height: 48px !important;
+    font-size: 2.5rem !important;
+    margin-bottom: 4px !important;
+    width: 56px !important;
+    height: 56px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     background: var(--bg) !important;
-    border-radius: 12px !important;
+    border-radius: 16px !important;
   }
 
-  /* Заголовок занимает оставшуюся ширину */
+  /* Заголовок */
   .rc-title {
-    font-size: 1.05rem !important;
-    font-weight: 600 !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
     margin-bottom: 0 !important;
-    width: calc(100% - 64px) !important; /* Вся ширина минус иконка */
-    flex-shrink: 0 !important;
     line-height: 1.2 !important;
   }
 
-  /* Описание падает на новую строку, ровно под заголовком */
+  /* Описание */
   .rc-desc {
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
     color: var(--muted) !important;
-    width: calc(100% - 64px) !important; /* Та же ширина */
-    margin-left: 64px !important; /* Отступ от иконки */
-    margin-top: -4px !important;
-    flex-shrink: 0 !important;
     line-height: 1.3 !important;
   }
 }
