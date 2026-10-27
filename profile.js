@@ -456,6 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Настройки (Имя) — С ПРОВЕРКОЙ
+    // Настройки (Имя) — С ПРОВЕРКОЙ
   const saveNameBtn = document.getElementById("saveNameBtn");
   if (saveNameBtn) {
     saveNameBtn.addEventListener("click", () => {
@@ -465,15 +466,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = validateName(raw);
       
       if (!name) {
-        showToast("❌ Имя должно быть от 2 до 20 букв.");
+        // Если имя не прошло валидацию, показываем ошибку и красим поле в красный
+        const input = document.getElementById("settingsName");
+        input.style.borderColor = "#ef4444";
+        showToast("❌ Имя должно быть от 2 до 20 букв, без HTML-тегов и матов.");
+        setTimeout(() => {
+          input.style.borderColor = "";
+        }, 2000);
         return;
       }
       
+      // Если всё ок — сохраняем
       localStorage.setItem("userName", name);
       unlockAchievement("nameChanged");
       updateProfileData();
       const greetName = document.getElementById("userName");
       if (greetName) greetName.textContent = name;
+      
+      // Если введенное имя отличалось от сохраненного (была цензура), обновляем поле ввода
+      const settingsName = document.getElementById("settingsName");
+      if (settingsName) settingsName.value = name;
+
       saveNameBtn.textContent = "Сохранено!";
       setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
     });
