@@ -490,6 +490,19 @@ function renderDayProgress() {
       }
     }
   }
+  
+  // === НОВЫЕ ПОДПИСИ НАЧАЛА И КОНЦА (ТОЛЬКО ДЛЯ МОБИЛКИ) ===
+  const mobileStart = document.createElement("span");
+  mobileStart.className = "dc-mobile-edge-label start";
+  mobileStart.textContent = BELLS[sorted[0].num].split("–")[0];
+  trackWrap.appendChild(mobileStart);
+
+  const mobileEnd = document.createElement("span");
+  mobileEnd.className = "dc-mobile-edge-label end";
+  mobileEnd.textContent = BELLS[sorted[sorted.length - 1].num].split("–")[1];
+  trackWrap.appendChild(mobileEnd);
+  // ==========================================================
+
   if (nowMin >= dayStart && nowMin <= dayEnd) {
     const nowP = ((nowMin - dayStart) / total) * 100;
     const dot = document.createElement("div"); dot.style.cssText = `position:absolute; top:50%; left:${nowP}%; width:14px; height:14px; border-radius:50%; background: var(--c, var(--blue)); border: 3px solid var(--card); transform: translate(-50%, -50%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 25%, transparent); z-index: 4;`; trackWrap.appendChild(dot);
@@ -500,17 +513,11 @@ function renderDayProgress() {
   sorted.forEach(item => { if (nowMin >= item.start && nowMin <= item.end) current = item; });
   if (nowMin < dayStart) { status.textContent = "День ещё не начался"; pairEl.textContent = "Скоро первая пара"; metaEl.textContent = `Начало в ${BELLS[sorted[0].num].split("–")[0]}`; leftEl.textContent = `До начала ${fmtLeft(dayStart - nowMin)}`; return; }
   if (nowMin > dayEnd) {
-    status.textContent = "День завершён 🎉"; pairEl.textContent = "Хорошего отдыха!";
-    const pairsCount = sorted.length; let pairsWord = "пар"; if (pairsCount === 1) pairsWord = "пара"; else if (pairsCount > 1 && pairsCount < 5) pairsWord = "пары";
-    const firstPairTime = BELLS[sorted[0].num].split("–")[0], lastPairTime = BELLS[sorted[sorted.length - 1].num].split("–")[1];
-    const tomorrowIndex = (now.getDay() + 1) % 7, tomorrowPairs = raw[tomorrowIndex]; let tomorrowText = "";
-    if (!tomorrowPairs || !tomorrowPairs.length) tomorrowText = "Завтра — выходной.";
-    else {
-      const weekNow = WEEK_LIST[state.week], tomorrowFiltered = tomorrowPairs.filter(p => !p.star || p.star === weekNow.star);
-      if (tomorrowFiltered.length === 0) tomorrowText = "Завтра — выходной.";
-      else { const firstTomorrow = [...tomorrowFiltered].sort((a, b) => a.number - b.number)[0]; const timeTomorrow = BELLS[firstTomorrow.number] ? BELLS[firstTomorrow.number].split("–")[0] : ""; tomorrowText = `Завтра — ${tomorrowFiltered.length} пар(ы), первая в ${timeTomorrow}.`; }
-    }
-    metaEl.textContent = `Пары прошли с ${firstPairTime} до ${lastPairTime} (${pairsCount} ${pairsWord}). ${tomorrowText}`; leftEl.textContent = "До завтра"; return;
+    status.textContent = "День завершён 🎉"; 
+    pairEl.textContent = "Хорошего отдыха!";
+    metaEl.textContent = ""; 
+    leftEl.textContent = "До завтра"; 
+    return;
   }
   if (current) { status.textContent = `Идёт ${current.num}-я пара`; pairEl.textContent = current.pair.text.split("преп.")[0].trim(); metaEl.textContent = `${BELLS[current.num]}`; leftEl.textContent = `До звонка ${fmtLeft(current.end - nowMin)}`; }
   else {
@@ -519,7 +526,6 @@ function renderDayProgress() {
     if (currentBreak) { status.textContent = "Перемена"; pairEl.textContent = currentBreak.nextPair.text.split("преп.")[0].trim(); metaEl.textContent = `Следующая в ${BELLS[sorted.find(s => s.start === currentBreak.nextStart).num].split("–")[0]}`; leftEl.textContent = `До пары ${fmtLeft(currentBreak.nextStart - nowMin)}`; }
   }
 }
-
 function openMobileBells(sorted) {
   let modal = document.getElementById("bellsModal");
   if (!modal) {

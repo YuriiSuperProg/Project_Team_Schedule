@@ -1141,3 +1141,38 @@ body.profile-open .mascot {
   10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
   20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
+
+/* Подписи начала и конца дня (только для мобилки) */
+.dc-mobile-edge-label {
+  display: none; /* Скрыто на ПК */
+}
+
+@media (max-width: 640px) {
+  /* Убираем сжатие шкалы, которое мы случайно добавили */
+  .dc-track {
+    padding: 0 !important;
+  }
+
+  .dc-mobile-edge-label {
+    display: block;
+    position: absolute;
+    top: 14px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--muted);
+    z-index: 3;
+    white-space: nowrap;
+  }
+
+  /* Подпись начала: чуть правее от левого края */
+  .dc-mobile-edge-label.start {
+    left: 8px; /* Отступ от края карточки */
+    transform: none;
+  }
+
+  /* Подпись конца: чуть левее от правого края */
+  .dc-mobile-edge-label.end {
+    right: 8px; /* Отступ от края карточки */
+    transform: none;
+  }
+}
