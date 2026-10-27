@@ -5,6 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Расписание — ПараЗвёзд</title>
   <link rel="stylesheet" href="schedule.css">
+  <style>
+/* ЭКСТРЕННЫЕ СТИЛИ ПРЯМО В HTML (В ОБХОД КЭША) */
+@media (max-width: 640px) {
+  .role-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 0 16px !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .role-card {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    text-align: left !important;
+    gap: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  .rc-icon {
+    font-size: 2rem !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+    width: 48px !important;
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #f0f4f8 !important;
+    border-radius: 12px !important;
+  }
+
+  .rc-title {
+    font-size: 1.05rem !important;
+    margin-bottom: 2px !important;
+  }
+  
+  .rc-desc {
+    font-size: 0.8rem !important;
+  }
+}
+</style>
   <link rel="stylesheet" href="notifications.css">
   <meta name="google" content="notranslate">
   
