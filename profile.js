@@ -444,35 +444,78 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sSpecs) sSpecs.textContent = visitedSpecs.length;
   }
 
-  // Настройки (Имя) — С ПРОВЕРКОЙ
-  const saveNameBtn = document.getElementById("saveNameBtn");
+     const saveNameBtn = document.getElementById("saveNameBtn");
   if (saveNameBtn) {
     saveNameBtn.addEventListener("click", () => {
       const input = document.getElementById("settingsName");
       const raw = input.value;
+      const result = validateName(raw);
       
-      // Используем validateName из schedule.js (глобальная функция)
-      const name = validateName(raw);
-      
-      if (!name) {
-        // Если имя не прошло валидацию, показываем ошибку и красим поле в красный
+      if (!result) {
         input.style.borderColor = "#ef4444";
         showToast("❌ Имя должно быть от 2 до 20 букв, без HTML-тегов и матов.");
-        setTimeout(() => {
-          input.style.borderColor = "";
-        }, 2000);
+        setTimeout(() => { input.style.borderColor = ""; }, 2000);
         return;
       }
-      
-      // Если всё ок — сохраняем
-      localStorage.setItem("userName", name);
+
+      // СЛУЧАЙ 1: СЛИШКОМ ДЛИННОЕ (тряска + шутка)
+      if (result.tooLong) {
+        // 1. Трясем поле
+        input.style.animation = "shake 0.5s ease-in-out";
+        setTimeout(() => input.style.animation = "", 500);
+        
+        // 2. Показываем случайную шутку
+        const jokes = [
+          "😅 Ого, да ты графоман! Мы обрезали имя до 20 символов.",
+          "📜 Это имя или глава из «Войны и мира»? Оставили только 20 букв.",
+          "✂️ Ножницы судьбы сказали: «Хватит!». Имя обрезано до 20 символов.",
+          "🤯 Длинновато будет! Оставили только самое главное.",
+          "🤖 Мой процессор чуть не завис. Укоротили до 20 буковок.",
+          "🎢 Вот это размах! Но в профиль влезает только 20 символов.",
+          "🗿 Каменный век? Нет, 2026. А имя все равно длинное, обрезали.",
+          "🍔 Как бургер на 10 этажей. Вкусно, но мы откусили лишнее."
+        ];
+        const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+        showToast(randomJoke);
+        
+        // 3. Ставим обрезанное имя
+        input.value = result.value.slice(0, 20);
+        
+        // 4. Сохраняем
+        localStorage.setItem("userName", result.value.slice(0, 20));
+        unlockAchievement("nameChanged");
+        updateProfileData();
+        const greetName = document.getElementById("userName");
+        if (greetName) greetName.textContent = result.value.slice(0, 20);
+        
+        saveNameBtn.textContent = "Сохранено!";
+        setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
+        return;
+      }
+
+      // СЛУЧАЙ 2: ПОВТОРЕНИЕ (ЮрийЮрийЮрий)
+      if (result.isRepeat) {
+        showToast(`🤖 Да ты циклическая программа! Оставили только "${result.value}".`);
+        input.value = result.value;
+        
+        localStorage.setItem("userName", result.value);
+        unlockAchievement("nameChanged");
+        updateProfileData();
+        const greetName = document.getElementById("userName");
+        if (greetName) greetName.textContent = result.value;
+        
+        saveNameBtn.textContent = "Сохранено!";
+        setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);
+        return;
+      }
+
+      // СЛУЧАЙ 3: ВСЁ ОК
+      localStorage.setItem("userName", result.value);
       unlockAchievement("nameChanged");
       updateProfileData();
       const greetName = document.getElementById("userName");
-      if (greetName) greetName.textContent = name;
-      
-      // Если введенное имя отличалось от сохраненного (была цензура), обновляем поле ввода
-      if (input) input.value = name;
+      if (greetName) greetName.textContent = result.value;
+      if (input) input.value = result.value;
 
       saveNameBtn.textContent = "Сохранено!";
       setTimeout(() => { saveNameBtn.textContent = "Сохранить"; }, 2000);

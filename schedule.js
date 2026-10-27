@@ -23,31 +23,36 @@ function isNameClean(raw) {
   return !BAD_WORDS.some(word => clean.includes(word));
 }
 
-// Основная функция валидации имени
+
 // Основная функция валидации и очистки имени
-// Основная функция валидации имени (использует bad-words.json)
 function validateName(raw) {
   if (!raw || !raw.trim()) return null;
   
-  // 1. Очищаем от всего, кроме русских/английских букв, пробелов и дефиса
-  // (Это удалит HTML-теги, скрипты, эмодзи и прочий мусор)
   let clean = raw.trim().replace(/[^a-zA-Zа-яА-ЯёЁ\s\-]/g, "");
-  
-  // 2. Убираем двойные пробелы и дефисы
   clean = clean.replace(/\s+/g, " ").replace(/-+/g, "-").trim();
 
-  // 3. Проверка длины (от 2 до 20 символов)
-  if (clean.length < 2 || clean.length > 20) return null;
+  if (clean.length < 2) return null;
   
-  // 4. Проверка на маты через isNameClean (которая использует BAD_WORDS из JSON)
+  // Проверка на повторение (ЮрийЮрийЮрий)
+  const repeatPattern = /^(.{2,})\1{2,}$/; 
+  const isRepeat = repeatPattern.test(clean);
+  
+  if (isRepeat) {
+    const baseName = clean.match(/^(.{2,})\1/)[1]; 
+    return { value: baseName, tooLong: false, isRepeat: true };
+  }
+
+  if (clean.length > 20) {
+    return { value: clean, tooLong: true, isRepeat: false };
+  }
+  
   if (typeof isNameClean === "function" && !isNameClean(clean)) {
-    // Если имя содержит мат — отклоняем (или можно заменить на звездочки)
-    // Давай отклоним, чтобы студент переписал нормально
     return null; 
   }
   
-  // 5. Приводим к красивому виду (Первая буква заглавная, остальные строчные)
-  return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  // ВСЕГДА возвращаем объект с полем value
+  const finalName = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  return { value: finalName, tooLong: false, isRepeat: false };
 }
 
 // ============================================================
