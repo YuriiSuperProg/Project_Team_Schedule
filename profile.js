@@ -872,11 +872,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   //  4. СОВА (ГЛАЗА)
   // ============================================================
-  const owlPupils = document.querySelectorAll(".owl-pupil");
+  const owlPupils = document.querySelectorAll(".falcon-pupil");
 
   if (owlPupils.length) {
     document.addEventListener("mousemove", (e) => {
-      const owl = document.querySelector(".owl");
+      const owl = document.querySelector(".falcon");
       if (!owl) return;
       
       const owlRect = owl.getBoundingClientRect();

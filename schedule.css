@@ -198,7 +198,7 @@ html.dark .fullscreen-menu { background: color-mix(in srgb, #0B1120 90%, transpa
 html.dark .fs-close-btn { background: #1A2338; border-color: #2A3448; }
 
 /* ============================================================
-   МАСКОТ СОВА
+   МАСКОТ СОКОЛ-САПСАН (АНФАС)
    ============================================================ */
 .mascot {
   position: fixed;
@@ -221,44 +221,34 @@ body.modal-open .mascot {
   transform: none !important;
 }
 
-.owl {
-  width: 80px; height: 80px;
-  background: var(--c, #4C9AFF);
-  border-radius: 50%;
-  position: relative;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+body.profile-open .mascot {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0) !important;
+}
+
+/* Контейнер для SVG */
+.falcon-svg-wrap {
+  width: 120px; /* Уменьшили размер */
+  height: 120px;
   margin-left: 8px;
-  animation: owlBounce 3s ease-in-out infinite;
-  transition: background 0.5s ease;
-  flex-shrink: 0;
-}
-@keyframes owlBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-.owl-face { display: flex; gap: 8px; position: relative; z-index: 2; }
-.owl-eye {
-  width: 28px; height: 28px;
-  background: #fff;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-.owl-pupil {
-  width: 12px; height: 12px;
-  background: #0F172A;
-  border-radius: 50%;
-  transition: transform 0.1s ease-out;
-}
-.owl-beak {
-  position: absolute;
-  bottom: 14px;
-  width: 0; height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-top: 12px solid #FFB300;
-  z-index: 3;
+  animation: falconBounce 3s ease-in-out infinite;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,0.3));
 }
 
+@keyframes falconBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* Сама SVG */
+.falcon-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Облачко с текстом */
 .mascot-bubble {
   position: absolute;
   bottom: 100%;
@@ -278,18 +268,23 @@ body.modal-open .mascot {
   transition: opacity 0.3s ease, transform 0.3s ease;
   pointer-events: none;
   border: 1px solid var(--line);
-  
   max-width: 220px;
   white-space: normal;
   line-height: 1.4;
   word-wrap: break-word;
+  z-index: 10;
 }
-.mascot-bubble.show { opacity: 1; transform: translateY(0) scale(1); }
+.mascot-bubble.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 
-body.profile-open .mascot {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: scale(0) !important;
+/* Мобильный адаптив для маскота */
+@media (max-width: 640px) {
+  .mascot { bottom: 16px; left: 16px; }
+  body.modal-open .mascot { right: 16px !important; bottom: 16px !important; }
+  .falcon-svg-wrap { width: 70px; height: 70px; }
+  .mascot-bubble { font-size: 0.75rem; padding: 8px 12px; }
 }
 
 /* ============ ОСТАЛЬНОЙ КОНТЕНТ ============ */
