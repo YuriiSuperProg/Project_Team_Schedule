@@ -280,6 +280,7 @@ function lessonKey(dayIndex, p, parsed, star) {
 function buildLessonCards() {
   const all = collectAllGroups();
   const byDay = {};
+  
   all.forEach(({ spec, group, raw }) => {
     Object.keys(raw).forEach(dayStr => {
       const dayIndex = Number(dayStr);
@@ -287,14 +288,11 @@ function buildLessonCards() {
         const time = BELLS[p.number] || (p.number + " пара");
         const parsed = parseText(p.text);
         const stars = p.star ? [p.star] : ["*", "**"];
+        
         stars.forEach(star => {
-          
-          // Берем подгруппу из любого поля (subgroup или subgroups)
-          const subValue = p.subgroup || p.subgroups || null;
-          
-          // Ключ склейки: время, предмет, аудитория, преподаватель, группа.
-          // Подгруппу НЕ включаем в ключ, чтобы лекции не дублировались.
-          const key = [dayIndex, p.number, star, parsed.subject.trim(), parsed.room.trim(), parsed.teacher, group].join("§");
+          // КЛЮЧ: День | Номер пары | Неделя | Предмет | Аудитория | Преподаватель
+          // Группа и подгруппа НЕ входят в ключ, чтобы лекции склеились
+          const key = [dayIndex, p.number, star, parsed.subject.trim(), parsed.room.trim(), parsed.teacher].join("§");
           
           if (!byDay[dayIndex]) byDay[dayIndex] = {};
           if (!byDay[dayIndex][star]) byDay[dayIndex][star] = {};
@@ -302,20 +300,32 @@ function buildLessonCards() {
           
           if (!bucket[key]) {
             bucket[key] = { 
-              time, number: p.number, subject: parsed.subject, room: parsed.room, 
-              teachers: [], groups: [], subgroups: new Set(), 
-              dates: p.dates || null, _tSet: new Set(), _gSet: new Set() 
+              time, 
+              number: p.number, 
+              subject: parsed.subject, 
+              room: parsed.room, 
+              teachers: [], 
+              groups: [], // Сюда соберутся ВСЕ группы
+              subgroups: new Set(), // Собираем подгруппы
+              dates: p.dates || null, 
+              _tSet: new Set(), 
+              _gSet: new Set() 
             };
           }
           
           const card = bucket[key];
+          
+          // Собираем подгруппы (если есть)
+          const subValue = p.subgroup || p.subgroups;
           if (subValue) card.subgroups.add(subValue);
           
+          // Собираем преподавателей
           if (parsed.teacher && !card._tSet.has(parsed.teacher)) { 
             card._tSet.add(parsed.teacher); 
             card.teachers.push(parsed.teacher); 
           }
           
+          // Собираем группы
           const gKey = spec + "|" + group;
           if (!card._gSet.has(gKey)) { 
             card._gSet.add(gKey); 
@@ -456,6 +466,7 @@ function renderSchedule() {
   if (window.__renderTeacherSchedule && state.viewTeacher) return window.__renderTeacherSchedule();
   const out = $("out"), info = $("weekInfo");
   if (!state.spec || !state.course || !state.group) { info.textContent = "Выберите группу"; out.innerHTML = ""; return; }
+  
   const w = WEEK_LIST[state.week];
   info.innerHTML = `Неделя ${w.star}<br><span style="font-size:0.9em; white-space:nowrap;">(${w.start} – ${w.end})</span>`;
   out.innerHTML = "";
@@ -470,10 +481,10 @@ function renderSchedule() {
     
     let dayCards = (cardsByDay[index] && cardsByDay[index][w.star]) || [];
     
-    // 1. Фильтр по группе
+    // Фильтр: оставляем карточки, где есть наша группа
     dayCards = dayCards.filter(card => card.groups.some(g => g.group === state.group));
 
-    // 2. Фильтр по подгруппе
+    // Фильтр по подгруппе (если у карточки есть подгруппа, и мы выбрали подгруппу)
     if (state.subgroup) {
       dayCards = dayCards.filter(card => {
         if (!card.subgroups || card.subgroups.length === 0) return true;
@@ -485,20 +496,24 @@ function renderSchedule() {
       const empty = document.createElement("div"); empty.className = "day-empty"; empty.textContent = "Выходной";
       block.appendChild(empty); out.appendChild(block); return;
     }
+    
     const grid = document.createElement("div"); grid.className = "cards";
+    
     dayCards.forEach(card => {
       const el = document.createElement("article"); el.className = "card";
       const teachers = card.teachers.length ? card.teachers.join(", ") : "";
+      
+      // Чипсы ВСЕХ групп
       const chips = card.groups.map(g => {
         const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
         const isMine = (g.group === state.group);
         return `<span class="group-chip${isMine ? " mine" : ""}" style="--chip-c:${col}">${g.group}</span>`;
       }).join("");
       
-      // Убрали вывод "(подгр. X)" из карточки
       el.innerHTML = `<div class="t">${card.time}</div><div class="s">${card.subject}</div><div class="m">${card.room}${teachers ? " · " + teachers : ""}</div>${card.groups.length > 1 ? `<div class="card-groups">${chips}</div>` : ""}`;
       grid.appendChild(el);
     });
+    
     block.appendChild(grid); out.appendChild(block);
   });
 }
