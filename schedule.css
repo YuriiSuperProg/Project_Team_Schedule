@@ -1306,3 +1306,125 @@ body.profile-open .mascot {
     padding: 10px 16px !important;
   }
 }
+
+/* ============================================================
+   АНИМАЦИЯ ВЗЛЁТА СОКОЛА (РУКИ В СТОРОНЫ)
+   ============================================================ */
+.falcon-svg-wrap {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+/* Взлёт всего контейнера */
+@keyframes falconTakeOff {
+  0%   { transform: translateY(0) scale(1); }
+  15%  { transform: translateY(-20px) scale(1.05); }
+  40%  { transform: translateY(-40px) scale(1.1); }
+  70%  { transform: translateY(-20px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Левое крыло: выпрямляется влево (как рука) */
+@keyframes wingLeftFly {
+  0%   { transform: rotate(0deg); }
+  40%  { transform: rotate(40deg); }
+  70%  { transform: rotate(-10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Правое крыло: выпрямляется вправо (как рука) */
+@keyframes wingRightFly {
+  0%   { transform: rotate(0deg); }
+  40%  { transform: rotate(-40deg); }
+  70%  { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Сокол красится в цвет специальности через --c */
+.falcon-svg-wrap {
+  --falcon-main:   var(--c, #1769E0);
+  --falcon-dark:   color-mix(in srgb, var(--c, #1769E0) 65%, #000 35%);
+  --falcon-light:  color-mix(in srgb, var(--c, #1769E0) 55%, #fff 45%);
+  --falcon-accent: color-mix(in srgb, var(--c, #1769E0) 50%, #FFB300 50%);
+}
+
+.falcon-svg path,
+.falcon-svg g[stroke],
+.falcon-svg ellipse {
+  transition: fill 0.4s ease, stroke 0.4s ease;
+}
+
+/* Запуск анимации */
+.falcon-svg-wrap.flying {
+  animation: falconTakeOff 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.falcon-svg-wrap.flying #falconWingLeft {
+  animation: wingLeftFly 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.falcon-svg-wrap.flying #falconWingRight {
+  animation: wingRightFly 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+
+/* ============================================================
+   СОКОЛ: ДЫХАНИЕ + МОРГАНИЕ
+   ============================================================ */
+
+/* Дыхание: едва заметное покачивание объёма.
+   Длительность 4s — не синхронизируется с bounce (3s),
+   чтобы не было ощущения «механического» цикла. */
+@keyframes falconBreathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.02, 1.01); }
+}
+.falcon-svg {
+  animation: falconBreathe 4s ease-in-out infinite;
+  transform-origin: 50px 60px; /* центр тела, не голова */
+  will-change: transform;
+}
+
+/* ============================================================
+   СОКОЛ: СЛЕЖЕНИЕ ЗРАЧКАМИ
+   ============================================================ */
+#falconPupils {
+  transition: transform 0.12s ease-out;
+  will-change: transform;
+}
+
+/* На тач-устройствах — отключаем, там нет «курсора» */
+@media (pointer: coarse) {
+  #falconPupils { transition: none; }
+}
+
+/* ============================================================
+   СОКОЛ: ВЗМАХ ПРИ СМЕНЕ СПЕЦИАЛЬНОСТИ
+   ============================================================ */
+/* Переиспользуем wingLeftFly / wingRightFly, но без falconTakeOff.
+   Длительность короче — 0.6s, чтобы не мешало. */
+.falcon-svg-wrap.spec-flap #falconWingLeft {
+  animation: wingLeftFly 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.falcon-svg-wrap.spec-flap #falconWingRight {
+  animation: wingRightFly 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* На время взмаха — лёгкий «толчок» вверх, чтобы не выглядело как судорога */
+@keyframes falconSpecFlap {
+  0%   { transform: translateY(0)    scale(1); }
+  40%  { transform: translateY(-4px) scale(1.03); }
+  100% { transform: translateY(0)    scale(1); }
+}
+.falcon-svg-wrap.spec-flap {
+  animation: falconSpecFlap 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Если пользователь против анимаций — не взмахиваем */
+@media (prefers-reduced-motion: reduce) {
+  .falcon-svg-wrap.spec-flap,
+  .falcon-svg-wrap.spec-flap #falconWingLeft,
+  .falcon-svg-wrap.spec-flap #falconWingRight {
+    animation: none;
+  }
+}

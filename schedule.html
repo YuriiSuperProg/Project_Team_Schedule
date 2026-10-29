@@ -350,75 +350,110 @@
     </div>
   </div>
 
- <!-- МАСКОТ СОКОЛ-САПСАН (АНФАС) -->
+<!-- МАСКОТ СОКОЛ-САПСАН -->
 <div class="mascot" id="mascot" title="Привет! Я твой помощник.">
   <div class="mascot-bubble" id="mascotBubble">Привет! Выбери группу →</div>
-  <div class="falcon-svg-wrap">
-        <svg class="falcon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <!-- Тень -->
-      <ellipse cx="50" cy="96" rx="26" ry="3" fill="rgba(0,0,0,0.15)"/>
+  <div class="falcon-svg-wrap" id="falconMascot" title="Кликни, и я взлечу!">
+    <svg class="falcon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Тень -->
+  <ellipse cx="50" cy="96" rx="26" ry="3" fill="rgba(0,0,0,0.15)"/>
 
-      <!-- Хвост -->
-      <path d="M 40 85 L 30 98 L 45 90 L 50 100 L 55 90 L 70 98 L 60 85 Z" fill="#0F2A5C" />
+  <!-- Хвост: длиннее и уже (сапсан узнаётся по хвосту) -->
+  <path d="M 42 82 L 30 99 L 44 91 L 47 100 L 50 92 L 53 100 L 56 91 L 70 99 L 58 82 Z"
+        fill="var(--falcon-dark, #0F2A5C)" />
 
-      <!-- Тело -->
-      <path d="M 50 20 C 25 25 20 60 25 85 C 30 95 45 97 50 97 C 55 97 70 95 75 85 C 80 60 75 25 50 20 Z" fill="#1769E0" />
+  <!-- Тело: грудь уже, плечи шире — силуэт «каплей вниз» -->
+  <path d="M 50 22 C 30 26 24 58 28 84 C 33 94 46 97 50 97 C 54 97 67 94 72 84 C 76 58 70 26 50 22 Z"
+        fill="var(--falcon-main, #1769E0)" />
 
-      <!-- Крылья -->
-      <path d="M 25 45 C 10 60 10 80 20 92 C 30 95 40 80 40 60 Z" fill="#0F2A5C" />
-      <path d="M 75 45 C 90 60 90 80 80 92 C 70 95 60 80 60 60 Z" fill="#0F2A5C" />
+  <!-- ЛЕВОЕ КРЫЛО (id и transform-origin НЕ трогаем — на них висит взлёт) -->
+  <g id="falconWingLeft" style="transform-origin: 30px 50px;">
+    <path d="M 28 44 C 12 58 8 80 18 92 C 28 96 40 82 40 60 Z"
+          fill="var(--falcon-dark, #0F2A5C)" />
+    <!-- Перья: длиннее, веером -->
+    <g stroke="var(--falcon-light, #4C9AFF)" stroke-width="1.4" fill="none" opacity="0.55" stroke-linecap="round">
+      <path d="M 16 58 Q 12 70 18 82" />
+      <path d="M 22 53 Q 18 66 24 78" />
+      <path d="M 29 50 Q 26 63 31 76" />
+      <path d="M 35 50 Q 33 62 37 74" />
+    </g>
+  </g>
 
-      <!-- Линии перьев -->
-      <g stroke="#4C9AFF" stroke-width="1.5" fill="none" opacity="0.5">
-        <path d="M 18 60 Q 15 70 20 80" />
-        <path d="M 25 55 Q 22 65 27 75" />
-        <path d="M 32 52 Q 30 62 35 72" />
-        <path d="M 82 60 Q 85 70 80 80" />
-        <path d="M 75 55 Q 78 65 73 75" />
-        <path d="M 68 52 Q 70 62 65 72" />
-      </g>
+  <!-- ПРАВОЕ КРЫЛО -->
+  <g id="falconWingRight" style="transform-origin: 70px 50px;">
+    <path d="M 72 44 C 88 58 92 80 82 92 C 72 96 60 82 60 60 Z"
+          fill="var(--falcon-dark, #0F2A5C)" />
+    <g stroke="var(--falcon-light, #4C9AFF)" stroke-width="1.4" fill="none" opacity="0.55" stroke-linecap="round">
+      <path d="M 84 58 Q 88 70 82 82" />
+      <path d="M 78 53 Q 82 66 76 78" />
+      <path d="M 71 50 Q 74 63 69 76" />
+      <path d="M 65 50 Q 67 62 63 74" />
+    </g>
+  </g>
 
-      <!-- Голова -->
-      <path d="M 50 10 C 35 10 30 20 32 30 C 34 38 42 40 50 40 C 58 40 66 38 68 30 C 70 20 65 10 50 10 Z" fill="#1769E0" />
-      
-      <!-- Белая маска -->
-      <path d="M 36 22 C 34 28 36 34 42 36 C 46 38 54 38 58 36 C 64 34 66 28 64 22 Z" fill="#F7F9FC" />
+  <!-- Голова: уже, с угловатым затылком -->
+  <path d="M 50 8 C 38 8 31 16 30 26 C 29 34 34 40 42 41 L 50 42 L 58 41 C 66 40 71 34 70 26 C 69 16 62 8 50 8 Z"
+        fill="var(--falcon-main, #1769E0)" />
 
-      <!-- Черные усы -->
-      <path d="M 30 22 L 36 30 L 40 22 Z" fill="#0F2A5C" />
-      <path d="M 70 22 L 64 30 L 60 22 Z" fill="#0F2A5C" />
+  <!-- Надбровные дуги: тёмные клины над глазами — «злой» взгляд -->
+  <path d="M 33 22 L 43 27 L 41 21 Z" fill="var(--falcon-dark, #0F2A5C)" />
+  <path d="M 67 22 L 57 27 L 59 21 Z" fill="var(--falcon-dark, #0F2A5C)" />
 
-      <!-- Глаза -->
-      <circle cx="42" cy="24" r="4.5" fill="#FFB300" stroke="#0F172A" stroke-width="1.5"/>
-      <circle cx="58" cy="24" r="4.5" fill="#FFB300" stroke="#0F172A" stroke-width="1.5"/>
-      <circle cx="42" cy="24" r="1.5" fill="#0F172A"/>
-      <circle cx="58" cy="24" r="1.5" fill="#0F172A"/>
-      <circle cx="40.5" cy="22.5" r="0.8" fill="#FFF"/>
-      <circle cx="56.5" cy="22.5" r="0.8" fill="#FFF"/>
+  <!-- Белая маска (сапсан) — чуть уже, повторяет форму головы -->
+  <path d="M 37 24 C 35 30 37 36 43 38 C 47 39 53 39 57 38 C 63 36 65 30 63 24 Z" fill="#F7F9FC" />
 
-      <!-- Клюв -->
-      <path d="M 46 28 L 50 40 L 54 28 Q 50 34 46 28 Z" fill="#FFB300" />
-      <path d="M 49 36 L 50 40 L 51 36 Z" fill="#333" />
+  <!-- «Усы» сапсана: вертикальные тёмные полосы от глаз вниз -->
+  <path d="M 32 26 L 36 32 L 40 26 Z" fill="var(--falcon-dark, #0F2A5C)" />
+  <path d="M 68 26 L 64 32 L 60 26 Z" fill="var(--falcon-dark, #0F2A5C)" />
 
-      <!-- Лапы -->
-      <g stroke="#FF8C00" stroke-width="3" stroke-linecap="round" fill="none">
-        <path d="M 44 95 L 42 100" />
-        <path d="M 46 95 L 46 100" />
-        <path d="M 48 95 L 50 100" />
-        <path d="M 52 95 L 50 100" />
-        <path d="M 54 95 L 54 100" />
-        <path d="M 56 95 L 58 100" />
-      </g>
-      <!-- Когти -->
-      <g stroke="#333" stroke-width="2" stroke-linecap="round" fill="none">
-        <path d="M 42 100 L 40 100" />
-        <path d="M 46 100 L 46 100" />
-        <path d="M 50 100 L 52 100" />
-        <path d="M 50 100 L 48 100" />
-        <path d="M 54 100 L 54 100" />
-        <path d="M 58 100 L 60 100" />
-      </g>
-    </svg>
+  <!-- Пестрины на груди: 8 крапинок цвета --falcon-dark -->
+  <g fill="var(--falcon-dark, #0F2A5C)" opacity="0.28">
+    <circle cx="44" cy="52" r="1.1"/>
+    <circle cx="50" cy="50" r="1.2"/>
+    <circle cx="56" cy="52" r="1.1"/>
+    <circle cx="42" cy="58" r="1.0"/>
+    <circle cx="48" cy="57" r="1.1"/>
+    <circle cx="54" cy="58" r="1.0"/>
+    <circle cx="46" cy="64" r="1.0"/>
+    <circle cx="52" cy="64" r="1.0"/>
+  </g>
+
+  <!-- Глаза-«миндаль»: вертикальные, с янтарной радужкой и зрачком -->
+    <!-- Левый глаз: радужка -->
+  <path d="M 38 24 Q 41.5 20 45 24 Q 41.5 28 38 24 Z" fill="#FFB300" stroke="#0F172A" stroke-width="1.3"/>
+  <!-- Правый глаз: радужка -->
+  <path d="M 55 24 Q 58.5 20 62 24 Q 58.5 28 55 24 Z" fill="#FFB300" stroke="#0F172A" stroke-width="1.3"/>
+
+  <!-- ЗРАЧКИ (группа для слежения) -->
+  <g id="falconPupils">
+    <ellipse class="falcon-pupil" cx="41.5" cy="24" rx="0.9" ry="1.8" fill="#0F172A"/>
+    <circle  class="falcon-pupil" cx="40.6" cy="22.9" r="0.55" fill="#FFF"/>
+    <ellipse class="falcon-pupil" cx="58.5" cy="24" rx="0.9" ry="1.8" fill="#0F172A"/>
+    <circle  class="falcon-pupil" cx="57.6" cy="22.9" r="0.55" fill="#FFF"/>
+  </g>
+
+  <!-- Клюв-крючок: надклювье с загибом вниз + подклювье -->
+  <!-- Надклювье (верхний крючок) -->
+  <path d="M 46 28 Q 47 33 50 37 Q 53 33 54 28 Q 50 31 46 28 Z" fill="#FFB300"/>
+  <!-- Тёмный кончик крючка -->
+  <path d="M 49 35 L 50 38 L 51 35 Z" fill="#1A1A1A"/>
+  <!-- Подклювье (нижняя часть) -->
+  <path d="M 47.5 31 Q 50 34 52.5 31 Q 50 32.5 47.5 31 Z" fill="#D99400"/>
+
+  <!-- Лапы: три пальца вперёд + один назад, когти -->
+  <g stroke="var(--falcon-accent, #FF8C00)" stroke-width="2.4" stroke-linecap="round" fill="none">
+    <!-- Левая лапа -->
+    <path d="M 44 95 L 42 99"/>
+    <path d="M 46 95 L 46 99"/>
+    <path d="M 48 95 L 50 99"/>
+    <path d="M 46 95 L 43.5 92.5"/>
+    <!-- Правая лапа -->
+    <path d="M 54 95 L 54 99"/>
+    <path d="M 56 95 L 56 99"/>
+    <path d="M 58 95 L 60 99"/>
+    <path d="M 56 95 L 58.5 92.5"/>
+  </g>
+</svg>
   </div>
 </div>
 

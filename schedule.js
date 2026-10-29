@@ -364,6 +364,21 @@ function applyColor(spec) {
   }
 }
 
+/* ============================================================
+   СОКОЛ: КОРОТКИЙ ВЗМАХ ПРИ СМЕНЕ СПЕЦИАЛЬНОСТИ
+   ============================================================ */
+function flapFalcon() {
+  const falcon = document.querySelector(".falcon-svg-wrap");
+  if (!falcon) return;
+  if (falcon.classList.contains("flying")) return;      // не мешаем полноценному взлёту
+  falcon.classList.remove("spec-flap");
+  void falcon.offsetWidth;                              // reflow, чтобы animation перезапустилась
+  falcon.classList.add("spec-flap");
+  falcon.addEventListener("animationend", () => {
+    falcon.classList.remove("spec-flap");
+  }, { once: true });
+}
+
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
@@ -400,23 +415,33 @@ function renderChips(containerId, items, current, onClick, label = x => x) {
 
 function renderFilters() {
   if (window.__renderTeacherFilters && state.viewTeacher) return window.__renderTeacherFilters();
+
   renderChips("specs", Object.keys(SCHEDULE), state.spec, spec => {
-    state.spec = spec; state.course = null; state.group = null; state.subgroup = null; state.week = currentWeek();
+    state.spec = spec;
+    state.course = null;
+    state.group = null;
+    state.subgroup = null;
+    state.week = currentWeek();
     applyColor(spec);
+    flapFalcon();                                   // ← 2.4: взмах крыльями при смене спец.
     if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
     showRandomWish(true);
     renderAll();
     window.dispatchEvent(new CustomEvent("specChanged", { detail: spec }));
   });
-  
+
   if (state.spec) {
     renderChips("courses", Object.keys(SCHEDULE[state.spec]).sort(), state.course, course => {
-      state.course = course; state.group = null; state.subgroup = null;
+      state.course = course;
+      state.group = null;
+      state.subgroup = null;
       if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
       renderAll();
     }, c => c + " курс");
-  } else $("courses").innerHTML = "";
-  
+  } else {
+    $("courses").innerHTML = "";
+  }
+
   if (state.spec && state.course) {
     renderChips("groups", Object.keys(SCHEDULE[state.spec][state.course]).sort(), state.group, group => {
       state.group = group;
@@ -424,23 +449,25 @@ function renderFilters() {
       if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
       renderAll();
     });
-  } else $("groups").innerHTML = "";
+  } else {
+    $("groups").innerHTML = "";
+  }
 
   // ЛОГИКА ПОДГРУПП
   const rowSub = $("rowSubgroups");
   const subgroupsBox = $("subgroups");
-  
+
   if (state.spec && state.course && state.group) {
     const groupData = SCHEDULE[state.spec][state.course][state.group];
-    // Проверяем и p.subgroup, и p.subgroups!
-    const hasSubgroups = Object.values(groupData).some(pairs => 
+    // Проверяем и p.subgroup, и p.subgroups
+    const hasSubgroups = Object.values(groupData).some(pairs =>
       pairs.some(p => p.subgroup || p.subgroups)
     );
 
     if (hasSubgroups && subgroupsBox) {
       rowSub.style.display = "flex";
       subgroupsBox.innerHTML = "";
-      
+
       [1, 2].forEach(sub => {
         const b = document.createElement("button");
         b.className = "chip" + (state.subgroup === sub ? " on" : "");
@@ -841,3 +868,92 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 1000);
 });
+
+/* ============================================================
+   СОКОЛ: СЛЕЖЕНИЕ ЗРАЧКАМИ ЗА КУРСОРОМ
+   ============================================================ */
+(function initFalconTracking() {
+  const pupils = document.getElementById('falconPupils');
+  if (!pupils) return;
+
+  // На тач-устройствах курсора нет — выходим
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  // Уважаем reduced-motion
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const MAX_OFFSET = 2;      // максимум смещения в px (в системе viewBox)
+  const INFLUENCE_RADIUS = 400; // на каком расстоянии от сокола начинаем реагировать
+  let rafId = null;
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+
+  function onMove(e) {
+    // Позиция сокола на экране
+    const svg = pupils.ownerSVGElement;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const falconCX = rect.left + rect.width / 2;
+    const falconCY = rect.top + rect.height / 2;
+
+    const dx = e.clientX - falconCX;
+    const dy = e.clientY - falconCY;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist > INFLUENCE_RADIUS) {
+      targetX = 0;
+      targetY = 0;
+    } else {
+      // Нормализуем вектор и умножаем на MAX_OFFSET.
+      // Мягкое затухание: чем ближе — тем сильнее сдвиг (но не больше MAX_OFFSET).
+      const strength = 1 - dist / INFLUENCE_RADIUS;
+      const angle = Math.atan2(dy, dx);
+      targetX = Math.cos(angle) * MAX_OFFSET * strength;
+      targetY = Math.sin(angle) * MAX_OFFSET * strength;
+    }
+
+    scheduleFrame();
+  }
+
+  function scheduleFrame() {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function tick() {
+    rafId = null;
+    // Плавная интерполяция (lerp) к цели
+    currentX += (targetX - currentX) * 0.25;
+    currentY += (targetY - currentY) * 0.25;
+
+    // Если почти дошли — фиксируем и останавливаемся
+    if (Math.abs(targetX - currentX) < 0.01 && Math.abs(targetY - currentY) < 0.01) {
+      currentX = targetX;
+      currentY = targetY;
+    } else {
+      scheduleFrame();
+    }
+
+    pupils.style.transform = `translate(${currentX}px, ${currentY}px)`;
+  }
+
+  document.addEventListener('mousemove', onMove, { passive: true });
+
+  // При уходе курсора со страницы — возвращаем зрачки в центр
+  document.addEventListener('mouseleave', () => {
+    targetX = 0;
+    targetY = 0;
+    scheduleFrame();
+  });
+
+  // При скролле позиция сокола меняется — пересчитываем при следующем mousemove.
+  // (onMove всегда читает rect заново, так что отдельный обработчик не нужен.)
+
+  // Если пользователь включит reduced-motion на лету — сбрасываем
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change', (e) => {
+    if (e.matches) {
+      pupils.style.transform = '';
+      document.removeEventListener('mousemove', onMove);
+    }
+  });
+})();
