@@ -279,14 +279,12 @@ body.profile-open .mascot {
   transform: translateY(0) scale(1);
 }
 
-/* Мобильный адаптив для маскота */
 @media (max-width: 640px) {
-  .mascot { bottom: 16px; left: 16px; }
-  body.modal-open .mascot { right: 16px !important; bottom: 16px !important; }
-  .falcon-svg-wrap { width: 70px; height: 70px; }
-  .mascot-bubble { font-size: 0.75rem; padding: 8px 12px; }
+  .falcon-svg-wrap {
+    filter: none; /* просто убираем тяжёлую тень на мобилках */
+    /* box-shadow и border-radius убираем, чтобы не было белого круга */
+  }
 }
-
 /* ============ ОСТАЛЬНОЙ КОНТЕНТ ============ */
 .greeting {
   display: flex;
@@ -1356,7 +1354,7 @@ body.profile-open .mascot {
 
 /* Запуск анимации */
 .falcon-svg-wrap.flying {
-  animation: falconTakeOff 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
 }
 
 .falcon-svg-wrap.flying #falconWingLeft {
@@ -1417,7 +1415,7 @@ body.profile-open .mascot {
   100% { transform: translateY(0)    scale(1); }
 }
 .falcon-svg-wrap.spec-flap {
-  animation: falconSpecFlap 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
 }
 
 /* Если пользователь против анимаций — не взмахиваем */

@@ -999,13 +999,27 @@ mascot.addEventListener("click", () => {
   const reaction = clickCount % 2;
   clickCount++;
 
-  if (reaction === 0) {
+    if (reaction === 0) {
     if (falconWrap) {
       falconWrap.classList.add("flying");
-      setTimeout(() => falconWrap.classList.remove("flying"), 1200);
+      
+      // Производительность: убираем will-change после окончания анимации
+      const onFlyEnd = () => {
+        falconWrap.classList.remove("flying");
+        falconWrap.style.willChange = "auto"; // сбрасываем
+        falconWrap.removeEventListener("animationend", onFlyEnd);
+      };
+      falconWrap.style.willChange = "transform";
+      falconWrap.addEventListener("animationend", onFlyEnd, { once: true });
+
+      // Страховка на случай, если animationend не сработает (например, при reduced-motion)
+      setTimeout(() => {
+        falconWrap.classList.remove("flying");
+        falconWrap.style.willChange = "auto";
+      }, 1300);
     }
     sayPhrase("Вжух! ✈️", 2000);
-  } else {
+  }else {
     if (falconWrap) {
       falconWrap.classList.add("chirping");
       setTimeout(() => falconWrap.classList.remove("chirping"), 600);
