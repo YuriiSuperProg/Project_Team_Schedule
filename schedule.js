@@ -672,6 +672,9 @@ function renderTomorrow() {
 function renderAll() {
   renderFilters(); renderSchedule(); renderDayProgress(); renderTomorrow(); showRandomWish();
   if (window.renderCurrentGroupBanner) window.renderCurrentGroupBanner(state.spec, state.course, state.group);
+  if (typeof maybeSayContextual === "function") {
+    setTimeout(() => maybeSayContextual(false), 300);
+  }
 }
 
 function shiftWeek(d) {
@@ -798,57 +801,270 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-//  МАСКОТ СОВА
+//  МАСКОТ СОКОЛ: КОНТЕКСТНЫЕ РЕПЛИКИ
 // ============================================================
+
+/* ============================================================
+   СОКОЛ: НАСТРОЕНИЕ ПО ВРЕМЕНИ СУТОК
+   ============================================================ */
+function applyFalconMood() {
+  const hour = new Date().getHours();
+  const root = document.documentElement;
+  root.classList.remove("falcon-morning", "falcon-day", "falcon-evening", "falcon-night");
+
+  let phase;
+  if (hour >= 6 && hour < 11)       phase = "falcon-morning";
+  else if (hour >= 11 && hour < 18) phase = "falcon-day";
+  else if (hour >= 18 && hour < 23) phase = "falcon-evening";
+  else                               phase = "falcon-night";
+
+  root.classList.add(phase);
+  root.dataset.falconPhase = phase.replace("falcon-", "");
+}
+
+// Общая функция «сказать» — доступна из других мест
+function sayPhrase(text, duration = 4000) {
+  const bubble = document.getElementById("mascotBubble");
+  if (!bubble) return;
+  bubble.textContent = text;
+  bubble.classList.add("show");
+  clearTimeout(sayPhrase._t);
+  sayPhrase._t = setTimeout(() => bubble.classList.remove("show"), duration);
+}
+
+/**
+ * Определяет, что сказать, исходя из текущего состояния.
+ * Возвращает { text, priority } или null.
+ * priority: чем больше — тем «важнее» реплика (чтобы не перебивать друг друга).
+ */
+function getMascotPhrase() {
+  const now = new Date();
+  const hour = now.getHours();
+  const dayIndex = (now.getDay() + 6) % 7; // 0 = Пн, 6 = Вс
+  const nowMin = hour * 60 + now.getMinutes();
+
+  // 1. Группа не выбрана — самое важное
+  if (!state.spec || !state.course || !state.group) {
+    return { text: "Выбери группу — и я покажу пары 👇", priority: 100 };
+  }
+
+  // 2. Преподавательский режим
+  if (state.viewTeacher) {
+    return { text: "Режим преподавателя. Найди себя через 🔍", priority: 60 };
+  }
+
+  // 3. Выходной (Сб/Вс)
+  if (dayIndex >= 5) {
+    return { text: "Сегодня выходной. Отдыхай! 🎉", priority: 70 };
+  }
+
+  // 4. Смотрим чужую неделю — не говорим про «сейчас»
+  if (state.week !== currentWeek()) {
+    return { text: `Ты смотришь неделю ${WEEK_LIST[state.week].star}. Вернись к текущей →`, priority: 50 };
+  }
+
+  // 5. Расписание на сегодня
+  const raw = SCHEDULE[state.spec]?.[state.course]?.[state.group];
+  if (!raw) return null;
+  let pairs = raw[dayIndex];
+  if (!pairs || !pairs.length) {
+    return { text: "Сегодня пар нет — свободный день! 🌿", priority: 80 };
+  }
+  const w = WEEK_LIST[state.week];
+  pairs = pairs.filter(p => !p.star || p.star === w.star);
+  if (!pairs.length) {
+    return { text: "Сегодня пар нет — свободный день! 🌿", priority: 80 };
+  }
+
+  // Сортируем пары по номеру и времени
+  const BELL_MIN = {};
+  Object.keys(BELLS).forEach(n => {
+    const [s, e] = BELLS[n].split("–");
+    BELL_MIN[n] = { start: toMin(s), end: toMin(e), num: Number(n) };
+  });
+  const seen = new Set();
+  const sorted = pairs
+    .filter(p => BELL_MIN[p.number])
+    .filter(p => { if (seen.has(p.number)) return false; seen.add(p.number); return true; })
+    .map(p => ({ ...BELL_MIN[p.number], pair: p }))
+    .sort((a, b) => a.start - b.start);
+
+  if (!sorted.length) return null;
+  const dayStart = sorted[0].start;
+  const dayEnd = sorted[sorted.length - 1].end;
+
+  // 6. До начала дня
+  if (nowMin < dayStart) {
+    const firstTime = BELLS[sorted[0].num].split("–")[0];
+    const minsLeft = dayStart - nowMin;
+    if (minsLeft <= 60) {
+      return { text: `Скоро первая пара в ${firstTime}. Собирайся! ⏰`, priority: 90 };
+    }
+    return { text: `Доброе утро! Первая пара в ${firstTime}`, priority: 40 };
+  }
+
+  // 7. После последней пары
+  if (nowMin > dayEnd) {
+    if (dayIndex === 4) {
+      return { text: "Ура, выходные! 🎉 Отдыхай как следует", priority: 85 };
+    }
+    return { text: "Пары закончились. Хорошего отдыха! 🌙", priority: 60 };
+  }
+
+  // 8. Идёт пара
+  const current = sorted.find(item => nowMin >= item.start && nowMin <= item.end);
+  if (current) {
+    const subject = current.pair.text.split("преп.")[0].trim().replace(/\s*\(.*?\)\s*/g, "");
+    const minsLeft = current.end - nowMin;
+    if (minsLeft <= 5) {
+      return { text: `Скоро звонок! ${subject} заканчивается`, priority: 75 };
+    }
+    return { text: `Сейчас: ${subject}`, priority: 65 };
+  }
+
+  // 9. Перемена
+  for (let i = 0; i < sorted.length - 1; i++) {
+    if (nowMin > sorted[i].end && nowMin < sorted[i + 1].start) {
+      const next = sorted[i + 1];
+      const minsToNext = next.start - nowMin;
+      const nextSubject = next.pair.text.split("преп.")[0].trim().replace(/\s*\(.*?\)\s*/g, "");
+      if (minsToNext <= 2) {
+        return { text: `Перемена кончается! Следующая — ${nextSubject}`, priority: 70 };
+      }
+      return { text: `Перемена. ${minsToNext} мин до «${nextSubject}»`, priority: 55 };
+    }
+  }
+
+  return null;
+}
+
+// Показать реплику, если она «важнее» предыдущей за последние N секунд
+let _lastPhrasePriority = 0;
+let _lastPhraseTime = 0;
+function maybeSayContextual(force = false) {
+  const phrase = getMascotPhrase();
+  if (!phrase) return;
+  const now = Date.now();
+  // Не перебиваем важную реплику в течение 20 секунд
+  if (!force && now - _lastPhraseTime < 20000 && phrase.priority < _lastPhrasePriority) return;
+  _lastPhrasePriority = phrase.priority;
+  _lastPhraseTime = now;
+  sayPhrase(phrase.text);
+}
+
+// Инициализация маскота
 document.addEventListener("DOMContentLoaded", () => {
   const mascot = document.getElementById("mascot");
   const bubble = document.getElementById("mascotBubble");
-  
   if (!mascot || !bubble) return;
 
-  let bubbleTimeout;
-
-  function say(text, duration = 3000) {
-    bubble.textContent = text;
-    bubble.classList.add("show");
-    clearTimeout(bubbleTimeout);
-    bubbleTimeout = setTimeout(() => {
-      bubble.classList.remove("show");
-    }, duration);
-  }
-
+  // Первое приветствие — через 1.5 сек после загрузки
   setTimeout(() => {
     if (localStorage.getItem("savedGroup")) {
-      say("О, ты вернулся! 👋");
+      maybeSayContextual(true);
     } else {
-      say("Привет! Выбери группу →");
+      sayPhrase("Привет! Выбери группу →");
     }
   }, 1500);
 
-  const phrases = [
-    "Учись хорошо! 📚",
-    "Не забудь про перемену! ☕",
-    "Ты справишься! 💪",
-    "Хорошего дня! 🌟",
-    "Сова всегда на твоей стороне 🦉",
-    "Не забудь сделать домашку! 📝",
-    "Отдохни немного, ты много работаешь 😉"
-  ];
-  
-  mascot.addEventListener("click", () => {
-    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-    say(randomPhrase);
-    mascot.style.transform = "scale(0.9) translateY(5px)";
-    setTimeout(() => {
-      mascot.style.transform = "";
-    }, 150);
-  });
+// ============================================================
+//  РОТАЦИЯ РЕАКЦИИ НА КЛИК: взлёт ↔ чириканье
+// ============================================================
+const falconWrap = document.getElementById("falconMascot");
+let clickCount = 0;
+let lastClickTime = 0;
+const CLICK_RESET_MS = 10000;
 
+function spawnNote() {
+  if (!falconWrap) return;
+  const old = falconWrap.querySelector(".falcon-note");
+  if (old) old.remove();
+
+  const note = document.createElement("span");
+  note.className = "falcon-note";
+  note.textContent = "🎵";
+  falconWrap.appendChild(note);
+  requestAnimationFrame(() => note.classList.add("fly"));
+  setTimeout(() => note.remove(), 1000);
+}
+
+// 1. Сначала обработчик КЛИКА
+mascot.addEventListener("click", () => {
+  if (falconWrap && falconWrap.classList.contains("flying")) return;
+
+  const now = Date.now();
+  if (now - lastClickTime > CLICK_RESET_MS) clickCount = 0;
+  lastClickTime = now;
+
+  const reaction = clickCount % 2;
+  clickCount++;
+
+  if (reaction === 0) {
+    if (falconWrap) {
+      falconWrap.classList.add("flying");
+      setTimeout(() => falconWrap.classList.remove("flying"), 1200);
+    }
+    sayPhrase("Вжух! ✈️", 2000);
+  } else {
+    if (falconWrap) {
+      falconWrap.classList.add("chirping");
+      setTimeout(() => falconWrap.classList.remove("chirping"), 600);
+    }
+    spawnNote();
+    sayPhrase("Чирик! 🎵", 2000);
+  }
+}); // ← Вот здесь закрывается клик
+
+// 2. А ТЕПЕРЬ (ОТДЕЛЬНО, СНАРУЖИ) обработчик КЛАВИАТУРЫ
+if (falconWrap) {
+  falconWrap.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();          // чтобы Space не скроллил страницу
+      mascot.click();              // вызываем тот же обработчик, что и мышкой
+    }
+  });
+}
+
+  // Реакция на смену специальности
   window.addEventListener("specChanged", (e) => {
     const specName = e.detail;
-    say(`О, ${specName} — крутой выбор! 🚀`);
+    sayPhrase(`О, ${specName} — крутой выбор! 🚀`);
   });
+
+  // Реакция на открытие профиля
+  const profileBtns = document.querySelectorAll(".open-profile-btn");
+  profileBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      setTimeout(() => sayPhrase("О, достижения? Покажи, что собрал 🏆"), 400);
+    });
+  });
+
+  // При возврате на вкладку — обновляем реплику
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      maybeSayContextual(false);
+    }
+  });
+
+  
+  // Обновлять реплику раз в 5 минут
+  setInterval(() => {
+    if (!document.hidden) maybeSayContextual(false);
+  }, 5 * 60 * 1000);
+  // Настроение по времени суток
+  applyFalconMood();
+  setInterval(applyFalconMood, 60 * 1000);
 });
+
+// Хук: после renderAll обновляем реплику
+// (renderAll вызывается из schedule.js при смене группы/курса/спец.)
+const _origRenderAll = window.renderAll;
+if (typeof _origRenderAll === "function") {
+  window.renderAll = function () {
+    _origRenderAll.apply(this, arguments);
+    setTimeout(() => maybeSayContextual(false), 300);
+  };
+}
 
 // ============================================================
 //  АВТОМАТИЧЕСКАЯ ЧИСТКА ИМЕНИ ПРИ ЗАГРУЗКЕ

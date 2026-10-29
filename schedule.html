@@ -351,10 +351,13 @@
   </div>
 
 <!-- МАСКОТ СОКОЛ-САПСАН -->
-<div class="mascot" id="mascot" title="Привет! Я твой помощник.">
-  <div class="mascot-bubble" id="mascotBubble">Привет! Выбери группу →</div>
-  <div class="falcon-svg-wrap" id="falconMascot" title="Кликни, и я взлечу!">
-    <svg class="falcon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<div class="mascot" id="mascot">
+  <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite">Привет! Выбери группу →</div>
+  <div class="falcon-svg-wrap" id="falconMascot" 
+       role="button" 
+       tabindex="0" 
+       aria-label="Сокол-помощник. Нажми Enter или Пробел, чтобы взаимодействовать">
+<svg class="falcon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <!-- Тень -->
   <ellipse cx="50" cy="96" rx="26" ry="3" fill="rgba(0,0,0,0.15)"/>
 
@@ -432,14 +435,15 @@
     <circle  class="falcon-pupil" cx="57.6" cy="22.9" r="0.55" fill="#FFF"/>
   </g>
 
-  <!-- Клюв-крючок: надклювье с загибом вниз + подклювье -->
-  <!-- Надклювье (верхний крючок) -->
-  <path d="M 46 28 Q 47 33 50 37 Q 53 33 54 28 Q 50 31 46 28 Z" fill="#FFB300"/>
-  <!-- Тёмный кончик крючка -->
-  <path d="M 49 35 L 50 38 L 51 35 Z" fill="#1A1A1A"/>
-  <!-- Подклювье (нижняя часть) -->
-  <path d="M 47.5 31 Q 50 34 52.5 31 Q 50 32.5 47.5 31 Z" fill="#D99400"/>
-
+    <!-- КЛЮВ (группа для чириканья) -->
+  <g id="falconBeak" style="transform-origin: 50px 31px;">
+    <!-- Надклювье (верхний крючок) -->
+    <path d="M 46 28 Q 47 33 50 37 Q 53 33 54 28 Q 50 31 46 28 Z" fill="#FFB300"/>
+    <!-- Тёмный кончик крючка -->
+    <path d="M 49 35 L 50 38 L 51 35 Z" fill="#1A1A1A"/>
+    <!-- Подклювье (нижняя часть) -->
+    <path d="M 47.5 31 Q 50 34 52.5 31 Q 50 32.5 47.5 31 Z" fill="#D99400"/>
+  </g>
   <!-- Лапы: три пальца вперёд + один назад, когти -->
   <g stroke="var(--falcon-accent, #FF8C00)" stroke-width="2.4" stroke-linecap="round" fill="none">
     <!-- Левая лапа -->

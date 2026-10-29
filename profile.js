@@ -962,30 +962,4 @@ document.addEventListener("DOMContentLoaded", () => {
     clearTimeout(clickTimer);
     clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
   });
-
-   // ============================================================
-  //  ВЗЛЁТ СОКОЛА ПРИ КЛИКЕ
-  // ============================================================
-  const falconMascot = document.getElementById("falconMascot");
-  if (falconMascot) {
-    falconMascot.addEventListener("click", () => {
-      // Если уже летит — не запускаем повторно
-      if (falconMascot.classList.contains("flying")) return;
-      
-      falconMascot.classList.add("flying");
-      
-      // Убираем класс через 1.2 секунды (когда анимация закончится)
-      setTimeout(() => {
-        falconMascot.classList.remove("flying");
-      }, 1200);
-
-      // Меняем текст в облачке
-      const bubble = document.getElementById("mascotBubble");
-      if (bubble) {
-        bubble.textContent = "Вжух! ✈️";
-        bubble.classList.add("show");
-        setTimeout(() => bubble.classList.remove("show"), 2000);
-      }
-    });
-  }
 });
