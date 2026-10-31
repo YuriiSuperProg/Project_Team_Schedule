@@ -7,6 +7,7 @@
   <title>Расписание — ПараЗвёзд</title>
   <link rel="stylesheet" href="schedule.css">
   <link rel="stylesheet" href="notifications.css">
+  <link rel="stylesheet" href="atmosphere.css">
   <meta name="google" content="notranslate">
   
   <!-- Анти-мигание: проверяем роль до отрисовки страницы -->
@@ -17,9 +18,16 @@
   </script>
 </head>
 <body>
-
-  <div class="aurora-bg"></div>
-  <div class="star-field" id="starField"></div>
+  <body>
+  <div class="page-bg"></div>
+  <div class="bg-decor" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+  </div>
+  <div class="bg-particles" id="bgParticles" aria-hidden="true"></div>
+  <div class="bg-sparkles" id="bgSparkles" aria-hidden="true"></div>
+  <div class="star-field" id="starField" aria-hidden="true"></div>
 
   <!-- ШАПКА -->
   <header>
@@ -423,5 +431,6 @@
   <script src="stars.js"></script>
   <script src="profile.js"></script>
   <script src="notifications.js"></script>
+  <script src="bg-particles.js"></script>
 </body>
 </html>

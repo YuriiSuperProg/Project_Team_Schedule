@@ -114,30 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let modalOpen = false;
   let lastFocused = null;
 
-  // ---------- 3D-наклон ----------
-  const TILT_MAX = 10;
-  const SCALE    = 1.04;
-
-  function onMove(e) {
-    if (modalOpen || !isDesktop()) return;
-    const card = e.currentTarget;
-    const r = card.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width;
-    const py = (e.clientY - r.top)  / r.height;
-    const rotY = (px - 0.5) * 2 * TILT_MAX;
-    const rotX = -(py - 0.5) * 2 * TILT_MAX;
-    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(${SCALE},${SCALE},${SCALE})`;
-  }
-
-  function onLeave(e) {
-    const card = e.currentTarget;
-    card.style.transform = "";
-  }
-
-  cards.forEach(card => {
-    card.addEventListener("mousemove", onMove);
-    card.addEventListener("mouseleave", onLeave);
-  });
+  
 
   // ---------- Модалка с FLIP ----------
   function openModal(card) {
@@ -375,49 +352,43 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-//  3D-НАКЛОН ЭКОСИСТЕМЫ (СЛЕЖКА ЗА МЫШКОЙ)
+//  ЭФФЕКТ «МАГНИТ» + БЛИК ДЛЯ КАРТОЧЕК
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
   const cards = document.querySelectorAll(".eco-card");
+  const isTouch = window.matchMedia("(pointer: coarse)").matches;
+  
+  if (isTouch) return; // На телефонах отключаем
 
   cards.forEach(card => {
-    // При движении мыши над карточкой
+    // Создаем блик
+    const glow = document.createElement("div");
+    glow.className = "eco-card-glow";
+    
+    // ВАЖНО: вставляем блик ПЕРВЫМ элементом (под превью и текстом)
+    card.insertBefore(glow, card.firstChild);
+
     card.addEventListener("mousemove", (e) => {
       const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left; // Позиция мыши по X внутри карточки
-      const y = e.clientY - rect.top;  // Позиция мыши по Y внутри карточки
-      
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // Двигаем блик
+      glow.style.opacity = "1";
+      glow.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+
+      // Двигаем карточку («Магнит»)
       const centerX = rect.width / 2;
       const centerY = rect.height / 2;
+      const moveX = (x - centerX) * 0.03;
+      const moveY = (y - centerY) * 0.03;
       
-      // Вычисляем угол наклона (чем дальше от центра, тем больше наклон)
-      const rotateX = ((y - centerY) / centerY) * -10; // Максимальный наклон 10 градусов
-      const rotateY = ((x - centerX) / centerX) * 10;
-
-      // Применяем 3D-трансформацию
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-      
-      // Делаем превью внутри карточки чуть более объемным
-      const preview = card.querySelector('.eco-preview');
-      if (preview) {
-        preview.style.transform = `translateZ(20px)`; // Сдвигаем превью вперед
-      }
+      card.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) scale3d(1.02, 1.02, 1.02)`;
     });
 
-    // Когда мышка уходит с карточки — плавно возвращаем её в исходное положение
     card.addEventListener("mouseleave", () => {
-      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-      card.style.transition = "transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1)";
-      
-      const preview = card.querySelector('.eco-preview');
-      if (preview) {
-        preview.style.transform = `translateZ(0)`;
-      }
-    });
-
-    // Когда мышка заходит на карточку — убираем задержку для мгновенной реакции
-    card.addEventListener("mouseenter", () => {
-      card.style.transition = "none";
+      glow.style.opacity = "0";
+      card.style.transform = `translate3d(0, 0, 0) scale3d(1, 1, 1)`;
     });
   });
 });

@@ -160,8 +160,6 @@ header {
   border-radius: 50%; color: var(--text); cursor: pointer;
   box-shadow: var(--shadow-md); transition: all 0.3s ease; z-index: 10001;
 }
-.fs-close-btn:hover { background: var(--bg-2); transform: scale(1.1) rotate(90deg); }
-
 .fs-menu-content {
   display: flex; flex-direction: column; align-items: center;
   gap: 48px; width: 100%; max-width: 400px; padding: 24px;
@@ -747,9 +745,6 @@ html.dark .sn-btn-close { background: rgba(255, 217, 102, 0.1); color: #FFD966; 
   /* Сову прячем в угол */
   .mascot { bottom: 16px; left: 16px; }
   body.modal-open .mascot { right: 16px !important; bottom: 16px !important; }
-  .owl { width: 65px; height: 65px; }
-  .owl-eye { width: 22px; height: 22px; }
-  .owl-pupil { width: 10px; height: 10px; }
   .mascot-bubble { font-size: 0.75rem; padding: 8px 12px; }
 
   /* Лого */
@@ -992,164 +987,6 @@ html.dark .btn-report:hover {
   }
 }
 
-/* ============================================================
-   ДРУЗЬЯ (СОЗВЕЗДИЕ) и ГРУППА
-   ============================================================ */
-.friends-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.friends-header h3 { font-size: 1.1rem; color: var(--text); }
-
-.friends-network {
-  position: relative;
-  width: 100%;
-  height: 400px;
-  background: radial-gradient(circle at center, color-mix(in srgb, var(--c, var(--blue)) 10%, transparent) 0%, transparent 70%);
-  border-radius: 24px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line);
-}
-.friends-empty {
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.95rem;
-  padding: 40px;
-  max-width: 320px;
-  line-height: 1.5;
-}
-.friend-node {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 2px solid var(--c, var(--blue));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: var(--shadow-md);
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
-  z-index: 2;
-  transform: translate(-50%, -50%);
-}
-.friend-node:hover {
-  transform: translate(-50%, -50%) scale(1.15);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--c, var(--blue)) 50%, transparent);
-}
-.friend-node.center {
-  width: 70px;
-  height: 70px;
-  font-size: 2.2rem;
-  border-width: 3px;
-  box-shadow: 0 0 25px color-mix(in srgb, var(--c, var(--blue)) 40%, transparent);
-  z-index: 3;
-}
-.friend-node svg, .friend-node .friend-emoji { width: 100%; height: 100%; display: block; object-fit: contain; }
-.friend-line {
-  position: absolute;
-  height: 2px;
-  background: linear-gradient(90deg, var(--c, var(--blue)), transparent);
-  transform-origin: left center;
-  z-index: 1;
-  opacity: 0.5;
-}
-
-/* Группа */
-.group-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.group-score-badge {
-  background: var(--c, var(--blue));
-  color: #fff;
-  padding: 4px 12px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-.group-totem-wrap {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  background: var(--card);
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid var(--line);
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
-}
-.group-totem {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, var(--c-soft, #E8F1FF), var(--card));
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  border: 2px solid var(--c, var(--blue));
-  box-shadow: 0 0 20px color-mix(in srgb, var(--c, var(--blue)) 30%, transparent);
-  animation: totemFloat 3s ease-in-out infinite;
-}
-@keyframes totemFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-.totem-glow {
-  position: absolute;
-  inset: -10px;
-  border-radius: 50%;
-  background: var(--c, var(--blue));
-  opacity: 0.2;
-  filter: blur(15px);
-  z-index: -1;
-  animation: glowPulse 2s infinite alternate;
-}
-@keyframes glowPulse { from { opacity: 0.1; transform: scale(0.9); } to { opacity: 0.3; transform: scale(1.1); } }
-.group-info { flex: 1; }
-.group-name { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
-.group-rank { font-size: 0.9rem; color: var(--muted); }
-.group-members { background: var(--bg); padding: 20px; border-radius: 20px; }
-.group-members h4 { margin-bottom: 16px; font-size: 1rem; color: var(--text); }
-.group-members-list { display: flex; flex-wrap: wrap; gap: 12px; }
-.group-member-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--card);
-  border: 2px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  transition: transform 0.2s;
-}
-.group-member-avatar:hover { transform: scale(1.1); border-color: var(--c, var(--blue)); }
-.group-member-avatar.empty { border-style: dashed; color: var(--muted); font-size: 1rem; }
-.group-member-avatar svg { width: 100%; height: 100%; display: block; }
-
-/* Прячем сову, когда открыт профиль */
-body.profile-open .mascot {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  transform: scale(0) !important;
-}
-
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-  20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
-
 /* Подписи начала и конца дня (только для мобилки) */
 .dc-mobile-edge-label {
   display: none; /* Скрыто на ПК */
@@ -1300,25 +1137,6 @@ body.profile-open .mascot {
   }
 }
 
-@media (max-width: 640px) {
-  .friends-header {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
-  }
-
-  .friends-header h3 {
-    font-size: 1.1rem !important;
-    margin-bottom: 0 !important;
-  }
-
-  .friends-header .settings-btn {
-    width: 100% !important; /* Кнопка на всю ширину */
-    justify-content: center !important;
-    padding: 10px 16px !important;
-  }
-}
 
 /* ============================================================
    АНИМАЦИЯ ВЗЛЁТА СОКОЛА (РУКИ В СТОРОНЫ)
@@ -1328,14 +1146,7 @@ body.profile-open .mascot {
   transition: transform 0.3s ease;
 }
 
-/* Взлёт всего контейнера */
-@keyframes falconTakeOff {
-  0%   { transform: translateY(0) scale(1); }
-  15%  { transform: translateY(-20px) scale(1.05); }
-  40%  { transform: translateY(-40px) scale(1.1); }
-  70%  { transform: translateY(-20px) scale(1.05); }
-  100% { transform: translateY(0) scale(1); }
-}
+
 
 /* Левое крыло: выпрямляется влево (как рука) */
 @keyframes wingLeftFly {
@@ -1421,13 +1232,6 @@ body.profile-open .mascot {
 }
 .falcon-svg-wrap.spec-flap #falconWingRight {
   animation: wingRightFly 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-/* На время взмаха — лёгкий «толчок» вверх, чтобы не выглядело как судорога */
-@keyframes falconSpecFlap {
-  0%   { transform: translateY(0)    scale(1); }
-  40%  { transform: translateY(-4px) scale(1.03); }
-  100% { transform: translateY(0)    scale(1); }
 }
 .falcon-svg-wrap.spec-flap {
   will-change: transform;
@@ -1538,147 +1342,6 @@ body.profile-open .mascot {
   outline: 3px solid var(--c, var(--blue));
   outline-offset: 4px;
   border-radius: 16px; /* скругляем рамку вокруг сокола */
-}
-
-/* ============================================================
-   БИТВА ГРУПП: ИДЕАЛЬНЫЕ СТИЛИ (ПЕРЕКРЫВАЮТ ВСЁ)
-   ============================================================ */
-
-/* Общий контейнер формы */
-#pane-battle #battleAuthView {
-  max-width: 420px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-#pane-battle .settings-form {
-  background: var(--bg);
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 16px; /* Отступы между блоками */
-}
-
-/* Поля ввода (включая селект) */
-#pane-battle .settings-input {
-  width: 100% !important; /* Принудительно на всю ширину */
-  display: block !important;
-  padding: 14px 16px !important;
-  font-size: 1rem !important;
-  border-radius: 12px !important;
-  border: 1.5px solid var(--line) !important;
-  background: var(--card) !important;
-  color: var(--text) !important;
-  box-sizing: border-box !important;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  margin-bottom: 0 !important; /* Убираем старые отступы, теперь их делает gap */
-}
-
-#pane-battle .settings-input:focus {
-  border-color: var(--blue) !important;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 15%, transparent) !important;
-  outline: none !important;
-}
-
-/* Лейблы (подписи) */
-#pane-battle .settings-label {
-  font-size: 0.85rem !important;
-  font-weight: 600 !important;
-  color: var(--muted) !important;
-  margin-bottom: -8px !important; /* Прижимаем к полю ввода */
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: block;
-}
-
-/* Красивый селект (стрелочка) */
-#pane-battle select.settings-input {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-  background-repeat: no-repeat !important;
-  background-position: right 16px center !important;
-  background-size: 18px !important;
-  padding-right: 40px !important;
-  cursor: pointer;
-}
-
-html.dark #pane-battle select.settings-input {
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F7F9FC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
-}
-
-/* Контейнер для кнопок */
-#pane-battle .settings-form > div[style*="display: flex"] {
-  display: flex !important;
-  gap: 12px !important;
-  margin-top: 8px !important;
-}
-
-/* Кнопки */
-#pane-battle .settings-btn {
-  padding: 14px 20px !important;
-  border-radius: 12px !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-  border: none !important;
-  white-space: nowrap;
-}
-
-/* Кнопка "Создать аккаунт" */
-#pane-battle #gameRegisterBtn {
-  background: var(--blue) !important;
-  color: #fff !important;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--blue) 30%, transparent) !important;
-}
-#pane-battle #gameRegisterBtn:hover {
-  background: var(--blue-2) !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--blue) 40%, transparent) !important;
-}
-
-/* Кнопка "Вход" */
-#pane-battle #gameLoginBtn {
-  background: var(--bg) !important;
-  color: var(--text) !important;
-  border: 1.5px solid var(--line) !important;
-}
-#pane-battle #gameLoginBtn:hover {
-  border-color: var(--muted) !important;
-  background: var(--card) !important;
-  transform: translateY(-2px);
-}
-
-/* Кнопка "Выйти" */
-#pane-battle #gameLogoutBtn {
-  background: #fef2f2 !important;
-  color: #ef4444 !important;
-  border: 1.5px solid #fee2e2 !important;
-  box-shadow: none !important;
-}
-#pane-battle #gameLogoutBtn:hover {
-  background: #ef4444 !important;
-  color: #fff !important;
-}
-html.dark #pane-battle #gameLogoutBtn {
-  background: rgba(239, 68, 68, 0.1) !important;
-  border-color: rgba(239, 68, 68, 0.2) !important;
-}
-
-/* Карточка профиля (когда уже зарегистрирован) */
-#battleProfileView {
-  background: var(--bg) !important;
-  padding: 32px 24px !important;
-  border-radius: 24px !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: var(--shadow-sm) !important;
-  max-width: 420px !important;
-  margin: 0 auto !important;
 }
 
 /* ============================================================

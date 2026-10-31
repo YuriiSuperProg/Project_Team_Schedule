@@ -1,0 +1,156 @@
+/* ============================================================
+   ОБЩИЙ ФОН (АТМОСФЕРА) ДЛЯ ВСЕХ СТРАНИЦ
+   ============================================================ */
+
+/* 1. Молочный холст */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  background: #FAFBFD;
+  transition: background 1.4s ease;
+  pointer-events: none;
+}
+html.dark .page-bg { background: #070B18; }
+
+/* 2. Переменные тумана */
+:root {
+  --fog-c1: color-mix(in srgb, #4C9AFF 22%, transparent);
+  --fog-c2: color-mix(in srgb, #1769E0 16%, transparent);
+  --fog-c3: color-mix(in srgb, #7C3AED 10%, transparent);
+  --fog-op: 0.55;
+  --fog-blur: 140px;
+}
+html.dark {
+  --fog-c1: color-mix(in srgb, #4C9AFF 65%, transparent);
+  --fog-c2: color-mix(in srgb, #1769E0 55%, transparent);
+  --fog-c3: color-mix(in srgb, #7C3AED 45%, transparent);
+  --fog-op: 0.8;
+  --fog-blur: 110px;
+}
+
+/* 3. Слой облаков */
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.4s ease-out;
+  will-change: transform;
+}
+.bg-decor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--blue) 22%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%);
+          mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%);
+  opacity: 0.18;
+  transition: opacity 1.4s ease;
+}
+html.dark .bg-decor::after { opacity: 0.04; }
+
+.blob {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  filter: blur(var(--fog-blur));
+  opacity: var(--fog-op);
+  will-change: transform, filter, opacity, background;
+  transition: background 1.4s ease, opacity 1.4s ease, filter 1.4s ease, transform 1.4s ease;
+}
+.blob-1 {
+  width: 65vw; height: 65vw; top: -22vh; right: -18vw;
+  background: radial-gradient(circle, var(--fog-c1) 0%, transparent 70%);
+  animation: drift1 42s ease-in-out infinite alternate;
+}
+.blob-2 {
+  width: 55vw; height: 55vw; bottom: -22vh; left: -18vw;
+  background: radial-gradient(circle, var(--fog-c2) 0%, transparent 70%);
+  animation: drift2 50s ease-in-out infinite alternate;
+}
+.blob-3 {
+  width: 40vw; height: 40vw; top: 35%; left: 30%;
+  background: radial-gradient(circle, var(--fog-c3) 0%, transparent 70%);
+  opacity: calc(var(--fog-op) * 0.6);
+  animation: drift3 56s ease-in-out infinite alternate;
+}
+@keyframes drift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-5vw, 7vh) scale(1.08); } }
+@keyframes drift2 { from { transform: translate(0, 0) scale(1); } to { transform: translate(7vw, -5vh) scale(1.06); } }
+@keyframes drift3 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-4vw, -4vh) scale(1.12); } }
+
+/* 4. Звёзды (только ночь) */
+.star-field {
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none; overflow: hidden;
+  opacity: 0; transition: opacity 1.6s ease;
+}
+html.dark .star-field { opacity: 1; }
+.star {
+  position: absolute;
+  background-color: var(--c, #fff);
+  border-radius: 50%;
+  box-shadow: 0 0 4px 1px color-mix(in srgb, var(--c, #fff) 50%, transparent);
+  animation: twinkle linear infinite alternate;
+}
+@keyframes twinkle { 0% { transform: scale(0.8); opacity: 0.2; } 100% { transform: scale(1.2); opacity: 1; } }
+
+/* 5. Частицы (светлая тема) */
+.bg-particles {
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none; overflow: hidden;
+  transition: opacity 1.2s ease;
+}
+html.dark .bg-particles { opacity: 0; }
+
+.bg-particle {
+  position: absolute;
+  border-radius: 50%;
+  will-change: left, top, opacity;
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0%   { opacity: var(--dust-min, 0.1); }
+  50%  { opacity: var(--dust-max, 0.4); }
+  100% { opacity: var(--dust-min, 0.1); }
+}
+
+/* 6. Блёстки (светлая тема) */
+.bg-sparkles {
+  position: fixed; inset: 0; z-index: -1;
+  pointer-events: none; overflow: hidden;
+  transition: opacity 1.2s ease;
+}
+html.dark .bg-sparkles { opacity: 0; }
+
+.bg-sparkle {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 6px 1px var(--spark-glow, rgba(23, 105, 224, 0.5));
+  animation: sparkleTwinkle ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+@keyframes sparkleTwinkle {
+  0%   { transform: scale(0.6); opacity: 0.05; }
+  50%  { transform: scale(1.2); opacity: 0.9; }
+  100% { transform: scale(0.6); opacity: 0.05; }
+}
+
+/* Мобильная адаптация */
+@media (max-width: 640px) {
+  .bg-sparkle { box-shadow: none; }
+  .blob { filter: blur(80px); }
+  .blob-1 { width: 95vw; height: 95vw; top: -28vh; right: -28vw; }
+  .blob-2 { width: 85vw; height: 85vw; bottom: -28vh; left: -28vw; }
+  .blob-3 { display: none; }
+  .bg-decor::after { background-size: 32px 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blob, .bg-particle, .star { animation: none !important; }
+  .blob, .bg-decor, .page-bg, .star-field, .bg-particles { transition: none; }
+}
