@@ -416,7 +416,7 @@ document.addEventListener("DOMContentLoaded", () => {
       title: "Web / PWA", 
       desc: "Работает в браузере. Можно установить на iPhone как приложение.", 
       cta: "Как установить?", 
-      action: "modal" // Специальное действие для открытия модалки
+      action: "modal" 
     },
     android: { 
       title: "Android", 
@@ -438,44 +438,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+function updateContent(target) {
+  const info = data[target];
+  if (!info) return;
+
+  if (titleEl) titleEl.textContent = info.title;
+  if (descEl) descEl.textContent = info.desc;
+  
+  if (ctaEl) {
+    ctaEl.textContent = info.cta;
+    
+    // Сбрасываем старые обработчики
+    ctaEl.onclick = null;
+
+    if (info.action === "modal") {
+      ctaEl.onclick = (e) => {
+        e.preventDefault();
+        if (iosModal) iosModal.classList.add("open");
+      };
+    } else {
+      ctaEl.onclick = (e) => {
+        e.preventDefault(); // На всякий случай
+        
+        if (info.link && info.link !== "#") {
+          window.open(info.link, "_blank", "noopener,noreferrer");
+        }
+      };
+    }
+  }
+
+  // Анимация появления
+  if (contentBox) {
+    contentBox.style.animation = "none";
+    contentBox.offsetHeight; // триггер рефлоу
+    contentBox.style.animation = "emhFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards";
+  }
+}
+
+  // Вешаем обработчики на кнопки
   buttons.forEach(btn => {
     btn.addEventListener("click", () => {
+      // 1. Снимаем активный класс со всех
       buttons.forEach(b => b.classList.remove("active"));
+      // 2. Добавляем на нажатую
       btn.classList.add("active");
-
-      const target = btn.dataset.target;
-      const info = data[target];
-
-      if (info) {
-        titleEl.textContent = info.title;
-        descEl.textContent = info.desc;
-        ctaEl.textContent = info.cta;
-
-        // Если это Web/iOS - вешаем открытие модалки
-        if (info.action === "modal") {
-          ctaEl.href = "javascript:void(0)";
-          ctaEl.onclick = (e) => {
-            e.preventDefault();
-            iosModal.classList.add("open");
-          };
-        } else {
-          // Для остальных - обычная ссылка
-          ctaEl.href = info.link || "#";
-          ctaEl.onclick = null;
-        }
-
-        // Анимация появления
-        contentBox.style.animation = "none";
-        contentBox.offsetHeight;
-        contentBox.style.animation = "emhFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards";
-      }
+      // 3. Обновляем контент по data-target
+      updateContent(btn.dataset.target);
     });
   });
 
   // Закрытие модалки
   if (closeInstallBtn) {
     closeInstallBtn.addEventListener("click", () => {
-      iosModal.classList.remove("open");
+      if (iosModal) iosModal.classList.remove("open");
     });
   }
   if (iosModal) {

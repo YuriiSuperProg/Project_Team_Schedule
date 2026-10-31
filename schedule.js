@@ -106,11 +106,41 @@ const BELLS = { 1: "08:30–10:00", 2: "10:10–11:40", 3: "12:10–13:40", 4: "
 const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const DAY_NAMES = { Пн: "Понедельник", Вт: "Вторник", Ср: "Среда", Чт: "Четверг", Пт: "Пятница", Сб: "Суббота", Вс: "Воскресенье" };
 const WISHES = {
-  "ЮСП": [{ emoji: "⚖️", text: "Сегодня отличный день, чтобы всё успеть — даже закон!" }],
-  "ИСП": [{ emoji: "💻", text: "Пусть код компилируется, а жизнь — радует!" }],
-  "РУПО": [{ emoji: "💻", text: "Программирование — это магия, и ты — волшебник!" }],
-  "ЗСП": [{ emoji: "🌱", text: "Расти, как цветок под солнцем — ярко и смело!" }],
-  "ЭСП": [{ emoji: "📈", text: "Пусть твой личностный рост всегда идёт вверх!" }]
+  "ЮСП": [
+    { emoji: "⚖️", text: "Сегодня отличный день, чтобы всё успеть — даже закон!" },
+    { emoji: "📚", text: "Параграфы сами себя не прочитают. Вперёд!" },
+    { emoji: "⚖️", text: "Пусть справедливость восторжествует на всех парах!" },
+    { emoji: "🧠", text: "Знания — твоя лучшая защита." },
+    { emoji: "🕊️", text: "Спокойствие и только спокойствие." }
+  ],
+  "ИСП": [
+    { emoji: "💻", text: "Пусть код компилируется, а жизнь — радует!" },
+    { emoji: "🐛", text: "Желаю тебе найти все баги до того, как их найдёт преподаватель." },
+    { emoji: "☕️", text: "Кофе — это топливо для программиста. Не забудь заправиться!" },
+    { emoji: "🚀", text: "Пусть твой проект летит в продакшн без падений!" },
+    { emoji: "🧠", text: "Каждая решённая задача делает тебя сильнее." }
+  ],
+  "РУПО": [
+    { emoji: "💻", text: "Программирование — это магия, и ты — волшебник!" },
+    { emoji: "⚙️", text: "Главное — чтобы всё работало. А как — мы придумаем по ходу." },
+    { emoji: "📈", text: "Расти над собой каждый день, даже если это сложно." },
+    { emoji: "⌨️", text: "Пусть пальцы летают по клавишам, а ошибки обходят стороной." },
+    { emoji: "🎯", text: "Сфокусируйся на главном — и всё получится!" }
+  ],
+  "ЗСП": [
+    { emoji: "🌱", text: "Расти, как цветок под солнцем — ярко и смело!" },
+    { emoji: "🌍", text: "Береги природу, а она сбережёт тебя!" },
+    { emoji: "🍃", text: "Вдохни свежий воздух и начни день с улыбки." },
+    { emoji: "☀️", text: "Пусть солнце светит даже в самые пасмурные дни." },
+    { emoji: "🌿", text: "Гармония внутри и снаружи — вот твой путь." }
+  ],
+  "ЭСП": [
+    { emoji: "📈", text: "Пусть твой личностный рост всегда идёт вверх!" },
+    { emoji: "💰", text: "Экономика — это искусство возможного. Делай невозможное!" },
+    { emoji: "📊", text: "Пусть графики только растут, а убытки обходят стороной." },
+    { emoji: "🧮", text: "Считай правильно, живи красиво." },
+    { emoji: "🤝", text: "Связи решают всё. Не забывай общаться!" }
+  ]
 };
 
 let SCHEDULE = {};
@@ -220,20 +250,29 @@ function showRandomWish(force = false) {
   if (state.viewTeacher) return;
   const wrap = $("wish"), emojiEl = $("wishEmoji"), textEl = $("wishText");
   if (!wrap || !emojiEl || !textEl) return;
+  
   const spec = state.spec || "ИСП";
   const list = WISHES[spec] || WISHES["ИСП"];
   if (!list || !list.length) return;
+  
   const now = Date.now();
   const storageKey = `wishLastChange_${spec}`;
   const lastChange = parseInt(localStorage.getItem(storageKey) || "0", 10);
-  if (!force && (now - lastChange < 1.5 * 60 * 60 * 1000)) return;
+  
+  // Если прошло меньше 30 мин И это не принудительное обновление (кнопка) — не меняем
+  if (!force && (now - lastChange < 0.5 * 60 * 60 * 1000)) return;
+  
   localStorage.setItem(storageKey, now.toString());
+  
   if (lastWishIndex[spec] === undefined) lastWishIndex[spec] = -1;
+  
   let i;
   do { i = Math.floor(Math.random() * list.length); } while (i === lastWishIndex[spec] && list.length > 1);
+  
   lastWishIndex[spec] = i;
   emojiEl.textContent = list[i].emoji;
   textEl.textContent = list[i].text;
+  
   wrap.classList.remove("changing");
   void wrap.offsetWidth;
   wrap.classList.add("changing");
@@ -423,11 +462,12 @@ function renderFilters() {
     state.subgroup = null;
     state.week = currentWeek();
     applyColor(spec);
-    flapFalcon();                                   // ← 2.4: взмах крыльями при смене спец.
+    flapFalcon();
     if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
     showRandomWish(true);
     renderAll();
     window.dispatchEvent(new CustomEvent("specChanged", { detail: spec }));
+    if (typeof maybeSayContextual === "function") maybeSayContextual(true);
   });
 
   if (state.spec) {
@@ -437,6 +477,7 @@ function renderFilters() {
       state.subgroup = null;
       if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
       renderAll();
+      if (typeof maybeSayContextual === "function") maybeSayContextual(true);
     }, c => c + " курс");
   } else {
     $("courses").innerHTML = "";
@@ -448,6 +489,7 @@ function renderFilters() {
       state.subgroup = null;
       if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
       renderAll();
+      if (typeof maybeSayContextual === "function") maybeSayContextual(true);
     });
   } else {
     $("groups").innerHTML = "";
@@ -459,7 +501,6 @@ function renderFilters() {
 
   if (state.spec && state.course && state.group) {
     const groupData = SCHEDULE[state.spec][state.course][state.group];
-    // Проверяем и p.subgroup, и p.subgroups
     const hasSubgroups = Object.values(groupData).some(pairs =>
       pairs.some(p => p.subgroup || p.subgroups)
     );
@@ -478,6 +519,7 @@ function renderFilters() {
           renderSchedule();
           renderDayProgress();
           renderTomorrow();
+          if (typeof maybeSayContextual === "function") maybeSayContextual(true);
         };
         subgroupsBox.appendChild(b);
       });
@@ -822,14 +864,38 @@ function applyFalconMood() {
   root.dataset.falconPhase = phase.replace("falcon-", "");
 }
 
-// Общая функция «сказать» — доступна из других мест
+// ============================================================
+//  РЕПЛИКИ МАСКОТА (С ОЧЕРЕДЬЮ)
+// ============================================================
+let phraseQueue = [];
+let isSpeaking = false;
+
 function sayPhrase(text, duration = 4000) {
   const bubble = document.getElementById("mascotBubble");
   if (!bubble) return;
+
+  // Если уже говорим — ставим в очередь (макс 2 сообщения)
+  if (isSpeaking) {
+    if (phraseQueue.length < 2) {
+      phraseQueue.push({ text, duration });
+    }
+    return;
+  }
+
+  isSpeaking = true;
   bubble.textContent = text;
   bubble.classList.add("show");
-  clearTimeout(sayPhrase._t);
-  sayPhrase._t = setTimeout(() => bubble.classList.remove("show"), duration);
+
+  setTimeout(() => {
+    bubble.classList.remove("show");
+    isSpeaking = false;
+    
+    // Если есть очередь — показываем следующую
+    if (phraseQueue.length > 0) {
+      const next = phraseQueue.shift();
+      setTimeout(() => sayPhrase(next.text, next.duration), 400);
+    }
+  }, duration);
 }
 
 /**
@@ -840,43 +906,53 @@ function sayPhrase(text, duration = 4000) {
 function getMascotPhrase() {
   const now = new Date();
   const hour = now.getHours();
-  const dayIndex = (now.getDay() + 6) % 7; // 0 = Пн, 6 = Вс
+  const dayIndex = (now.getDay() + 6) % 7;
   const nowMin = hour * 60 + now.getMinutes();
 
-  // 1. Группа не выбрана — самое важное
-  if (!state.spec || !state.course || !state.group) {
-    return { text: "Выбери группу — и я покажу пары 👇", priority: 100 };
+  // 1. Специальность
+  if (!state.spec) {
+    return { text: "Привет! Давай найдем твои пары. Выбери специальность 👇", priority: 100 };
   }
 
-  // 2. Преподавательский режим
+  // 2. Курс
+  if (!state.course) {
+    return { text: `Отлично! Теперь выбери свой курс 👇`, priority: 95 };
+  }
+
+  // 3. Группа
+  if (!state.group) {
+    return { text: `Остался последний шаг — выбери свою группу 👇`, priority: 90 };
+  }
+
+  // 4. Преподавательский режим
   if (state.viewTeacher) {
     return { text: "Режим преподавателя. Найди себя через 🔍", priority: 60 };
   }
 
-  // 3. Выходной (Сб/Вс)
-  if (dayIndex >= 5) {
-    return { text: "Сегодня выходной. Отдыхай! 🎉", priority: 70 };
-  }
-
-  // 4. Смотрим чужую неделю — не говорим про «сейчас»
+  // 5. Чужая неделя
   if (state.week !== currentWeek()) {
     return { text: `Ты смотришь неделю ${WEEK_LIST[state.week].star}. Вернись к текущей →`, priority: 50 };
   }
 
-  // 5. Расписание на сегодня
+  // 6. Расписание на сегодня
   const raw = SCHEDULE[state.spec]?.[state.course]?.[state.group];
   if (!raw) return null;
+  
   let pairs = raw[dayIndex];
-  if (!pairs || !pairs.length) {
-    return { text: "Сегодня пар нет — свободный день! 🌿", priority: 80 };
-  }
   const w = WEEK_LIST[state.week];
-  pairs = pairs.filter(p => !p.star || p.star === w.star);
-  if (!pairs.length) {
+  if (pairs) {
+    pairs = pairs.filter(p => !p.star || p.star === w.star);
+  }
+
+  // 7. Если пар нет
+  if (!pairs || !pairs.length) {
+    if (dayIndex >= 5) {
+      return { text: "Сегодня выходной. Отдыхай! 🎉", priority: 70 };
+    }
     return { text: "Сегодня пар нет — свободный день! 🌿", priority: 80 };
   }
 
-  // Сортируем пары по номеру и времени
+  // 8. Сортируем
   const BELL_MIN = {};
   Object.keys(BELLS).forEach(n => {
     const [s, e] = BELLS[n].split("–");
@@ -893,7 +969,7 @@ function getMascotPhrase() {
   const dayStart = sorted[0].start;
   const dayEnd = sorted[sorted.length - 1].end;
 
-  // 6. До начала дня
+  // 9. До пар
   if (nowMin < dayStart) {
     const firstTime = BELLS[sorted[0].num].split("–")[0];
     const minsLeft = dayStart - nowMin;
@@ -903,7 +979,7 @@ function getMascotPhrase() {
     return { text: `Доброе утро! Первая пара в ${firstTime}`, priority: 40 };
   }
 
-  // 7. После последней пары
+  // 10. После пар
   if (nowMin > dayEnd) {
     if (dayIndex === 4) {
       return { text: "Ура, выходные! 🎉 Отдыхай как следует", priority: 85 };
@@ -911,7 +987,7 @@ function getMascotPhrase() {
     return { text: "Пары закончились. Хорошего отдыха! 🌙", priority: 60 };
   }
 
-  // 8. Идёт пара
+  // 11. Идет пара
   const current = sorted.find(item => nowMin >= item.start && nowMin <= item.end);
   if (current) {
     const subject = current.pair.text.split("преп.")[0].trim().replace(/\s*\(.*?\)\s*/g, "");
@@ -922,7 +998,7 @@ function getMascotPhrase() {
     return { text: `Сейчас: ${subject}`, priority: 65 };
   }
 
-  // 9. Перемена
+  // 12. Перемена
   for (let i = 0; i < sorted.length - 1; i++) {
     if (nowMin > sorted[i].end && nowMin < sorted[i + 1].start) {
       const next = sorted[i + 1];
@@ -939,17 +1015,35 @@ function getMascotPhrase() {
 }
 
 // Показать реплику, если она «важнее» предыдущей за последние N секунд
-let _lastPhrasePriority = 0;
 let _lastPhraseTime = 0;
+let _lastPhraseText = "";
+let _phraseTimer = null;
+
 function maybeSayContextual(force = false) {
-  const phrase = getMascotPhrase();
-  if (!phrase) return;
-  const now = Date.now();
-  // Не перебиваем важную реплику в течение 20 секунд
-  if (!force && now - _lastPhraseTime < 20000 && phrase.priority < _lastPhrasePriority) return;
-  _lastPhrasePriority = phrase.priority;
-  _lastPhraseTime = now;
-  sayPhrase(phrase.text);
+  // Отменяем предыдущий отложенный вызов, если он был
+  if (_phraseTimer) clearTimeout(_phraseTimer);
+
+  _phraseTimer = setTimeout(() => {
+    const phrase = getMascotPhrase();
+    if (!phrase) return;
+
+    const now = Date.now();
+    
+    // Если текст реплики не изменился и это не принудительный вызов — не повторяем
+    if (!force && phrase.text === _lastPhraseText) return;
+    
+    // Защита от спама: не чаще, чем раз в 1.5 секунды (если это не force)
+    if (!force && now - _lastPhraseTime < 1500) return;
+
+    _lastPhraseText = phrase.text;
+    _lastPhraseTime = now;
+    
+    // Очищаем очередь, чтобы не "договаривать" старые фразы
+    phraseQueue = [];
+    isSpeaking = false;
+    
+    sayPhrase(phrase.text);
+  }, 400); // Ждем 400 мс, чтобы DOM и state успели обновиться после клика
 }
 
 // Инициализация маскота
@@ -989,7 +1083,11 @@ function spawnNote() {
 }
 
 // 1. Сначала обработчик КЛИКА
+let isAnimating = false; // Блокиратор: не даем кликать во время анимации
+
 mascot.addEventListener("click", () => {
+  // Если анимация уже идет — игнорируем клик (чтобы крылья не ломались)
+  if (isAnimating) return;
   if (falconWrap && falconWrap.classList.contains("flying")) return;
 
   const now = Date.now();
@@ -999,7 +1097,9 @@ mascot.addEventListener("click", () => {
   const reaction = clickCount % 2;
   clickCount++;
 
-    if (reaction === 0) {
+  if (reaction === 0) {
+    // ВЗЛЁТ
+    isAnimating = true;
     if (falconWrap) {
       falconWrap.classList.add("flying");
       
@@ -1007,28 +1107,37 @@ mascot.addEventListener("click", () => {
       const onFlyEnd = () => {
         falconWrap.classList.remove("flying");
         falconWrap.style.willChange = "auto"; // сбрасываем
+        isAnimating = false; // снимаем блокировку
         falconWrap.removeEventListener("animationend", onFlyEnd);
       };
       falconWrap.style.willChange = "transform";
       falconWrap.addEventListener("animationend", onFlyEnd, { once: true });
 
-      // Страховка на случай, если animationend не сработает (например, при reduced-motion)
+      // Страховка на случай, если animationend не сработает
       setTimeout(() => {
-        falconWrap.classList.remove("flying");
-        falconWrap.style.willChange = "auto";
+        if (isAnimating) {
+          falconWrap.classList.remove("flying");
+          falconWrap.style.willChange = "auto";
+          isAnimating = false;
+        }
       }, 1300);
     }
     sayPhrase("Вжух! ✈️", 2000);
-  }else {
+  } else {
+    // ЧИРИКАНЬЕ
+    isAnimating = true;
     if (falconWrap) {
       falconWrap.classList.add("chirping");
-      setTimeout(() => falconWrap.classList.remove("chirping"), 600);
+      setTimeout(() => {
+        falconWrap.classList.remove("chirping");
+        isAnimating = false; // снимаем блокировку
+      }, 600);
     }
     spawnNote();
     sayPhrase("Чирик! 🎵", 2000);
+    
   }
 }); // ← Вот здесь закрывается клик
-
 // 2. А ТЕПЕРЬ (ОТДЕЛЬНО, СНАРУЖИ) обработчик КЛАВИАТУРЫ
 if (falconWrap) {
   falconWrap.addEventListener("keydown", (e) => {
