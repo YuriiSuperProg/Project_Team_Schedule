@@ -599,11 +599,26 @@ html.dark .profile-xp-wrap { background: rgba(255,255,255,0.1); }
 .profile-xp-bar { height: 100%; background: var(--c, var(--blue)); border-radius: 999px; transition: width 1s ease; }
 .profile-xp-text { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 
-.profile-tabs { display: flex; border-bottom: 1px solid var(--line); background: var(--card); width: 100%; }
+.profile-tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--line); background: var(--card); width: 100%; }
 .profile-tab {
-  flex: 1; padding: 16px 8px; background: transparent; border: none; font: inherit; font-weight: 600; color: var(--muted);
-  cursor: pointer; transition: .2s; border-bottom: 3px solid transparent; text-align: center; white-space: nowrap;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  flex: 1; 
+  padding: 16px 8px; /* ← Уменьшили боковые отступы с 16px до 8px */
+  background: transparent; 
+  border: none; 
+  font: inherit; 
+  font-weight: 600; 
+  color: var(--muted);
+  cursor: pointer; 
+  transition: .2s; 
+  border-bottom: 3px solid transparent; 
+  text-align: center; 
+  white-space: nowrap;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 6px;
+  font-size: 0.9rem; /* ← Чуть уменьшили шрифт */
 }
 .profile-tab:hover { color: var(--text); background: var(--bg); }
 .profile-tab.active { color: var(--c-text, var(--blue)); border-bottom-color: var(--c, var(--blue)); }
@@ -1523,4 +1538,206 @@ body.profile-open .mascot {
   outline: 3px solid var(--c, var(--blue));
   outline-offset: 4px;
   border-radius: 16px; /* скругляем рамку вокруг сокола */
+}
+
+/* ============================================================
+   БИТВА ГРУПП: ИДЕАЛЬНЫЕ СТИЛИ (ПЕРЕКРЫВАЮТ ВСЁ)
+   ============================================================ */
+
+/* Общий контейнер формы */
+#pane-battle #battleAuthView {
+  max-width: 420px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+#pane-battle .settings-form {
+  background: var(--bg);
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Отступы между блоками */
+}
+
+/* Поля ввода (включая селект) */
+#pane-battle .settings-input {
+  width: 100% !important; /* Принудительно на всю ширину */
+  display: block !important;
+  padding: 14px 16px !important;
+  font-size: 1rem !important;
+  border-radius: 12px !important;
+  border: 1.5px solid var(--line) !important;
+  background: var(--card) !important;
+  color: var(--text) !important;
+  box-sizing: border-box !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  margin-bottom: 0 !important; /* Убираем старые отступы, теперь их делает gap */
+}
+
+#pane-battle .settings-input:focus {
+  border-color: var(--blue) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue) 15%, transparent) !important;
+  outline: none !important;
+}
+
+/* Лейблы (подписи) */
+#pane-battle .settings-label {
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  color: var(--muted) !important;
+  margin-bottom: -8px !important; /* Прижимаем к полю ввода */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+/* Красивый селект (стрелочка) */
+#pane-battle select.settings-input {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 16px center !important;
+  background-size: 18px !important;
+  padding-right: 40px !important;
+  cursor: pointer;
+}
+
+html.dark #pane-battle select.settings-input {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F7F9FC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+}
+
+/* Контейнер для кнопок */
+#pane-battle .settings-form > div[style*="display: flex"] {
+  display: flex !important;
+  gap: 12px !important;
+  margin-top: 8px !important;
+}
+
+/* Кнопки */
+#pane-battle .settings-btn {
+  padding: 14px 20px !important;
+  border-radius: 12px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  white-space: nowrap;
+}
+
+/* Кнопка "Создать аккаунт" */
+#pane-battle #gameRegisterBtn {
+  background: var(--blue) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--blue) 30%, transparent) !important;
+}
+#pane-battle #gameRegisterBtn:hover {
+  background: var(--blue-2) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--blue) 40%, transparent) !important;
+}
+
+/* Кнопка "Вход" */
+#pane-battle #gameLoginBtn {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  border: 1.5px solid var(--line) !important;
+}
+#pane-battle #gameLoginBtn:hover {
+  border-color: var(--muted) !important;
+  background: var(--card) !important;
+  transform: translateY(-2px);
+}
+
+/* Кнопка "Выйти" */
+#pane-battle #gameLogoutBtn {
+  background: #fef2f2 !important;
+  color: #ef4444 !important;
+  border: 1.5px solid #fee2e2 !important;
+  box-shadow: none !important;
+}
+#pane-battle #gameLogoutBtn:hover {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+html.dark #pane-battle #gameLogoutBtn {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.2) !important;
+}
+
+/* Карточка профиля (когда уже зарегистрирован) */
+#battleProfileView {
+  background: var(--bg) !important;
+  padding: 32px 24px !important;
+  border-radius: 24px !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow-sm) !important;
+  max-width: 420px !important;
+  margin: 0 auto !important;
+}
+
+/* ============================================================
+   КРАСИВЫЕ УВЕДОМЛЕНИЯ (ТОСТЫ)
+   ============================================================ */
+#toastContainer {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999; /* Поверх всего */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  align-items: center;
+}
+
+.custom-toast {
+  background: var(--card);
+  color: var(--text);
+  padding: 14px 24px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--blue);
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: auto;
+  max-width: 90vw;
+}
+
+.custom-toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.custom-toast.error {
+  border-left-color: #ef4444;
+}
+
+.custom-toast .toast-icon {
+  font-size: 1.2rem;
+}
+
+/* На мобилке делаем пошире */
+@media (max-width: 640px) {
+  #toastContainer {
+    bottom: 20px;
+    width: calc(100% - 40px);
+  }
+  .custom-toast {
+    width: 100%;
+    justify-content: center;
+  }
 }

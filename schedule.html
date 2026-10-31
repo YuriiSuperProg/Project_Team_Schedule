@@ -222,25 +222,28 @@
           <span>⚙️</span>
           <span class="tab-text">Настройки</span>
         </button>
-        <button class="profile-tab" data-tab="secrets">
-          <span>🤫</span>
-          <span class="tab-text">Секреты</span>
-        </button>
-        <button class="profile-tab" data-tab="friends">
-          <span>🤝</span>
-          <span class="tab-text">Друзья</span>
-        </button>
-        <button class="profile-tab" data-tab="group">
-          <span>🏫</span>
-          <span class="tab-text">Группа</span>
-        </button>
       </div>
 
       <div class="profile-content">
+        <!-- 1. Достижения (включая секреты) -->
         <div class="profile-pane active" id="pane-achievements">
+          
+          <!-- Блок секретного кода -->
+          <div class="settings-form" style="margin-bottom: 24px; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px dashed var(--line); max-width: 100%;">
+            <h3 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--text);">🤫 Секретные достижения</h3>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; line-height: 1.5;">
+              Введи уникальный код от разработчика, чтобы открыть скрытое достижение.
+            </p>
+            <div class="settings-input-wrap">
+              <input type="text" id="secretCodeInput" class="settings-input" placeholder="НАПРИМЕР: HANDSHAKE" maxlength="30">
+              <button class="settings-btn" id="saveSecretBtn">Активировать</button>
+            </div>
+          </div>
+
           <div class="ach-grid" id="achGrid"></div>
         </div>
 
+        <!-- 2. Статистика -->
         <div class="profile-pane" id="pane-stats">
           <div class="stats-grid">
             <div class="stat-card">
@@ -261,6 +264,7 @@
           </div>
         </div>
 
+        <!-- 3. Настройки -->
         <div class="profile-pane" id="pane-settings">
           <div class="settings-form">
             <label class="settings-label">Ваше имя</label>
@@ -272,64 +276,6 @@
             <div class="avatar-picker" id="avatarPicker"></div>
           </div>
         </div>
-
-        <div class="profile-pane" id="pane-secrets">
-          <div class="settings-form">
-            <h3 style="margin-bottom: 10px; font-size: 1.2rem; color: var(--text);">🤫 Секретные достижения</h3>
-            <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 20px; line-height: 1.5;">
-              Некоторые достижения нельзя получить просто так. За ними нужно охотиться!<br><br>
-              <b>Как это работает:</b><br>
-              1. Выполни секретное задание.<br>
-              2. Разработчик даст тебе <b>уникальный код</b>.<br>
-              3. Введи его в поле ниже.<br><br>
-              <i>Подсказки ищи в описаниях закрытых достижений.</i>
-            </p>
-            
-            <label class="settings-label">Введите секретный код</label>
-            <div class="settings-input-wrap">
-              <input type="text" id="secretCodeInput" class="settings-input" placeholder="НАПРИМЕР: HANDSHAKE" maxlength="30">
-              <button class="settings-btn" id="saveSecretBtn">Активировать</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- НОВАЯ ПАНЕЛЬ: ДРУЗЬЯ -->
-        <div class="profile-pane" id="pane-friends">
-          <div class="friends-header">
-            <h3>Моя сеть контактов</h3>
-            <button class="settings-btn" id="shareProfileBtn" style="padding: 8px 16px; font-size: 0.9rem;">🔗 Поделиться</button>
-          </div>
-          <div class="friends-network" id="friendsNetwork">
-            <!-- Сюда будем рендерить созвездие -->
-          </div>
-        </div>
-
-        <!-- НОВАЯ ПАНЕЛЬ: ГРУППА -->
-        <div class="profile-pane" id="pane-group">
-          <div class="group-header">
-            <h3>Моя группа</h3>
-            <span class="group-score-badge" id="groupScoreBadge">0 XP</span>
-          </div>
-          
-          <div class="group-totem-wrap">
-            <div class="group-totem" id="groupTotem">
-              <div class="totem-icon">🔥</div>
-              <div class="totem-glow"></div>
-            </div>
-            <div class="group-info">
-              <div class="group-name" id="groupNameDisplay">Группа не выбрана</div>
-              <div class="group-rank" id="groupRankDisplay">Место в топе: —</div>
-            </div>
-          </div>
-
-          <div class="group-members">
-            <h4>Одногруппники в созвездии</h4>
-            <div class="group-members-list" id="groupMembersList">
-              <!-- Сюда будем добавлять аватары -->
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>

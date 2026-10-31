@@ -963,3 +963,72 @@ document.addEventListener("DOMContentLoaded", () => {
     clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
   });
 });
+
+// ==========================================
+// ЛОГИКА ВКЛАДКИ «БИТВА ГРУПП» В ПРОФИЛЕ
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  const authView = document.getElementById("battleAuthView");
+  const profileView = document.getElementById("battleProfileView");
+
+  function updateBattleView() {
+    const user = getCurrentUser();
+    if (user) {
+      authView.style.display = "none";
+      profileView.style.display = "block";
+      document.getElementById("gameProfileName").textContent = user.nickname;
+      document.getElementById("gameProfileId").textContent = `ID: ${user.id}`;
+      document.getElementById("gameProfileGroup").textContent = `Группа: ${user.group}`;
+      document.getElementById("gameProfilePoints").textContent = user.season_points || 0;
+    } else {
+      authView.style.display = "block";
+      profileView.style.display = "none";
+    }
+  }
+
+  // Регистрация
+  document.getElementById("gameRegisterBtn")?.addEventListener("click", () => {
+    const nick = document.getElementById("gameNickname").value.trim();
+    const group = document.getElementById("gameGroup").value;
+    const pin = document.getElementById("gamePin").value;
+
+    if (!nick || !pin) return showToast("Заполните все поля");
+    if (nick.includes(" ")) return showToast("Никнейм не должен содержать пробелов");
+
+    const res = registerUser(nick, group, pin);
+    if (res.success) {
+      showToast(`Успех! Ваш ID: ${res.user.id}`);
+      updateBattleView();
+    } else {
+      showToast(res.error);
+    }
+  });
+
+  // Вход
+  document.getElementById("gameLoginBtn")?.addEventListener("click", () => {
+    const nick = document.getElementById("gameNickname").value.trim();
+    const pin = document.getElementById("gamePin").value;
+
+    if (!nick || !pin) return showToast("Заполните все поля");
+
+    const res = loginUser(nick, pin);
+    if (res.success) {
+      showToast(`Привет, ${res.user.nickname}!`);
+      updateBattleView();
+    } else {
+      showToast(res.error);
+    }
+  });
+
+  // Выход
+  document.getElementById("gameLogoutBtn")?.addEventListener("click", () => {
+    logoutUser();
+    updateBattleView();
+  });
+
+  // При клике на вкладку "Битва Групп" обновляем данные
+  const battleTab = document.querySelector('.profile-tab[data-tab="battle"]');
+  if (battleTab) {
+    battleTab.addEventListener("click", updateBattleView);
+  }
+});
