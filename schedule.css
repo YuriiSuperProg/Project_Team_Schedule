@@ -1147,23 +1147,6 @@ html.dark .btn-report:hover {
 }
 
 
-
-/* Левое крыло: выпрямляется влево (как рука) */
-@keyframes wingLeftFly {
-  0%   { transform: rotate(0deg); }
-  40%  { transform: rotate(40deg); }
-  70%  { transform: rotate(-10deg); }
-  100% { transform: rotate(0deg); }
-}
-
-/* Правое крыло: выпрямляется вправо (как рука) */
-@keyframes wingRightFly {
-  0%   { transform: rotate(0deg); }
-  40%  { transform: rotate(-40deg); }
-  70%  { transform: rotate(10deg); }
-  100% { transform: rotate(0deg); }
-}
-
 /* Сокол красится в цвет специальности через --c */
 .falcon-svg-wrap {
   --falcon-main:   var(--c, #1769E0);
@@ -1177,20 +1160,6 @@ html.dark .btn-report:hover {
 .falcon-svg ellipse {
   transition: fill 0.4s ease, stroke 0.4s ease;
 }
-
-/* Запуск анимации */
-.falcon-svg-wrap.flying {
-  will-change: transform;
-}
-
-.falcon-svg-wrap.flying #falconWingLeft {
-  animation: wingLeftFly 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.falcon-svg-wrap.flying #falconWingRight {
-  animation: wingRightFly 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
 
 /* ============================================================
    СОКОЛ: ДЫХАНИЕ + МОРГАНИЕ
@@ -1249,27 +1218,6 @@ html.dark .btn-report:hover {
 /* ============================================================
    СОКОЛ: ЧИРИКАНЬЕ (клик 2)
    ============================================================ */
-/* Клюв быстро «щёлкает» — открывается/закрывается 4 раза за 0.6s */
-@keyframes beakChatter {
-  0%, 100% { transform: rotateX(0deg)   scaleY(1); }
-  50%      { transform: rotateX(-25deg) scaleY(0.7); }
-}
-
-.falcon-svg-wrap.chirping #falconBeak {
-  animation: beakChatter 0.15s ease-in-out 4;
-  transform-origin: 50px 31px;
-  transform-box: view-box;          /* координаты как в viewBox, не bbox */
-}
-
-/* Лёгкий «толчок» тела при чириканье */
-@keyframes falconChirpBody {
-  0%, 100% { transform: translateY(0)    scale(1); }
-  30%      { transform: translateY(-2px) scale(1.02); }
-  60%      { transform: translateY(0)    scale(1); }
-}
-.falcon-svg-wrap.chirping {
-  animation: falconChirpBody 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
 
 /* Нотка «🎵», вылетающая из клюва */
 .falcon-note {
@@ -1294,10 +1242,6 @@ html.dark .btn-report:hover {
 
 /* reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .falcon-svg-wrap.chirping,
-  .falcon-svg-wrap.chirping #falconBeak {
-    animation: none;
-  }
   .falcon-note.fly { animation: none; opacity: 0; }
 }
 
