@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="schedule.css">
   <link rel="stylesheet" href="notifications.css">
   <link rel="stylesheet" href="atmosphere.css">
+  <link rel="stylesheet" href="holiday.css">
+  <link rel="stylesheet" href="runner.css">
   <meta name="google" content="notranslate">
   
   <!-- Анти-мигание: проверяем роль до отрисовки страницы -->
@@ -18,7 +20,6 @@
   </script>
 </head>
 <body>
-  <body>
   <div class="page-bg"></div>
   <div class="bg-decor" aria-hidden="true">
     <span class="blob blob-1"></span>
@@ -83,6 +84,29 @@
       </div>
     </div>
 
+    <!-- БЛОК ПРАЗДНИКА -->
+    <section class="holiday-section" id="holidaySection" style="display: none;">
+      <div class="holiday-card">
+        <div class="holiday-bg-decor"></div>
+        
+        <div class="holiday-content">
+          <div class="holiday-badge">🎉 Праздник</div>
+                    <h2 class="holiday-title" id="holidayTitle">С наступающим Днём народного единства!</h2>
+          <p class="holiday-subtitle" id="holidaySubtitle">Скоро выходной — 4 ноября. Пар не будет.</p>
+          
+          <div class="holiday-info">
+            <div class="holiday-icon">🇷🇺</div>
+            <div class="holiday-text">
+              <span>Отдыхаем и набираемся сил</span>
+              <b>до 5 ноября!</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="holiday-confetti"></div>
+      </div>
+    </section>
+
     <div class="role-screen" id="roleScreen">
       <div class="role-title">Кто ты?</div>
       <div class="role-sub">Выбери, чтобы настроить расписание под себя</div>
@@ -101,7 +125,7 @@
     </div>
 
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
-        <div class="greeting" id="greeting">
+      <div class="greeting" id="greeting">
         <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
         <div class="greeting-actions">
           <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
@@ -226,6 +250,10 @@
           <span>📊</span>
           <span class="tab-text">Статистика</span>
         </button>
+        <button class="profile-tab" data-tab="survival">
+          <span>🔥</span>
+          <span class="tab-text">Выживание</span>
+        </button>
         <button class="profile-tab" data-tab="settings">
           <span>⚙️</span>
           <span class="tab-text">Настройки</span>
@@ -272,7 +300,47 @@
           </div>
         </div>
 
-        <!-- 3. Настройки -->
+                <!-- 3. Выживание (Игра) -->
+        <div class="profile-pane" id="pane-survival">
+          <div class="game-header">
+            <h3 style="margin: 0; font-size: 1.2rem;">🏃‍♂️ Зачётка-Раннер</h3>
+            <div class="game-stats">
+              <span id="gameModeBadge" class="mode-badge normal">Обычный</span>
+              <span>Рекорд: <b id="runnerRecord">0</b></span>
+            </div>
+          </div>
+
+          <div class="runner-wrap" id="runnerWrap">
+            <div class="runner-track" id="runnerTrack">
+              <!-- Настоящая Зачётка (SVG) -->
+              <div class="runner-player" id="runnerPlayer">
+                <svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="5" y="5" width="50" height="70" rx="4" fill="#1769E0" stroke="#0F172A" stroke-width="2"/>
+                  <rect x="5" y="5" width="10" height="70" rx="4" fill="#1259C4" stroke="#0F172A" stroke-width="2"/>
+                  <path d="M 20 25 L 50 25 M 20 35 L 50 35 M 20 45 L 45 45" stroke="#FFF" stroke-width="2" stroke-linecap="round"/>
+                  <text x="32" y="62" font-size="9" font-weight="bold" fill="#FFF" text-anchor="middle" font-family="sans-serif">ЗАЧЁТКА</text>
+                  <circle cx="42" cy="15" r="2" fill="#FFB300"/>
+                  <circle cx="48" cy="15" r="2" fill="#FFB300"/>
+                  <circle cx="42" cy="20" r="2" fill="#FFB300"/>
+                </svg>
+              </div>
+            </div>
+            
+            <div class="runner-overlay" id="runnerStartScreen">
+              <h2>Выживание на сессии</h2>
+              <p>Тапай по экрану или жми Пробел, чтобы прыгать</p>
+              <button class="runner-btn" id="runnerStartBtn">Начать забег</button>
+            </div>
+            
+            <div class="runner-overlay hidden" id="runnerGameOverScreen">
+              <h2 style="color: #EF4444;">ОТЧИСЛЕН! 💀</h2>
+              <p>Ты продержался: <b id="runnerFinalScore">0</b> очков</p>
+              <button class="runner-btn" id="runnerRestartBtn">Реванш</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Настройки -->
         <div class="profile-pane" id="pane-settings">
           <div class="settings-form">
             <label class="settings-label">Ваше имя</label>
@@ -288,7 +356,7 @@
     </div>
   </div>
 
-  <!-- МОДАЛКА ИЗМЕНЕНИЯ ИМЕНИ (ВЫНЕСЕНА ИЗ ПРОФИЛЯ) -->
+  <!-- МОДАЛКА ИЗМЕНЕНИЯ ИМЕНИ -->
   <div class="name-modal-overlay" id="nameModal">
     <div class="name-modal-window">
       <h3 class="name-modal-title">Как тебя зовут?</h3>
@@ -432,5 +500,6 @@
   <script src="profile.js"></script>
   <script src="notifications.js"></script>
   <script src="bg-particles.js"></script>
+  <script src="runner.js"></script>
 </body>
 </html>

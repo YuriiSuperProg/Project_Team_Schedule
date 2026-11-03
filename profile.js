@@ -320,8 +320,6 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "weekShift", icon: "🗓", title: "Путешественник", desc: "Переключил неделю" },
     { id: "dateSearch", icon: "🔍", title: "Детектив", desc: "Нашёл день через поиск" },
     { id: "bellSchedule", icon: "🔔", title: "Звонок", desc: "Посмотрел расписание звонков" },
-    { id: "consoleOpen", icon: "🕵️", title: "Хакер", desc: "Открыл секретную консоль" },
-    { id: "logoSpinner", icon: "💫", title: "Круть", desc: "Закрутил логотип" },
     { id: "handshake_dev", icon: "🤝", title: "Рукопожатие", desc: "Пожми руку разработчику (Юрию) и спроси секретный код.", secret: true },
     { id: "beta_tester", icon: "🧪", title: "Бета-тестер", desc: "Найди баг на сайте и сообщи о нем. Разработчик даст код.", secret: true },
     { id: "inspirer", icon: "💡", title: "Вдохновитель", desc: "Предложи идею, которую добавят на сайт. Получи код.", secret: true },
@@ -364,23 +362,30 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("achievements", JSON.stringify(unlocked));
     const ach = ACHIEVEMENTS.find(a => a.id === id);
     if (ach) showToast(`🏆 Достижение: ${ach.title}!`);
-    if (id === "consoleOpen") {
-      console.log("%c🕵️ Секретное сообщение!", "color: #1769E0; font-size: 16px; font-weight: bold;");
-      console.log("%cТы нашел пасхалку! Держи достижение 'Хакер'.", "color: #94A3B8; font-size: 14px;");
-    }
+    
   }
 
   // Делаем функцию глобальной
   window.unlockAchievement = unlockAchievement;
 
-  function renderAchievements() {
+   function renderAchievements() {
     const grid = document.getElementById("achGrid");
     if (!grid) return;
     
     const unlocked = getUnlocked();
     grid.innerHTML = "";
     
-    ACHIEVEMENTS.forEach(ach => {
+    // Сортируем: сначала легендарные, потом секретные, потом обычные
+    const sortedAchievements = [...ACHIEVEMENTS].sort((a, b) => {
+      const getPriority = (ach) => {
+        if (ach.legendary) return 1; // Легендарные — самые важные
+        if (ach.secret) return 2;    // Секретные — посередине
+        return 3;                    // Обычные — в конце
+      };
+      return getPriority(a) - getPriority(b);
+    });
+    
+    sortedAchievements.forEach(ach => {
       const isUnlocked = unlocked.includes(ach.id);
       const el = document.createElement("div");
       
@@ -652,55 +657,3 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ============================================================
-//  5. ПАСХАЛКИ
-// ============================================================
-
-// 1. Секрет в консоли
-setTimeout(() => {
-  console.log("%c🕵️ Секретное сообщение!", "color: #1769E0; font-size: 16px; font-weight: bold;");
-  console.log("%cТы нашел пасхалку! Держи достижение 'Хакер'.", "color: #94A3B8; font-size: 14px;");
-  if (typeof window.unlockAchievement === "function") {
-    window.unlockAchievement("consoleOpen");
-  }
-}, 1000);
-
-// 2. Закрути логотип
-document.addEventListener("DOMContentLoaded", () => {
-  const logo = document.querySelector(".logo");
-  if (!logo) return;
-
-  let clickCount = 0;
-  let clickTimer = null;
-
-  logo.addEventListener("click", (e) => {
-    if (clickCount > 0) e.preventDefault();
-    clickCount++;
-
-    if (clickCount >= 5) {
-      e.preventDefault();
-      logo.style.transition = "transform 1s ease-in-out";
-      logo.style.transform = "rotate(720deg)";
-      
-      const bubble = document.getElementById("mascotBubble");
-      if (bubble) {
-        bubble.textContent = "Ой, голова кружится! 🌀";
-        bubble.classList.add("show");
-        setTimeout(() => bubble.classList.remove("show"), 3000);
-      }
-      
-      if (typeof window.unlockAchievement === "function") {
-        window.unlockAchievement("logoSpinner");
-      }
-
-      setTimeout(() => {
-        logo.style.transform = "";
-        clickCount = 0;
-      }, 1000);
-      return;
-    }
-
-    clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
-  });
-});

@@ -1348,3 +1348,116 @@ html.dark .btn-report:hover {
     justify-content: center;
   }
 }
+
+
+/* ============================================================
+   ОПТИМИЗАЦИЯ ДЛЯ ТАЧПАДОВ И СЛАБЫХ УСТРОЙСТВ
+   ============================================================ */
+@media (pointer: coarse), (hover: none) {
+  /* 1. Убираем backdrop-filter (размытие под элементами) */
+  header,
+  .fullscreen-menu,
+  .profile-overlay,
+  .name-modal-overlay,
+  .ts-modal-overlay,
+  .bells-modal-overlay,
+  .eco-overlay,
+  .install-modal {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Убираем тяжелый blur у облаков (с 140px до 40px) */
+  .blob {
+    filter: blur(40px) !important;
+    animation: none !important; /* Останавливаем дрейф облаков */
+  }
+
+  /* 3. Отключаем box-shadow у блёсток (они тяжелые для GPU) */
+  .bg-sparkle {
+    box-shadow: none !important;
+  }
+
+  /* 4. Отключаем тяжелые анимации появления */
+  .day-card, .tomorrow, .card, .wish, .role-card {
+    animation: none !important;
+  }
+
+  /* 5. Упрощаем тени (меньше слоев) */
+  .card, .day-card, .greeting, .weekbar {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1) !important;
+  }
+}
+
+/* ============================================================
+   ФИНАЛЬНАЯ ОПТИМИЗАЦИЯ ДЛЯ ТАЧПАДОВ (БЕЗ ДУБЛЕЙ)
+   ============================================================ */
+@media (pointer: coarse), (hover: none) {
+  /* 1. Отключаем backdrop-filter (размытие под элементами) */
+  header,
+  .fullscreen-menu,
+  .profile-overlay,
+  .name-modal-overlay,
+  .ts-modal-overlay,
+  .bells-modal-overlay,
+  .eco-overlay,
+  .install-modal {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Убираем тяжелый blur у облаков */
+  .blob {
+    filter: blur(40px) !important;
+    animation: none !important;
+  }
+
+  /* 3. Отключаем box-shadow у блёсток */
+  .bg-sparkle {
+    box-shadow: none !important;
+  }
+
+  /* 4. Отключаем микро-точки */
+  .bg-decor::after {
+    display: none !important;
+  }
+
+  /* 5. Убираем will-change (держит память) */
+  .bg-decor,
+  .bg-particle,
+  .bg-sparkle {
+    will-change: auto !important;
+  }
+
+  /* 6. Отключаем тяжелые анимации появления */
+  .day-card,
+  .tomorrow,
+  .card,
+  .wish,
+  .role-card {
+    animation: none !important;
+  }
+
+  /* 7. Упрощаем тени */
+  .card,
+  .day-card,
+  .greeting,
+  .weekbar,
+  .profile-window {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1) !important;
+  }
+}
+
+/* ============================================================
+   УВАЖЕНИЕ К PREFERS-REDUCED-MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

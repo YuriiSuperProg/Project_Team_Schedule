@@ -499,3 +499,65 @@ function updateContent(target) {
     });
   }
 });
+
+// ============================================================
+//  БЛОК ПРАЗДНИКА (ДЕНЬ НАРОДНОГО ЕДИНСТВА)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.getElementById("holidaySection");
+  if (!section) return;
+
+  // Проверяем дату
+  const now = new Date();
+  const month = now.getMonth(); // 10 = Ноябрь
+  const day = now.getDate();
+  
+  // Показываем только с 1 по 4 ноября
+  const isHolidayPeriod = (month === 10 && day >= 1 && day <= 4);
+  
+  if (!isHolidayPeriod) return;
+
+  // Показываем блок
+  section.style.display = "block";
+
+  // Меняем текст в зависимости от даты
+  const titleEl = document.getElementById("holidayTitle");
+  const subtitleEl = document.getElementById("holidaySubtitle");
+
+  if (day === 4) {
+    // 4 ноября — сам праздник
+    if (titleEl) titleEl.textContent = "С Днём народного единства!";
+    if (subtitleEl) subtitleEl.textContent = "Сегодня выходной день. Пар не будет.";
+  } else {
+    // 1, 2, 3 ноября — наступающий
+    if (titleEl) titleEl.textContent = "С наступающим Днём народного единства!";
+    if (subtitleEl) subtitleEl.textContent = "Скоро выходной — 4 ноября. Пар не будет.";
+  }
+
+  // Генерируем конфетти
+  const confettiBox = section.querySelector(".holiday-confetti");
+  if (confettiBox) {
+    const colors = ["#1769E0", "#4C9AFF", "#E60000", "#FFFFFF"];
+    
+    for (let i = 0; i < 20; i++) {
+      const piece = document.createElement("div");
+      piece.className = "confetti-piece";
+      
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const left = Math.random() * 100;
+      const delay = Math.random() * 5;
+      const dur = Math.random() * 3 + 4;
+      const size = Math.random() * 4 + 6;
+      
+      piece.style.left = left + "%";
+      piece.style.width = size + "px";
+      piece.style.height = size + "px";
+      piece.style.background = color;
+      piece.style.animationDelay = delay + "s";
+      piece.style.animationDuration = dur + "s";
+      piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+      
+      confettiBox.appendChild(piece);
+    }
+  }
+});

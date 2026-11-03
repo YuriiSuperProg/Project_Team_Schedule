@@ -18,7 +18,7 @@ html.dark .page-bg { background: #070B18; }
   --fog-c1: color-mix(in srgb, #4C9AFF 22%, transparent);
   --fog-c2: color-mix(in srgb, #1769E0 16%, transparent);
   --fog-c3: color-mix(in srgb, #7C3AED 10%, transparent);
-  --fog-op: 0.55;
+  --fog-op: 0.4;
   --fog-blur: 140px;
 }
 html.dark {
@@ -38,18 +38,19 @@ html.dark {
   overflow: hidden;
   isolation: isolate;
   transition: transform 0.4s ease-out;
-  will-change: transform;
 }
+/* Микро-точки — «пыль» в светлой, почти невидимы в тёмной */
 .bg-decor::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 2;
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--blue) 22%, transparent) 1px, transparent 1px);
-  background-size: 44px 44px;
+  background-image: radial-gradient(circle,
+    color-mix(in srgb, var(--blue) 18%, transparent) 1px, transparent 1px);
+  background-size: 50px 50px; /* Было 44px — стало 50px (реже) */
   -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%);
           mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%);
-  opacity: 0.18;
+  opacity: 0.12; /* Было 0.18 — стало 0.12 (бледнее) */
   transition: opacity 1.4s ease;
 }
 html.dark .bg-decor::after { opacity: 0.04; }
@@ -60,7 +61,6 @@ html.dark .bg-decor::after { opacity: 0.04; }
   border-radius: 50%;
   filter: blur(var(--fog-blur));
   opacity: var(--fog-op);
-  will-change: transform, filter, opacity, background;
   transition: background 1.4s ease, opacity 1.4s ease, filter 1.4s ease, transform 1.4s ease;
 }
 .blob-1 {
@@ -110,7 +110,6 @@ html.dark .bg-particles { opacity: 0; }
 .bg-particle {
   position: absolute;
   border-radius: 50%;
-  will-change: left, top, opacity;
   animation: particleFloat linear infinite;
 }
 @keyframes particleFloat {
@@ -153,4 +152,43 @@ html.dark .bg-sparkles { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .blob, .bg-particle, .star { animation: none !important; }
   .blob, .bg-decor, .page-bg, .star-field, .bg-particles { transition: none; }
+}
+
+/* ============================================================
+   ОПТИМИЗАЦИЯ ДЛЯ ТАЧПАДОВ И СЛАБЫХ УСТРОЙСТВ
+   ============================================================ */
+@media (pointer: coarse), (hover: none) {
+  /* 1. Убираем backdrop-filter (размытие под элементами) */
+  header,
+  .fullscreen-menu,
+  .profile-overlay,
+  .name-modal-overlay,
+  .ts-modal-overlay,
+  .bells-modal-overlay,
+  .eco-overlay,
+  .install-modal {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. Убираем тяжелый blur у облаков (с 140px до 40px) */
+  .blob {
+    filter: blur(40px) !important;
+    animation: none !important; /* Останавливаем дрейф облаков */
+  }
+
+  /* 3. Отключаем box-shadow у блёсток (они тяжелые для GPU) */
+  .bg-sparkle {
+    box-shadow: none !important;
+  }
+
+  /* 4. Отключаем тяжелые анимации появления */
+  .day-card, .tomorrow, .card, .wish, .role-card {
+    animation: none !important;
+  }
+
+  /* 5. Упрощаем тени (меньше слоев) */
+  .card, .day-card, .greeting, .weekbar {
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1) !important;
+  }
 }
