@@ -275,6 +275,17 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
   .eco-card:hover { box-shadow: var(--shadow-xl); z-index: 10; }
 }
 
+/* VK-бот занимает всю ширину первого ряда на десктопе */
+@media (min-width: 901px) {
+  .eco-card[data-color="#0077FF"] {
+    grid-column: 1 / -1;
+  }
+
+  .eco-card[data-color="#0077FF"] .mockup-vk {
+    max-width: 520px;
+  }
+}
+
 .eco-preview { background: var(--bg-2); height: 300px; position: relative; display: flex; align-items: flex-start; justify-content: center; overflow: hidden; padding: 24px 24px 0 24px; }
 .eco-text {
   padding: 24px; 
@@ -288,25 +299,6 @@ html.dark .logo-text b { background: linear-gradient(90deg, #4C9AFF, #8AB4F8, #4
 .eco-text p { color: var(--muted); font-size: 1rem; margin-bottom: 24px; flex: 1; }
 .eco-btn { display: inline-flex; align-items: center; justify-content: center; background: var(--blue); color: #fff; padding: 16px; border-radius: 16px; font-weight: 600; font-size: 1.05rem; text-decoration: none; transition: background 0.2s; }
 .eco-btn:hover { background: var(--blue-2); }
-
-/* 1. Браузер */
-.mockup-browser { width: 100%; max-width: 380px; background: var(--card); border-radius: 16px 16px 0 0; box-shadow: 0 -4px 24px rgba(0,0,0,0.06); border: 1px solid var(--line); border-bottom: none; transform: perspective(1000px) rotateX(5deg); transform-origin: bottom; overflow: hidden; }
-.mb-header { background: var(--bg); padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); }
-.mb-dots span { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-.mb-dots span:nth-child(1) { background: #FF5F56; } .mb-dots span:nth-child(2) { background: #FFBD2E; } .mb-dots span:nth-child(3) { background: #27C93F; }
-.mb-url { flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; font-size: 0.65rem; color: var(--muted); text-align: center; }
-.mb-body { padding: 12px; display: flex; flex-direction: column; gap: 16px; }
-.mb-top-list { display: flex; flex-direction: column; gap: 6px; background: var(--bg); padding: 10px; border-radius: 8px; }
-.mb-line { font-size: 0.55rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mb-subtext { font-size: 0.5rem; color: var(--muted); margin-top: 4px; }
-.mb-cards-row { display: flex; gap: 10px; overflow-x: hidden; }
-.mb-card { flex: 0 0 150px; background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
-.mb-card.active { background: var(--blue-soft); border-color: var(--blue); box-shadow: 0 4px 12px rgba(23, 105, 224, 0.15); }
-.mb-time { font-size: 0.6rem; font-weight: 700; color: var(--blue); }
-.mb-title { font-size: 0.65rem; font-weight: 600; color: var(--text); line-height: 1.2; }
-.mb-room { font-size: 0.55rem; color: var(--muted); }
-.mb-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.mb-chip { font-size: 0.5rem; background: var(--blue); color: #fff; padding: 2px 6px; border-radius: 4px; }
 
 /* 2. Telegram */
 .mockup-telegram { width: 100%; max-width: 300px; background: #F0F2F5; border-radius: 16px 16px 0 0; box-shadow: 0 -4px 24px rgba(0,0,0,0.06); border: 1px solid var(--line); border-bottom: none; transform: perspective(1000px) rotateX(5deg); transform-origin: bottom; overflow: hidden; display: flex; flex-direction: column; }
@@ -711,91 +703,7 @@ html.dark .install-close { background: #0F172A; }
 /* ============================================================
    МОДАЛКА ИНСТРУКЦИИ ДЛЯ iOS
    ============================================================ */
-.install-modal {
-  position: fixed; inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 20000;
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.install-modal.open { 
-  opacity: 1; 
-  pointer-events: auto; 
-}
-
-.install-window {
-  background: var(--card);
-  width: 100%; max-width: 400px;
-  border-radius: 24px;
-  padding: 32px 24px;
-  box-shadow: var(--shadow-xl);
-  position: relative;
-  transform: translateY(20px) scale(0.95);
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.install-modal.open .install-window { 
-  transform: translateY(0) scale(1); 
-}
-
-.install-close {
-  position: absolute; top: 16px; right: 16px;
-  width: 36px; height: 36px; border-radius: 50%;
-  border: none; background: var(--bg); color: var(--muted);
-  font-size: 1.2rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: .15s;
-}
-.install-close:hover { 
-  background: var(--line); 
-  color: var(--text); 
-}
-
-.install-icon { 
-  font-size: 3rem; 
-  text-align: center; 
-  margin-bottom: 16px; 
-}
-
-.install-window h3 { 
-  font-size: 1.4rem; 
-  font-weight: 800; 
-  text-align: center; 
-  margin-bottom: 24px; 
-  color: var(--text); 
-}
-
-.install-steps { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 16px; 
-}
-
-.step { 
-  display: flex; 
-  align-items: flex-start; 
-  gap: 12px; 
-  font-size: 0.95rem; 
-  line-height: 1.4; 
-  color: var(--text); 
-}
-
-.step-num {
-  display: flex; align-items: center; justify-content: center;
-  width: 24px; height: 24px;
-  background: var(--blue-soft); color: var(--blue);
-  border-radius: 50%; font-weight: 700; font-size: 0.8rem;
-  flex-shrink: 0; margin-top: 2px;
-}
-
-/* Тёмная тема */
-html.dark .install-window { background: #1A2338; }
-html.dark .install-close { background: #0F172A; }
-
-  .emh-icon-wrap {
+.emh-icon-wrap {
     display: flex;
     align-items: center;
     justify-content: center;

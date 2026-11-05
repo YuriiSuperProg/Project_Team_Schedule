@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,7 +7,6 @@
   <link rel="icon" type="image/png" href="img/favicon.png">
   <title>ПараЗвёзд — расписание ВФ ВолГУ</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="holiday.css">
 </head>
 <body>
   <div class="page-bg"></div>
@@ -18,6 +18,7 @@
   <div class="bg-particles" id="bgParticles" aria-hidden="true"></div>
   <div class="bg-sparkles" id="bgSparkles" aria-hidden="true"></div>
   <div class="star-field" id="starField" aria-hidden="true"></div>
+
   <header>
     <div class="container nav">
       <a href="index.html" class="logo">
@@ -29,7 +30,6 @@
           <small>Расписание ВФ ВолГУ</small>
         </div>
       </a>
-      
       <div class="nav-actions">
         <button class="nav-burger-btn" id="menuBtn" aria-label="Меню">
           <div class="burger-icon">
@@ -40,11 +40,11 @@
     </div>
   </header>
 
-    <!-- ПОЛНОЭКРАННОЕ МЕНЮ С КНОПКОЙ ЗАКРЫТИЯ -->
+  <!-- ПОЛНОЭКРАННОЕ МЕНЮ -->
   <div class="fullscreen-menu" id="mobileMenu">
-    <!-- Кнопка закрытия -->
     <button class="fs-close-btn" id="closeMenuBtn" aria-label="Закрыть меню">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <path d="M18 6L6 18M6 6l12 12"/>
       </svg>
     </button>
@@ -55,7 +55,6 @@
         <a href="#ecosystem" class="fs-link" style="--i: 2;">Платформы</a>
         <a href="#team" class="fs-link" style="--i: 3;">Команда</a>
       </nav>
-      
       <div class="fs-actions">
         <a href="schedule.html" class="fs-btn-main">Расписание</a>
         <button class="fs-theme-btn" id="themeToggle">
@@ -76,32 +75,6 @@
       </div>
     </div>
   </section>
-  
-    <!-- БЛОК ПРАЗДНИКА -->
-  <section class="holiday-section" id="holidaySection" style="display: none;">
-    <div class="container">
-      <div class="holiday-card">
-        <div class="holiday-bg-decor"></div>
-        
-        <div class="holiday-content">
-          <div class="holiday-badge">🎉 Праздник</div>
-                    <h2 class="holiday-title" id="holidayTitle">С наступающим Днём народного единства!</h2>
-          <p class="holiday-subtitle" id="holidaySubtitle">Скоро выходной — 4 ноября. Пар не будет.</p>
-          <div class="holiday-info">
-            <div class="holiday-icon">🇷🇺</div>
-            <div class="holiday-text">
-              <span>Отдыхаем и набираемся сил</span>
-              <b>до 5 ноября!</b>
-            </div>
-          </div>
-        </div>
-
-        <div class="holiday-confetti">
-          <!-- Сюда JS добавит конфетти -->
-        </div>
-      </div>
-    </div>
-  </section>
 
   <section class="intro">
     <div class="container">
@@ -109,7 +82,7 @@
         <div class="intro-mark">“</div>
         <p class="intro-greeting">Здравствуйте, дорогие друзья!</p>
         <p class="intro-text">
-          <span class="bold">Быстрее быстрого, скорее скорого! Всегда только газ 😎!</span> 
+          <span class="bold">Быстрее быстрого, скорее скорого! Всегда только газ 😎 !</span>
           А тормоз только для отдыха... Шутка! Для отдыха есть перемена.
           Мы собрались вместе, чтобы сделать одно простое дело:
           избавить студентов и преподавателей от бумажной путаницы
@@ -148,283 +121,255 @@
     </div>
   </section>
 
- <!-- ЭКОСИСТЕМА -->
-<section id="ecosystem">
-  <div class="container">
-    <div class="section-head">
-      <h2 class="section-title">Экосистема</h2>
-      <p class="section-sub">Выбери удобный формат</p>
-    </div>
-    
-    <!-- МОБИЛЬНЫЙ ХАБ (виден только на телефонах) -->
-        <!-- МОБИЛЬНЫЙ ХАБ (виден только на телефонах) -->
-    <div class="eco-mobile-hub" id="ecoMobileHub">
-      <!-- Сетка из 4 иконок -->
-            <!-- Сетка из 4 иконок -->
-      <div class="emh-nav">
-        <button class="emh-btn active" data-target="web">
-          <div class="emh-icon-wrap">
-            <!-- Иконка Web (Глобус) -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-          </div>
-          <span class="emh-label">Web / iOS</span>
-        </button>
-
-        <button class="emh-btn" data-target="vk">
-          <div class="emh-icon-wrap">
-            <!-- Иконка VK (из футера) -->
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.588-.19 1.341 1.26 2.14 1.818.605.422 1.064.33 1.064.33l2.137-.03s1.117-.07.587-.953c-.043-.072-.308-.66-1.58-1.868-1.326-1.26-1.148-1.055.448-3.234.972-1.327 1.36-2.138 1.239-2.485-.116-.33-.84-.24-.84-.24l-2.407.015s-.178-.025-.31.056c-.13.08-.212.265-.212.265s-.38 1.03-.885 1.905c-1.065 1.854-1.492 1.951-1.666 1.837-.404-.265-.303-1.07-.303-1.642 0-1.786.267-2.53-.52-2.723-.26-.064-.452-.106-1.117-.113-.853-.01-1.573.003-1.982.207-.272.136-.482.44-.354.457.158.022.516.098.706.363.245.343.235 1.113.235 1.113s.14 2.104-.327 2.365c-.32.178-.76-.185-1.7-1.844 0 0-.47-.825-.85-1.735-.09-.214-.215-.42-.402-.516-.228-.115-.563-.148-.563-.148l-2.287.014s-.343.01-.47.162c-.111.136-.008.416-.008.416s1.79 4.262 3.816 6.407c1.858 1.966 3.967 1.838 3.967 1.838h.955z"/></svg>
-          </div>
-          <span class="emh-label">VK</span>
-        </button>
-        
-        <button class="emh-btn" data-target="android">
-          <div class="emh-icon-wrap">
-            <!-- Иконка Android (Робот) -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16V9h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"></path><path d="M16 9V6a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v3"></path><circle cx="9" cy="13" r="1.5"></circle><circle cx="15" cy="13" r="1.5"></circle><path d="M8 22v-4"></path><path d="M16 22v-4"></path></svg>
-          </div>
-          <span class="emh-label">Android</span>
-        </button>
-
-        <button class="emh-btn" data-target="tg">
-          <div class="emh-icon-wrap">
-            <!-- Иконка Telegram (Самолетик из футера) -->
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-          </div>
-          <span class="emh-label">Telegram</span>
-        </button>
+  <!-- ЭКОСИСТЕМА -->
+  <section id="ecosystem">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Экосистема</h2>
+        <p class="section-sub">Выбери удобный формат</p>
       </div>
 
-      <!-- Общее поле с контентом -->
-      <div class="emh-content" id="emhContent">
-        <h3 class="emh-title" id="emhTitle">Web / PWA</h3>
-        <p class="emh-desc" id="emhDesc">Работает в браузере. Можно установить на iPhone как приложение.</p>
-        <a href="#" class="emh-cta" id="emhCta">Как установить?</a>
-      </div>
-    </div>
+      <!-- МОБИЛЬНЫЙ ХАБ -->
+      <div class="eco-mobile-hub" id="ecoMobileHub">
+        <div class="emh-nav">
+          <button class="emh-btn active" data-target="web">
+            <div class="emh-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+            <span class="emh-label">Web / iOS</span>
+          </button>
 
-    <!-- ДЕСКТОПНЫЕ 3D-КАРТОЧКИ (видны только на ПК) -->
-    <div class="eco-carousel-wrap">
-      <div class="eco-grid" id="ecoGrid">
-        
-        <!-- 1. САЙТ -->
-        <div class="eco-card" data-color="#1769E0">
-          <div class="eco-preview">
-            <div class="mockup-browser">
-              <div class="mb-header">
-                <div class="mb-dots"><span></span><span></span><span></span></div>
-                <div class="mb-url">yuriisuperprog.github.io</div>
-              </div>
-              <div class="mb-body">
-                <div class="mb-top-list">
-                  <div class="mb-line"><b>Разработка мобильных приложений (лаб.)</b> · 1-36</div>
-                  <div class="mb-line"><b>Разработка программных модулей (лаб.)</b> · 1-02</div>
-                  <div class="mb-line"><b>Разработка программных модулей (л.)</b> · 3-02</div>
-                  <div class="mb-line"><b>Внедрение и поддержка компьютерных систем (лаб.)</b> · 3-03</div>
-                  <div class="mb-subtext">16 октября · пар: 4</div>
-                </div>
-                <div class="mb-cards-row">
-                  <div class="mb-card">
-                    <div class="mb-time">12:10–13:40</div>
-                    <div class="mb-title">Разработка программных модулей (лаб.)</div>
-                    <div class="mb-room">1-02 · Донскова Д.А.</div>
+          <button class="emh-btn" data-target="vk">
+            <div class="emh-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.785 16.241s.288-.032.436-.194c.136-.148.132-.427.132-.427s-.02-1.304.576-1.496c.588-.19 1.341 1.26 2.14 1.818.605.422 1.064.33 1.064.33l2.137-.03s1.117-.07.587-.953c-.043-.072-.308-.66-1.58-1.868-1.326-1.26-1.148-1.055.448-3.234.972-1.327 1.36-2.138 1.239-2.485-.116-.33-.84-.24-.84-.24l-2.407.015s-.178-.025-.31.056c-.13.08-.212.265-.212.265s-.38 1.03-.885 1.905c-1.065 1.854-1.492 1.951-1.666 1.837-.404-.265-.303-1.07-.303-1.642 0-1.786.267-2.53-.52-2.723-.26-.064-.452-.106-1.117-.113-.853-.01-1.573.003-1.982.207-.272.136-.482.44-.354.457.158.022.516.098.706.363.245.343.235 1.113.235 1.113s.14 2.104-.327 2.365c-.32.178-.76-.185-1.7-1.844 0 0-.47-.825-.85-1.735-.09-.214-.215-.42-.402-.516-.228-.115-.563-.148-.563-.148l-2.287.014s-.343.01-.47.162c-.111.136-.008.416-.008.416s1.79 4.262 3.816 6.407c1.858 1.966 3.967 1.838 3.967 1.838h.955z"/>
+              </svg>
+            </div>
+            <span class="emh-label">VK</span>
+          </button>
+
+          <button class="emh-btn" data-target="android">
+            <div class="emh-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 16V9h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"></path>
+                <path d="M16 9V6a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v3"></path>
+                <circle cx="9" cy="13" r="1.5"></circle>
+                <circle cx="15" cy="13" r="1.5"></circle>
+                <path d="M8 22v-4"></path>
+                <path d="M16 22v-4"></path>
+              </svg>
+            </div>
+            <span class="emh-label">Android</span>
+          </button>
+
+          <button class="emh-btn" data-target="tg">
+            <div class="emh-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
+            </div>
+            <span class="emh-label">Telegram</span>
+          </button>
+        </div>
+
+        <div class="emh-content" id="emhContent">
+          <h3 class="emh-title" id="emhTitle">Web / PWA</h3>
+          <p class="emh-desc" id="emhDesc">Работает в браузере. Можно установить на iPhone как приложение.</p>
+          <a href="#" class="emh-cta" id="emhCta">Как установить?</a>
+        </div>
+      </div>
+
+      <!-- ДЕСКТОПНЫЕ КАРТОЧКИ -->
+      <div class="eco-carousel-wrap">
+        <div class="eco-grid" id="ecoGrid">
+
+          <!-- VK -->
+          <div class="eco-card" data-color="#0077FF">
+            <div class="eco-preview">
+              <div class="mockup-vk">
+                <div class="vk-header">
+                  <div class="vk-avatar">B</div>
+                  <div class="vk-title">
+                    <b>ПараЗвёзд</b>
+                    <span>ВКонтакте</span>
                   </div>
-                  <div class="mb-card active">
-                    <div class="mb-time">13:50–15:20</div>
-                    <div class="mb-title">Разработка программных модулей (л.)</div>
-                    <div class="mb-room">3-02 · Донскова Д.А.</div>
-                    <div class="mb-chips">
-                      <span class="mb-chip">ИСП-241</span>
-                      <span class="mb-chip">ИСП-242</span>
-                      <span class="mb-chip">ИСП-243</span>
+                </div>
+                <div class="vk-chat-bg">
+                  <div class="vk-message">
+                    <div class="vk-msg-author">ПараЗвёзд</div>
+                    <div class="vk-msg-text">
+                      📅 <b>Расписание на неделю</b><br><br>
+                      👥 <b>ИСП-241</b><br><br>
+                      ⭐️⭐️ Понедельник · 19.10<br>
+                      2 Пара. 10:10 — 11:40<br>
+                      Разработка мобильных приложений (лаб.)<br>
+                      Ауд. 1-36; Преп. Леонтьев Д.А.<br><br>
+                      3 Пара. 12:10 — 13:40<br>
+                      Разработка программных модулей (лаб.)<br>
+                      Ауд. 1-02; Преп. Донскова Д.А.
                     </div>
                   </div>
-                  <div class="mb-card">
-                    <div class="mb-time">15:30–17:00</div>
-                    <div class="mb-title">Внедрение и поддержка компьютерных систем (лаб.)</div>
-                    <div class="mb-room">4-01 · Ушакова М.А.</div>
+                  <div class="vk-buttons">
+                    <div class="vk-btn">📖 Посмотреть расписание</div>
+                    <div class="vk-btn">⚙️ Настройки</div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="eco-text">
-            <h3>Сайт</h3>
-            <p>Полная версия расписания в браузере</p>
-            <a href="schedule.html" class="eco-btn">Открыть</a>
-          </div>
-        </div>
-
-        <!-- 2. TELEGRAM -->
-        <div class="eco-card" data-color="#2AABEE">
-          <div class="eco-preview">
-            <div class="mockup-telegram">
-              <div class="mt-header">
-                <div class="mt-avatar">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                </div>
-                <div class="mt-title">
-                  <b>ПараЗвёзд</b>
-                  <span>4 подписчика</span>
-                </div>
-                <div class="mt-actions">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                </div>
-              </div>
-              <div class="mt-chat-bg">
-                <div class="mt-message">
-                  <div class="mt-msg-author">ПараЗвёзд <span class="mt-time">00:29</span></div>
-                  <div class="mt-msg-text">
-                    📅 <b>Расписание на неделю</b><br><br>
-                    👥 <b>ИСП-241</b><br><br>
-                    ⭐️⭐️ Понедельник · 19.10<br>
-                    2 Пара. 10:10 — 11:40<br>
-                    Разработка мобильных приложений (лаб.)<br>
-                    Ауд. 1-36; Преп. Леонтьев Д.А.<br><br>
-                    3 Пара. 12:10 — 13:40<br>
-                    Разработка программных модулей (лаб.)<br>
-                    Ауд. 1-02; Преп. Донскова Д.А.
-                  </div>
-                </div>
-                <div class="mt-buttons">
-                  <div class="mt-btn mt-btn-primary">📖 Посмотреть расписание</div>
-                  <div class="mt-btn mt-btn-secondary">⚙️ Настройки</div>
-                </div>
-              </div>
+            <div class="eco-text">
+              <h3>VK-бот</h3>
+              <p>Уведомления и расписание во ВКонтакте</p>
+              <a href="https://vk.ru/vfstudentbot" class="eco-btn">Перейти</a>
             </div>
           </div>
-          <div class="eco-text">
-            <h3>Telegram-бот</h3>
-            <p>Расписание прямо в мессенджере</p>
-            <a href="https://t.me/VFStudentBot" class="eco-btn">Перейти</a>
-          </div>
-        </div>
 
-        <!-- 3. VK -->
-        <div class="eco-card" data-color="#0077FF">
-          <div class="eco-preview">
-            <div class="mockup-vk">
-              <div class="vk-header">
-                <div class="vk-avatar">B</div>
-                <div class="vk-title">
-                  <b>ПараЗвёзд</b>
-                  <span>ВКонтакте</span>
-                </div>
-              </div>
-              <div class="vk-chat-bg">
-                <div class="vk-message">
-                  <div class="vk-msg-author">ПараЗвёзд</div>
-                  <div class="vk-msg-text">
-                    📅 <b>Расписание на неделю</b><br><br>
-                    👥 <b>ИСП-241</b><br><br>
-                    ⭐️⭐️ Понедельник · 19.10<br>
-                    2 Пара. 10:10 — 11:40<br>
-                    Разработка мобильных приложений (лаб.)<br>
-                    Ауд. 1-36; Преп. Леонтьев Д.А.<br><br>
-                    3 Пара. 12:10 — 13:40<br>
-                    Разработка программных модулей (лаб.)<br>
-                    Ауд. 1-02; Преп. Донскова Д.А.
+          <!-- TELEGRAM -->
+          <div class="eco-card" data-color="#2AABEE">
+            <div class="eco-preview">
+              <div class="mockup-telegram">
+                <div class="mt-header">
+                  <div class="mt-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                  </div>
+                  <div class="mt-title">
+                    <b>ПараЗвёзд</b>
+                    <span>45000 подписчика</span>
+                  </div>
+                  <div class="mt-actions">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"/>
+                      <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="1"/>
+                      <circle cx="19" cy="12" r="1"/>
+                      <circle cx="5" cy="12" r="1"/>
+                    </svg>
                   </div>
                 </div>
-                <div class="vk-buttons">
-                  <div class="vk-btn">📖 Посмотреть расписание</div>
-                  <div class="vk-btn">⚙️ Настройки</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="eco-text">
-            <h3>VK-бот</h3>
-            <p>Уведомления и расписание во ВКонтакте</p>
-            <a href="https://vk.ru/vfstudentbot" class="eco-btn">Перейти</a>
-          </div>
-        </div>
-
-        <!-- 4. ПРИЛОЖЕНИЕ -->
-        <div class="eco-card" data-color="#6ecf9b">
-          <div class="eco-preview">
-            <div class="mockup-app">
-              <div class="app-header">
-                <div class="app-logo">🎓</div>
-                <div class="app-title">
-                  <b>ПараЗвёзд</b>
-                  <span>Расписание ВолГУ</span>
-                </div>
-                <div class="app-actions">🌙 ☰</div>
-              </div>
-              <div class="app-body">
-                <div class="app-greeting">
-                  <b>Привет, Юрий! 👋</b>
-                </div>
-                <div class="app-wish">
-                  🧠 Каждая решённая задача делает тебя сильнее!
-                </div>
-                <div class="app-filters">
-                  <div class="app-label">Специальность</div>
-                  <div class="app-chips">
-                    <span class="app-chip">РУПО</span>
-                    <span class="app-chip active">ИСП</span>
-                    <span class="app-chip">ЗСП</span>
-                    <span class="app-chip">ЭСП</span>
-                    <span class="app-chip">ЮСП</span>
+                <div class="mt-chat-bg">
+                  <div class="mt-message">
+                    <div class="mt-msg-author">ПараЗвёзд</div>
+                    <div class="mt-msg-text">
+                      📅 <b>Расписание на неделю</b><br><br>
+                      👥 <b>ИСП-241</b><br><br>
+                      ⭐️⭐️ Понедельник · 19.10<br>
+                      2 Пара. 10:10 — 11:40<br>
+                      Разработка мобильных приложений (лаб.)<br>
+                      Ауд. 1-36; Преп. Леонтьев Д.А.<br><br>
+                      3 Пара. 12:10 — 13:40<br>
+                      Разработка программных модулей (лаб.)<br>
+                      Ауд. 1-02; Преп. Донскова Д.А.
+                    </div>
                   </div>
-                  <div class="app-label" style="margin-top: 12px;">Курс</div>
-                  <div class="app-chips">
-                    <span class="app-chip">2 курс</span>
-                    <span class="app-chip active">3 курс</span>
-                    <span class="app-chip">4 курс</span>
-                  </div>
-                  <div class="app-label" style="margin-top: 12px;">Группа</div>
-                  <div class="app-chips">
-                    <span class="app-chip active">ИСП-241</span>
-                    <span class="app-chip">ИСП-242</span>
-                    <span class="app-chip">ИСП-243</span>
+                  <div class="mt-buttons">
+                    <div class="mt-btn mt-btn-primary">📖 Посмотреть расписание</div>
+                    <div class="mt-btn mt-btn-secondary">⚙️ Настройки</div>
                   </div>
                 </div>
               </div>
             </div>
+            <div class="eco-text">
+              <h3>Telegram-бот</h3>
+              <p>Расписание прямо в мессенджере</p>
+              <a href="https://t.me/VFStudentBot" class="eco-btn">Перейти</a>
+            </div>
           </div>
-          <div class="eco-text">
-            <h3>Приложение</h3>
-            <p>Мобильное приложение для iOS и Android</p>
-            <a href="#" class="eco-btn">Скачать</a>
-          </div>
-        </div>
 
+          <!-- ПРИЛОЖЕНИЕ -->
+          <div class="eco-card" data-color="#6ecf9b">
+            <div class="eco-preview">
+              <div class="mockup-app">
+                <div class="app-header">
+                  <div class="app-logo">🎓</div>
+                  <div class="app-title">
+                    <b>ПараЗвёзд</b>
+                    <span>Расписание ВолГУ</span>
+                  </div>
+                  <div class="app-actions">🌙 ☰</div>
+                </div>
+                <div class="app-body">
+                  <div class="app-greeting">
+                    <b>Привет, Юрий! 👋</b>
+                  </div>
+                  <div class="app-wish">
+                    🧠 Каждая решённая задача делает тебя сильнее!
+                  </div>
+                  <div class="app-filters">
+                    <div class="app-label">Специальность</div>
+                    <div class="app-chips">
+                      <span class="app-chip">РУПО</span>
+                      <span class="app-chip active">ИСП</span>
+                      <span class="app-chip">ЗСП</span>
+                      <span class="app-chip">ЭСП</span>
+                      <span class="app-chip">ЮСП</span>
+                    </div>
+                    <div class="app-label" style="margin-top: 12px;">Курс</div>
+                    <div class="app-chips">
+                      <span class="app-chip">2 курс</span>
+                      <span class="app-chip active">3 курс</span>
+                      <span class="app-chip">4 курс</span>
+                    </div>
+                    <div class="app-label" style="margin-top: 12px;">Группа</div>
+                    <div class="app-chips">
+                      <span class="app-chip active">ИСП-241</span>
+                      <span class="app-chip">ИСП-242</span>
+                      <span class="app-chip">ИСП-243</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="eco-text">
+              <h3>Приложение</h3>
+              <p>Мобильное приложение для iOS и Android</p>
+              <a href="#" class="eco-btn">Скачать</a>
+            </div>
+          </div>
+
+        </div>
+        <div class="eco-dots" id="ecoDots"></div>
       </div>
-      <!-- Точки для мобилки (скрыты, так как есть мобильный хаб) -->
-      <div class="eco-dots" id="ecoDots"></div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- МОДАЛКА ИНСТРУКЦИИ ДЛЯ iOS -->
-<div class="install-modal" id="iosInstallModal">
-  <div class="install-window">
-    <button class="install-close" id="closeInstallBtn">✕</button>
-    <div class="install-icon">🍏</div>
-    <h3>Как установить на iPhone</h3>
-    <div class="install-steps">
-      <div class="step">
-        <span class="step-num">1</span>
-        <div>Откройте сайт в браузере <b>Safari</b> (это важно).</div>
-      </div>
-      <div class="step">
-        <span class="step-num">2</span>
-        <div>Нажмите на кнопку <b>«Поделиться»</b> (квадрат со стрелочкой вверх).</div>
-      </div>
-      <div class="step">
-        <span class="step-num">3</span>
-        <div>Выберите <b>«На экран "Домой"»</b>.</div>
-      </div>
-      <div class="step">
-        <span class="step-num">4</span>
-        <div>Нажмите <b>«Добавить»</b>.</div>
+  <!-- МОДАЛКА ИНСТРУКЦИИ ДЛЯ iOS -->
+  <div class="install-modal" id="iosInstallModal">
+    <div class="install-window">
+      <button class="install-close" id="closeInstallBtn">✕</button>
+      <div class="install-icon">🍏</div>
+      <h3>Как установить на iPhone</h3>
+      <div class="install-steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <div>Откройте сайт в браузере <b>Safari</b> (это важно).</div>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <div>Нажмите на кнопку <b>«Поделиться»</b> (квадрат со стрелочкой вверх).</div>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <div>Выберите <b>«На экран "Домой"»</b>.</div>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <div>Нажмите <b>«Добавить»</b>.</div>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <section id="team">
     <div class="container">
@@ -442,7 +387,7 @@
             <h3>Юрий</h3>
             <div class="role">Разработчик сайта, тестировщик</div>
             <div class="team-socials">
-               <a href="https://vk.ru/id566690820" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
+              <a href="https://vk.ru/id566690820" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
               <a href="https://t.me/Yura1231qwerty" target="_blank" class="social-btn tg" title="Telegram"></a>
               <a href="https://github.com/YuriiSuperProg" target="_blank" class="social-btn gh" title="GitHub"></a>
             </div>
@@ -464,6 +409,21 @@
           </div>
         </article>
 
+        <article class="member member--soft">
+          <div class="photo">
+            <img src="img/4.jpg" alt="Разработчик">
+          </div>
+          <div class="member-body">
+            <h3>Иван</h3>
+            <div class="role">Дизайнер</div>
+            <div class="team-socials">
+              <a href="https://vk.ru/crom0v" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
+              <a href="https://t.me/crom0v" target="_blank" class="social-btn tg" title="Telegram"></a>
+              <a href="https://github.com/VanyaOrlov2009" target="_blank" class="social-btn gh" title="GitHub"></a>
+            </div>
+          </div>
+        </article>
+
         <article class="member member--dark">
           <div class="photo">
             <img src="img/32.jpg" alt="Разработчик">
@@ -476,21 +436,6 @@
               <a href="https://t.me/VirpitzStal" target="_blank" class="social-btn tg" title="Telegram"></a>
               <a href=" https://github.com/DmitriyPros" target="_blank" class="social-btn gh" title="GitHub"></a>
             </div>
-          </div>
-        </article>
-
-        <article class="member member--soft">
-          <div class="photo">
-            <img src="img/4.jpg" alt="Разработчик">
-          </div>
-          <div class="member-body">
-            <h3>Иван</h3>
-            <div class="role">Дизайнер</div>
-            <div class="team-socials">
-              <a href="https://vk.ru/crom0v" target="_blank" class="social-btn vk" title="ВКонтакте"></a>
-              <a href="https://t.me/crom0v" target="_blank" class="social-btn tg" title="Telegram"></a>
-              <a href="https://github.com/VanyaOrlov2009" target="_blank" class="social-btn gh" title="GitHub"></a>
-             </div>
           </div>
         </article>
 
@@ -509,47 +454,44 @@
   </section>
 
   <footer>
-  <div class="container">
-    
-    <div class="footer-support">
-      <h2>Остались вопросы?</h2>
-      <p>Напишите нам — мы всегда рады помочь студентам и преподавателям.</p>
-      
-      <!-- Контейнер открыт здесь -->
-      <div class="footer-contact">
-        
-        <!-- Кнопка 1: Почта -->
-        <a href="mailto:arturkuriev5@gmail.com" class="footer-btn" title="Написать на почту">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-            <polyline points="22,6 12,13 2,6"></polyline>
+    <div class="container">
+      <div class="footer-support">
+        <h2>Остались вопросы?</h2>
+        <p>Напишите нам — мы всегда рады помочь студентам и преподавателям.</p>
+        <div class="footer-contact">
+          <a href="mailto:arturkuriev5@gmail.com" class="footer-btn" title="Написать на почту">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 width="18" height="18">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            arturkuriev5@gmail.com
+          </a>
+          <a href="https://t.me/shadwGG" target="_blank"
+             class="footer-btn footer-btn--tg" title="Написать в Telegram">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+            Telegram
+          </a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© ПараЗвёзд 2026. Все права защищены.</div>
+        <a href="#" class="footer-up-btn"
+           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+               stroke-linejoin="round">
+            <path d="M12 19V5M5 12l7-7 7 7"/>
           </svg>
-          arturkuriev5@gmail.com
+          Наверх
         </a>
-
-        <!-- Кнопка 2: Telegram -->
-        <a href="https://t.me/shadwGG" target="_blank" class="footer-btn footer-btn--tg" title="Написать в Telegram">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-          </svg>
-          Telegram
-        </a>
-
-      </div> <!-- Контейнер закрыт ПОСЛЕ кнопки Telegram -->
+      </div>
     </div>
-
-    <div class="footer-bottom">
-      <div>© ПараЗвёзд 2026. Все права защищены.</div>
-      <a href="#" class="footer-up-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 19V5M5 12l7-7 7 7"/>
-        </svg>
-        Наверх
-      </a>
-    </div>
-
-  </div>
-</footer>
+  </footer>
 
   <!-- ОВЕРЛЕЙ И МОДАЛКА ДЛЯ ЭКОСИСТЕМЫ -->
   <div class="eco-overlay" id="ecoOverlay" hidden></div>

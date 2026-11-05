@@ -1461,3 +1461,27 @@ html.dark .btn-report:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* Закрытое меню — полностью скрыто */
+#mobileMenu {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Открытое меню — непрозрачный фон */
+#mobileMenu.open {
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    visibility: visible;
+    pointer-events: auto;
+
+    background: #ffffff !important;
+    opacity: 1 !important;
+
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
