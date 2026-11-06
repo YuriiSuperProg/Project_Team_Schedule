@@ -144,8 +144,7 @@ const WISHES = {
 };
 
 let SCHEDULE = {};
-// Добавили subgroup: null в state
-let state = { spec: null, course: null, group: null, subgroup: null, week: 0, mode: "student", viewTeacher: false, teacher: null };
+let state = { institution: localStorage.getItem("institution") === "institute" ? "institute" : "college", spec: null, course: null, group: null, subgroup: null, week: 0, mode: "student", viewTeacher: false, teacher: null };
 const $ = id => document.getElementById(id);
 
 function toMin(t) { const [h, m] = t.split(":").map(Number); return h * 60 + m; }
@@ -291,14 +290,17 @@ function currentWeek() {
 }
 
 function parseText(text) {
-  let t = text.replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "").trim();
-  const teacherMatch = t.match(/преп\.\s*([^,]+)/);
+  const t = String(text || "").replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "").trim();
+  const teacherMatch = t.match(/(?:преп\.?\s*|(?:к\.[^,]+|д-р\s*[^,]+|ст\.преп\.?|ст\.преподаватель|доцент|профессор|ассистент)[^,]*,?\s*)([^,]+?)(?=,\s*(?:ауд\.|аудитория)|$)/i);
   const teacher = teacherMatch ? teacherMatch[1].trim() : "";
-  const roomMatch = t.match(/(?:ауд\.|спортивный зал)\s*([^,]+?)(?:\s|$)/i);
+  const roomMatch = t.match(/(?:ауд\.?|аудитория)\s*([^,]+?)(?:\s|$)/i);
   let room = roomMatch ? roomMatch[1].trim() : "";
-  if (t.toLowerCase().includes("спортивный зал")) room = "Спортивный зал";
-  const subject = t.split("преп.")[0].trim().replace(/,\s*$/, "");
-  return { subject, teacher, room };
+  if (/спортивный зал|с\/зал/i.test(t)) room = /с\/зал/i.test(t) ? "Спортивный зал" : "Спортивный зал";
+  let subject = t;
+  if (teacherMatch) subject = t.slice(0, teacherMatch.index).replace(/,\s*$/, "");
+  else subject = t.replace(/,\s*(?:к\.[^,]+|ст\.преподаватель|доцент|профессор|ассистент).*$/i, "");
+  if (roomMatch) subject = subject.replace(/,?\s*ауд\.?\s*[^,]+$/i, "");
+  return { subject: subject.trim(), teacher, room };
 }
 
 function collectAllGroups() {
@@ -324,14 +326,14 @@ function buildLessonCards() {
     Object.keys(raw).forEach(dayStr => {
       const dayIndex = Number(dayStr);
       (raw[dayStr] || []).forEach(p => {
-        const time = BELLS[p.number] || (p.number + " пара");
+        const time = p.time || BELLS[p.number] || (p.number + " пара");
         const parsed = parseText(p.text);
         const stars = p.star ? [p.star] : ["*", "**"];
         
         stars.forEach(star => {
           // КЛЮЧ: День | Номер пары | Неделя | Предмет | Аудитория | Преподаватель
           // Группа и подгруппа НЕ входят в ключ, чтобы лекции склеились
-          const key = [dayIndex, p.number, star, parsed.subject.trim(), parsed.room.trim(), parsed.teacher].join("§");
+          const key = [dayIndex, p.number, star, p.time || "", p.from || "", p.until || "", (p.except || []).join(","), parsed.subject.trim(), parsed.room.trim(), parsed.teacher].join("§");
           
           if (!byDay[dayIndex]) byDay[dayIndex] = {};
           if (!byDay[dayIndex][star]) byDay[dayIndex][star] = {};
@@ -346,7 +348,10 @@ function buildLessonCards() {
               teachers: [], 
               groups: [], // Сюда соберутся ВСЕ группы
               subgroups: new Set(), // Собираем подгруппы
-              dates: p.dates || null, 
+              dates: p.dates || null,
+              from: p.from || null,
+              until: p.until || null,
+              except: p.except || [],
               _tSet: new Set(), 
               _gSet: new Set() 
             };
@@ -441,18 +446,45 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function buildSchedule(raw) {
+function buildSchedule(raw, institution = "college") {
   const result = {};
-  Object.keys(raw).forEach(groupName => {
-    const match = groupName.match(/^([А-ЯЁ]+)-/);
+  Object.keys(raw || {}).forEach(groupName => {
+    const match = groupName.match(/^(.+?)-(\d{3})/);
     if (!match) return;
-    const spec = match[1], course = GROUP_TO_COURSE[groupName];
+    const spec = match[1].trim();
+    let course = GROUP_TO_COURSE[groupName];
+    if (institution === "institute") {
+      const code = Number(match[2].slice(1));
+      course = code >= 21 && code <= 61 && (71 - code) % 10 === 0 ? String((71 - code) / 10) : null;
+    }
     if (!course) return;
     if (!result[spec]) result[spec] = {};
     if (!result[spec][course]) result[spec][course] = {};
     result[spec][course][groupName] = raw[groupName];
   });
   return result;
+}
+
+function activateInstitution(institution, restore = true) {
+  state.institution = institution === "institute" ? "institute" : "college";
+  localStorage.setItem("institution", state.institution);
+  SCHEDULE = buildSchedule(state.institution === "institute" ? VUZ_RAW_DATA : RAW_DATA, state.institution);
+  state.spec = state.course = state.group = null;
+  state.subgroup = null;
+  state.week = currentWeek();
+  if (restore && window.loadUserGroup) {
+    const saved = window.loadUserGroup(state.institution);
+    if (saved && SCHEDULE[saved.spec]?.[saved.course]?.[saved.group]) {
+      state.spec = saved.spec; state.course = saved.course; state.group = saved.group;
+    }
+  }
+  document.querySelectorAll(".institution-btn").forEach(btn => {
+    const active = btn.dataset.institution === state.institution;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-pressed", String(active));
+  });
+  applyColor(state.spec || (state.institution === "college" ? "ИСП" : "teacher"));
+  renderAll();
 }
 
 function renderChips(containerId, items, current, onClick, label = x => x) {
@@ -479,7 +511,7 @@ function renderFilters() {
     state.week = currentWeek();
     applyColor(spec);
     flapFalcon();
-    if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
+    if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group, state.institution);
     showRandomWish(true);
     renderAll();
     window.dispatchEvent(new CustomEvent("specChanged", { detail: spec }));
@@ -491,7 +523,7 @@ function renderFilters() {
       state.course = course;
       state.group = null;
       state.subgroup = null;
-      if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
+      if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group, state.institution);
       renderAll();
       if (typeof maybeSayContextual === "function") maybeSayContextual(true);
     }, c => c + " курс");
@@ -503,7 +535,7 @@ function renderFilters() {
     renderChips("groups", Object.keys(SCHEDULE[state.spec][state.course]).sort(), state.group, group => {
       state.group = group;
       state.subgroup = null;
-      if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group);
+      if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group, state.institution);
       renderAll();
       if (typeof maybeSayContextual === "function") maybeSayContextual(true);
     });
@@ -565,6 +597,11 @@ function renderSchedule() {
     block.appendChild(h2);
     
     let dayCards = (cardsByDay[index] && cardsByDay[index][w.star]) || [];
+    const weekStart = parseDate(w.start);
+    const lessonDate = new Date(weekStart);
+    lessonDate.setDate(lessonDate.getDate() + index);
+    const lessonDateKey = `${lessonDate.getFullYear()}-${String(lessonDate.getMonth() + 1).padStart(2, "0")}-${String(lessonDate.getDate()).padStart(2, "0")}`;
+    dayCards = dayCards.filter(card => (!card.dates || card.dates.includes(lessonDateKey)) && (!card.from || lessonDateKey >= card.from) && (!card.until || lessonDateKey <= card.until) && !(card.except || []).includes(lessonDateKey));
     
     // Фильтр: оставляем карточки, где есть наша группа
     dayCards = dayCards.filter(card => card.groups.some(g => g.group === state.group));
@@ -755,7 +792,7 @@ function goToday() {
 //  ИНИЦИАЛИЗАЦИЯ
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
-  if (typeof RAW_DATA !== "undefined") SCHEDULE = buildSchedule(RAW_DATA);
+  SCHEDULE = buildSchedule(state.institution === "institute" ? VUZ_RAW_DATA : RAW_DATA, state.institution);
   state.week = currentWeek();
   initTheme(); applyName();
 
@@ -772,10 +809,132 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggleMenu = $("themeToggleMenu");
   if (themeToggleMenu) themeToggleMenu.addEventListener("click", toggleTheme);
 
-  const menuBtn = $("menuBtn"), mobileMenu = $("mobileMenu"), closeMenuBtn = $("closeMenuBtn");
-  if (menuBtn && mobileMenu) menuBtn.addEventListener("click", () => { mobileMenu.classList.add("open"); menuBtn.classList.add("open"); document.body.style.overflow = "hidden"; });
-  if (closeMenuBtn && mobileMenu) closeMenuBtn.addEventListener("click", () => { mobileMenu.classList.remove("open"); menuBtn.classList.remove("open"); document.body.style.overflow = ""; });
-  if (mobileMenu) mobileMenu.addEventListener("click", (e) => { if (e.target === mobileMenu) { mobileMenu.classList.remove("open"); menuBtn.classList.remove("open"); document.body.style.overflow = ""; } });
+  // ============================================================
+  // ПОЛНОЭКРАННОЕ МЕНЮ: открытие, закрытие и блокировка фона
+  // ============================================================
+  const menuBtn = $("menuBtn");
+  const mobileMenu = $("mobileMenu");
+  const closeMenuBtn = $("closeMenuBtn");
+  let menuIsOpen = false;
+  let menuScrollY = 0;
+  let inertBackground = [];
+
+  function setBackgroundInert(enabled) {
+    if (!mobileMenu) return;
+    if (enabled) {
+      inertBackground = Array.from(document.body.children)
+        .filter(el => el !== mobileMenu)
+        .map(el => ({ element: el, hadInert: el.hasAttribute("inert") }));
+      inertBackground.forEach(({ element }) => element.setAttribute("inert", ""));
+    } else {
+      inertBackground.forEach(({ element, hadInert }) => {
+        if (!hadInert) element.removeAttribute("inert");
+      });
+      inertBackground = [];
+    }
+  }
+
+  function openFullscreenMenu() {
+    if (!menuBtn || !mobileMenu || menuIsOpen) return;
+    menuIsOpen = true;
+    menuScrollY = window.scrollY || window.pageYOffset || 0;
+
+    mobileMenu.inert = false;
+    mobileMenu.classList.add("open");
+    menuBtn.classList.add("open");
+    mobileMenu.setAttribute("aria-hidden", "false");
+    menuBtn.setAttribute("aria-expanded", "true");
+    setBackgroundInert(true);
+
+    // Фиксированная блокировка работает и в мобильных Safari.
+    document.body.dataset.menuScrollY = String(menuScrollY);
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${menuScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+
+    if (closeMenuBtn) closeMenuBtn.focus({ preventScroll: true });
+  }
+
+  function closeFullscreenMenu() {
+    if (!mobileMenu || !menuIsOpen) return;
+
+    // Сначала снимаем inert с фона. Затем явно убираем фокус
+    // с кнопки внутри меню и возвращаем его на бургер.
+    setBackgroundInert(false);
+    if (mobileMenu.contains(document.activeElement)) {
+      document.activeElement.blur();
+    }
+    if (menuBtn) menuBtn.focus({ preventScroll: true });
+
+    // inert исключает скрытое меню из фокуса и дерева доступности.
+    mobileMenu.inert = true;
+    mobileMenu.classList.remove("open");
+    mobileMenu.setAttribute("aria-hidden", "true");
+    if (menuBtn) {
+      menuBtn.classList.remove("open");
+      menuBtn.setAttribute("aria-expanded", "false");
+    }
+
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    document.body.style.overflow = "";
+    delete document.body.dataset.menuScrollY;
+
+    menuIsOpen = false;
+    window.scrollTo(0, menuScrollY);
+  }
+
+  // Делаем функции доступными динамическим пунктам меню ниже.
+  window.openFullscreenMenu = openFullscreenMenu;
+  window.closeFullscreenMenu = closeFullscreenMenu;
+
+  if (mobileMenu) mobileMenu.setAttribute("aria-hidden", "true");
+  if (menuBtn) {
+    menuBtn.setAttribute("aria-expanded", "false");
+    menuBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      openFullscreenMenu();
+    });
+  }
+  if (closeMenuBtn) {
+    closeMenuBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      closeFullscreenMenu();
+    });
+  }
+  if (mobileMenu) {
+    mobileMenu.addEventListener("click", (event) => {
+      if (event.target === mobileMenu) closeFullscreenMenu();
+    });
+  }
+  document.addEventListener("keydown", (event) => {
+    if (!menuIsOpen) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeFullscreenMenu();
+      return;
+    }
+    if (event.key === "Tab") {
+      const focusable = Array.from(mobileMenu.querySelectorAll(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )).filter(el => el.getClientRects().length > 0);
+      if (!focusable.length) {
+        event.preventDefault();
+      } else if (event.shiftKey && document.activeElement === focusable[0]) {
+        event.preventDefault();
+        focusable[focusable.length - 1].focus();
+      } else if (!event.shiftKey && document.activeElement === focusable[focusable.length - 1]) {
+        event.preventDefault();
+        focusable[0].focus();
+      }
+    }
+  });
 
   const roleCards = document.querySelectorAll(".role-card");
   roleCards.forEach(card => {
@@ -824,7 +983,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (window.loadUserGroup) {
-    const saved = window.loadUserGroup();
+    const saved = window.loadUserGroup(state.institution);
     if (saved && SCHEDULE[saved.spec] && SCHEDULE[saved.spec][saved.course] && SCHEDULE[saved.spec][saved.course][saved.group]) {
       state.spec = saved.spec; state.course = saved.course; state.group = saved.group;
       applyColor(saved.spec);
@@ -846,7 +1005,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     if (!isTeacher) {
       const btnForgetGroup = document.createElement("button"); btnForgetGroup.className = "fs-link"; btnForgetGroup.style = "--i: 3;"; btnForgetGroup.innerHTML = "🗑 Забыть группу";
-      btnForgetGroup.onclick = () => { if (window.clearUserGroup) window.clearUserGroup(); state.spec = null; state.course = null; state.group = null; state.subgroup = null; state.week = currentWeek(); applyColor("ИСП"); renderAll(); if (mobileMenu) mobileMenu.classList.remove("open"); if (menuBtn) menuBtn.classList.remove("open"); document.body.style.overflow = ""; buildMenu(); };
+      btnForgetGroup.onclick = () => { if (window.clearUserGroup) window.clearUserGroup(state.institution); state.spec = null; state.course = null; state.group = null; state.subgroup = null; state.week = currentWeek(); applyColor("ИСП"); renderAll(); closeFullscreenMenu(); buildMenu(); };
       dynamicNav.appendChild(btnForgetGroup);
     }
     
@@ -855,14 +1014,18 @@ document.addEventListener("DOMContentLoaded", () => {
     linkHome.className = "fs-link"; 
     linkHome.style = "--i: 4;"; 
     linkHome.innerHTML = "← На главную"; 
-    linkHome.onclick = (e) => { 
-      if (mobileMenu) mobileMenu.classList.remove("open"); 
-      if (menuBtn) menuBtn.classList.remove("open"); 
-      document.body.style.overflow = ""; 
-    }; 
+    linkHome.onclick = () => closeFullscreenMenu(); 
     dynamicNav.appendChild(linkHome);
   }
 
+  document.querySelectorAll(".institution-btn").forEach(btn => btn.addEventListener("click", () => {
+    if (btn.dataset.institution !== state.institution) activateInstitution(btn.dataset.institution, true);
+  }));
+  document.querySelectorAll(".institution-btn").forEach(btn => {
+    const active = btn.dataset.institution === state.institution;
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-pressed", String(active));
+  });
   buildMenu();
   renderAll();
 
@@ -1384,3 +1547,64 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 })();
+// ============================================================
+//  БЛОК ПРАЗДНИКА (ДЕНЬ НАРОДНОГО ЕДИНСТВА)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const section = document.getElementById("holidaySection");
+  if (!section) return;
+
+  // Проверяем дату
+  const now = new Date();
+  const month = now.getMonth(); // 10 = Ноябрь
+  const day = now.getDate();
+  
+  // Показываем только с 1 по 4 ноября
+  const isHolidayPeriod = (month === 10 && day >= 1 && day <= 4);
+  
+  if (!isHolidayPeriod) return;
+
+  // Показываем блок
+  section.style.display = "block";
+
+  // Меняем текст в зависимости от даты
+  const titleEl = document.getElementById("holidayTitle");
+  const subtitleEl = document.getElementById("holidaySubtitle");
+
+  if (day === 4) {
+    // 4 ноября — сам праздник
+    if (titleEl) titleEl.textContent = "С Днём народного единства!";
+    if (subtitleEl) subtitleEl.textContent = "Сегодня выходной день. Пар не будет.";
+  } else {
+    // 1, 2, 3 ноября — наступающий
+    if (titleEl) titleEl.textContent = "С наступающим Днём народного единства!";
+    if (subtitleEl) subtitleEl.textContent = "Скоро выходной — 4 ноября. Пар не будет.";
+  }
+
+  // Генерируем конфетти
+  const confettiBox = section.querySelector(".holiday-confetti");
+  if (confettiBox) {
+    const colors = ["#1769E0", "#4C9AFF", "#E60000", "#FFFFFF"];
+    
+    for (let i = 0; i < 20; i++) {
+      const piece = document.createElement("div");
+      piece.className = "confetti-piece";
+      
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const left = Math.random() * 100;
+      const delay = Math.random() * 5;
+      const dur = Math.random() * 3 + 4;
+      const size = Math.random() * 4 + 6;
+      
+      piece.style.left = left + "%";
+      piece.style.width = size + "px";
+      piece.style.height = size + "px";
+      piece.style.background = color;
+      piece.style.animationDelay = delay + "s";
+      piece.style.animationDuration = dur + "s";
+      piece.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+      
+      confettiBox.appendChild(piece);
+    }
+  }
+});

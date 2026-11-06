@@ -4,21 +4,22 @@
 
 (function () {
   const GROUP_KEY = "savedGroup";
+  const groupKey = institution => `${GROUP_KEY}:${institution || "college"}`;
 
   // --- Сохранить группу ---
-  window.saveUserGroup = function (spec, course, group) {
+  window.saveUserGroup = function (spec, course, group, institution = "college") {
     if (!spec || !course || !group) return;
     try {
-      localStorage.setItem(GROUP_KEY, JSON.stringify({ spec, course, group }));
+      localStorage.setItem(groupKey(institution), JSON.stringify({ spec, course, group }));
     } catch (e) {
       console.warn("Не удалось сохранить группу:", e);
     }
   };
 
   // --- Загрузить группу ---
-  window.loadUserGroup = function () {
+  window.loadUserGroup = function (institution = "college") {
     try {
-      const raw = localStorage.getItem(GROUP_KEY);
+      const raw = localStorage.getItem(groupKey(institution)) || (institution === "college" ? localStorage.getItem(GROUP_KEY) : null);
       if (!raw) return null;
       const data = JSON.parse(raw);
       if (!data || !data.spec || !data.group) return null;
@@ -29,9 +30,10 @@
   };
 
   // --- Забыть группу ---
-  window.clearUserGroup = function () {
+  window.clearUserGroup = function (institution = "college") {
     try {
-      localStorage.removeItem(GROUP_KEY);
+      localStorage.removeItem(groupKey(institution));
+      if (institution === "college") localStorage.removeItem(GROUP_KEY);
     } catch (e) { /* ignore */ }
   };
 

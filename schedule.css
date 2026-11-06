@@ -107,7 +107,7 @@ header {
   backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); z-index: 100;
 }
 .nav { display: flex; justify-content: space-between; align-items: center; height: 68px; }
-.nav-actions { display: flex; align-items: center; gap: 12px; flex-direction: row-reverse; }
+.nav-actions { display: flex; align-items: center; gap: 10px; flex-direction: row; flex-shrink: 0; }
 
 /* ============ КНОПКИ ============ */
 .btn {
@@ -1461,27 +1461,157 @@ html.dark .btn-report:hover {
     scroll-behavior: auto !important;
   }
 }
-
-/* Закрытое меню — полностью скрыто */
-#mobileMenu {
+/* ============================================================
+   МОБИЛЬНАЯ ШАПКА И ПОЛНОЭКРАННОЕ МЕНЮ
+   ============================================================ */
+@media (max-width: 640px) {
+  /* Убираем декоративные эмодзи в шапке, освобождая место для переключателя. */
+  header .logo-icon-wrap,
+  header .logo-text .star-sparkle {
     display: none !important;
-    visibility: hidden;
-    pointer-events: none;
-}
+  }
 
-/* Открытое меню — непрозрачный фон */
-#mobileMenu.open {
-    display: flex !important;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
+  header .logo {
+    gap: 0;
+    min-width: 0;
+  }
 
-    visibility: visible;
-    pointer-events: auto;
+  header .logo-text b {
+    white-space: nowrap;
+  }
 
-    background: #ffffff !important;
-    opacity: 1 !important;
+  header .nav {
+    height: 60px;
+    gap: 8px;
+  }
 
+  header .nav-actions {
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* На телефонах меню должно полностью закрывать страницу даже без blur. */
+  .fullscreen-menu,
+  html.dark .fullscreen-menu {
+    background: var(--bg) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+}
+
+
+/* Переключатель колледж / институт — округлая версия */
+.institution-switch-row {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 16px;
+}
+
+.institution-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid var(--line, rgba(120, 130, 150, .2));
+  border-radius: 999px;
+  background: var(--card, #fff);
+  box-shadow: var(--shadow-sm, 0 3px 12px rgba(0,0,0,.06));
+}
+
+.institution-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--muted, #778094);
+  font: inherit;
+  font-size: .9rem;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .22s ease, color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+
+.institution-btn:hover {
+  color: var(--text, #202838);
+  background: var(--bg, rgba(120,130,150,.08));
+}
+
+.institution-btn.active {
+  color: #fff;
+  background: var(--blue, #3478e5);
+  box-shadow: 0 3px 10px rgba(52, 120, 229, .25);
+}
+
+.institution-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--blue, #3478e5) 35%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .institution-switch-row { margin-bottom: 12px; }
+  .institution-btn { padding: 9px 16px; font-size: .84rem; }
+}
+
+
+/* Переключатель в шапке: Заголовок — Колледж/Институт — Уведомления — Меню */
+.header-institution-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 12px 0 auto;
+  flex: 0 0 auto;
+}
+
+/* Колокольчик (кнопка уведомлений, добавляемая notifications.js) всегда перед меню. */
+header .nav-actions > :not(.nav-burger-btn) { order: 1; }
+header .nav-actions > .nav-burger-btn { order: 2; }
+
+@media (max-width: 640px) {
+  .header-institution-switch-row { margin: 0 8px 0 auto; }
+  .header-institution-switch-row .institution-switch { gap: 2px; padding: 3px; }
+  .header-institution-switch-row .institution-btn { padding: 8px 11px; font-size: .78rem; }
+  header .nav { gap: 6px; }
+  header .nav-actions { gap: 6px; }
+}
+
+@media (max-width: 380px) {
+  .header-institution-switch-row { margin-right: 5px; }
+  .header-institution-switch-row .institution-btn { padding: 7px 8px; font-size: .72rem; }
+}
+
+
+/* Подсветка специальностей при наведении на ПК */
+@media (hover: hover) and (pointer: fine) {
+  #specs .chip {
+    cursor: pointer;
+    transition: 
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease,
+      filter 0.2s ease;
+  }
+
+  #specs .chip:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: var(--c, var(--blue));
+    background: color-mix(
+      in srgb,
+      var(--c, var(--blue)) 13%,
+      var(--card)
+    );
+    box-shadow: 0 5px 15px color-mix(
+      in srgb,
+      var(--c, var(--blue)) 25%,
+      transparent
+    );
+    filter: brightness(1.05);
+  }
+
+  #specs .chip:active {
+    transform: scale(0.97);
+  }
 }

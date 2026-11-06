@@ -55,7 +55,19 @@ const COLORS = {
   "РУПО": { c: "#4C9AFF", soft: "#EDF5FF", text: "#2b6fbb" }, 
   "ИСП":  { c: "#1769E0", soft: "#E8F1FF", text: "#1769E0" },
   "ЮСП":  { c: "#e86a6a", soft: "#fdf5f5", text: "#c43a3a" },
-  "teacher": { c: "#e6b86a", soft: "#fdf9f1", text: "#b8862f" }
+  "teacher": { c: "#e6b86a", soft: "#fdf9f1", text: "#b8862f" },
+  // Цвета специальностей института
+  "Ла":   { c: "#8B5CF6", soft: "#F3EEFF", text: "#7040C0" },
+  "ПО":   { c: "#0EA5A4", soft: "#E8FAF8", text: "#087F7E" },
+  "Ю":    { c: "#E879A8", soft: "#FFF0F6", text: "#C34F80" },
+  "ПР":   { c: "#E28A3B", soft: "#FFF5E9", text: "#B96A24" },
+  "ПМБИ": { c: "#6478D3", soft: "#EEF0FF", text: "#4659B0" },
+  "ПМИ":  { c: "#36A6C8", soft: "#EAF8FC", text: "#21809D" },
+  "П":    { c: "#8A9B45", soft: "#F4F7E9", text: "#687A2E" },
+  "Позо": { c: "#C078D5", soft: "#FAF0FC", text: "#9B50B1" },
+  "Юозо": { c: "#D16A61", soft: "#FFF0EE", text: "#AD4E46" },
+  "Эозо": { c: "#B18A38", soft: "#FBF6E8", text: "#8B6B25" },
+  "ЮмП":  { c: "#4D9B75", soft: "#ECF8F1", text: "#347A59" }
 };
 
 // ============================================================
