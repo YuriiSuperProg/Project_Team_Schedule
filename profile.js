@@ -671,4 +671,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 100);
     }
   }
+
+  // Обработчик кнопки "Начать игру" (ТЕПЕРЬ ВЕДЁТ НА ЕДИНУЮ ИГРУ)
+  const startGameBtn = document.getElementById("startGameBtn");
+  if (startGameBtn) {
+    startGameBtn.addEventListener("click", () => {
+      if (profileOverlay) profileOverlay.classList.remove("open");
+      document.body.classList.remove("profile-open");
+      
+      // Переходим на единую игру (она сама адаптируется под телефон/ПК)
+      window.location.href = "game.html";
+    });
+  }
 });

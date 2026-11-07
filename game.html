@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <link rel="icon" type="image/png" href="img/favicon.png">
+  <title>Выживание в сессию — ПараЗвёзд</title>
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+
+  <div class="game-wrapper">
+    <a href="schedule.html" class="btn-back">← Назад</a>
+    
+    <div class="ui-overlay">
+      <div class="ui-health">HP: <span id="hpText">100</span></div>
+      <div class="ui-score">Оценка: <span id="scoreText">0</span></div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+    
+    <div class="controls-hint desktop-only">
+      <span>WASD / Стрелки — движение</span>
+      <span>Пробел — стрелять</span>
+    </div>
+    <div class="controls-hint mobile-only">
+      <span>Води пальцем — двигайся</span>
+      <span>Стрельба автоматическая</span>
+    </div>
+
+    <!-- Экран старта (общий для всех) -->
+    <div id="startScreen" class="game-over-overlay show">
+      <h2 style="color: #4C9AFF; font-size: 2.5rem; margin-bottom: 10px;">Выживание в сессию</h2>
+      <p id="startHint">На тебя бегут модули, опросы и экзамены.<br>Отстреливайся и выживи!</p>
+      <button class="btn-restart" onclick="startGame()">🎮 Играть</button>
+      <a href="schedule.html" class="btn-back-menu">Вернуться в расписание</a>
+    </div>
+
+    <!-- Экран проигрыша -->
+    <div id="gameOver" class="game-over-overlay">
+      <h2>Отчислен! 💀</h2>
+      <p>Ты продержался: <span id="finalScore">0</span> очков</p>
+      <button class="btn-restart" onclick="startGame()">Попробовать снова</button>
+      <a href="schedule.html" class="btn-back-menu">Вернуться в расписание</a>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
