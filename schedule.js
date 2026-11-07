@@ -290,17 +290,30 @@ function currentWeek() {
 }
 
 function parseText(text) {
-  const t = String(text || "").replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "").trim();
-  const teacherMatch = t.match(/(?:преп\.?\s*|(?:к\.[^,]+|д-р\s*[^,]+|ст\.преп\.?|ст\.преподаватель|доцент|профессор|ассистент)[^,]*,?\s*)([^,]+?)(?=,\s*(?:ауд\.|аудитория)|$)/i);
-  const teacher = teacherMatch ? teacherMatch[1].trim() : "";
-  const roomMatch = t.match(/(?:ауд\.?|аудитория)\s*([^,]+?)(?:\s|$)/i);
+  const t = String(text || "")
+    .replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "")
+    .trim();
+
+  // 1. Аудитория (всегда в конце после "ауд." / "аудитория")
+  const roomMatch = t.match(/(?:ауд\.?|аудитория)\s*([^,]+?)(?:\s*$|,)/i);
   let room = roomMatch ? roomMatch[1].trim() : "";
-  if (/спортивный зал|с\/зал/i.test(t)) room = /с\/зал/i.test(t) ? "Спортивный зал" : "Спортивный зал";
-  let subject = t;
-  if (teacherMatch) subject = t.slice(0, teacherMatch.index).replace(/,\s*$/, "");
-  else subject = t.replace(/,\s*(?:к\.[^,]+|ст\.преподаватель|доцент|профессор|ассистент).*$/i, "");
-  if (roomMatch) subject = subject.replace(/,?\s*ауд\.?\s*[^,]+$/i, "");
-  return { subject: subject.trim(), teacher, room };
+  if (/спортивный зал|с\/зал/i.test(t)) room = "Спортивный зал";
+
+  // 2. Отрезаем аудиторию — остаётся "предмет (вид) [степень] ФИО"
+  let beforeRoom = t;
+  if (roomMatch) beforeRoom = t.slice(0, roomMatch.index).replace(/,\s*$/, "").trim();
+
+  // 3. Преподаватель — ФИО в конце строки (с опциональной степенью)
+  const teacherRe = /((?:(?:к\.|д-р|д\.|ст\.|доцент|профессор|ассистент|преп\.|ст\.преп\.?)[^А-ЯЁA-Z]*)?[А-ЯЁA-Z][а-яёa-z\-]+(?:\s+[А-ЯЁA-Z]\.(?:\s*[А-ЯЁA-Z]\.)?)?(?:\s*,\s*[А-ЯЁA-Z][а-яёa-z\-]+(?:\s+[А-ЯЁA-Z]\.(?:\s*[А-ЯЁA-Z]\.)?)?)*)\s*$/;
+  const teacherMatch = beforeRoom.match(teacherRe);
+  const teacher = teacherMatch ? teacherMatch[1].trim() : "";
+
+  // 4. Предмет = всё до преподавателя
+  let subject = beforeRoom;
+  if (teacherMatch) subject = beforeRoom.slice(0, teacherMatch.index).trim();
+  subject = subject.replace(/[,\s]+$/, "").trim();
+
+  return { subject, teacher, room };
 }
 
 function collectAllGroups() {

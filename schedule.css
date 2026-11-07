@@ -17,6 +17,7 @@
   --text:       #0F172A;
   --muted:      #94A3B8;
   --line:       #E2E8F0;
+  --bg-2:       #EEF3F9;
   --radius:     20px;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04);
@@ -30,6 +31,7 @@ html.dark {
   --text:       #F7F9FC;
   --muted:      #94A3B8;
   --line:       #2A3448;
+  --bg-2:       #EEF3F9;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 1px 3px rgba(0, 0, 0, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -160,6 +162,10 @@ header {
   border-radius: 50%; color: var(--text); cursor: pointer;
   box-shadow: var(--shadow-md); transition: all 0.3s ease; z-index: 10001;
 }
+.fs-close-btn:hover {
+  background: var(--bg-2);
+  transform: scale(1.1) rotate(90deg);
+}
 .fs-menu-content {
   display: flex; flex-direction: column; align-items: center;
   gap: 48px; width: 100%; max-width: 400px; padding: 24px;
@@ -281,6 +287,12 @@ body.profile-open .mascot {
   .falcon-svg-wrap {
     filter: none; /* просто убираем тяжёлую тень на мобилках */
     /* box-shadow и border-radius убираем, чтобы не было белого круга */
+  }
+    .fs-close-btn {
+    top: 16px;
+    right: 16px;
+    width: 42px;
+    height: 42px;
   }
 }
 /* ============ ОСТАЛЬНОЙ КОНТЕНТ ============ */
@@ -1583,9 +1595,12 @@ header .nav-actions > .nav-burger-btn { order: 2; }
 }
 
 
-/* Подсветка специальностей при наведении на ПК */
+/* Подсветка чипсов при наведении на ПК */
 @media (hover: hover) and (pointer: fine) {
-  #specs .chip {
+  #specs .chip,
+  #courses .chip,
+  #groups .chip,
+  #subgroups .chip {
     cursor: pointer;
     transition: 
       transform 0.2s ease,
@@ -1595,7 +1610,10 @@ header .nav-actions > .nav-burger-btn { order: 2; }
       filter 0.2s ease;
   }
 
-  #specs .chip:hover {
+  #specs .chip:hover,
+  #courses .chip:hover,
+  #groups .chip:hover,
+  #subgroups .chip:hover {
     transform: translateY(-3px) scale(1.02);
     border-color: var(--c, var(--blue));
     background: color-mix(
@@ -1611,7 +1629,10 @@ header .nav-actions > .nav-burger-btn { order: 2; }
     filter: brightness(1.05);
   }
 
-  #specs .chip:active {
+  #specs .chip:active,
+  #courses .chip:active,
+  #groups .chip:active,
+  #subgroups .chip:active {
     transform: scale(0.97);
   }
 }

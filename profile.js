@@ -209,6 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
         unlockAchievement("profileOpened");
         profileOverlay.classList.add("open");
         document.body.classList.add("profile-open");
+        // ВАЖНО: снимаем modal-open, чтобы маскот не перекрывал вкладки
+        document.body.classList.remove("modal-open");
       });
     });
 
@@ -224,19 +226,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Переключение вкладок
+  // Переключение вкладок (без modal-open — он ломал клики)
   tabs.forEach(tab => {
     tab.addEventListener("click", () => {
       tabs.forEach(t => t.classList.remove("active"));
       panes.forEach(p => p.classList.remove("active"));
       tab.classList.add("active");
-      document.getElementById("pane-" + tab.dataset.tab).classList.add("active");
-      
-      if (tab.dataset.tab === "secrets") {
-        document.body.classList.add("modal-open");
-      } else {
-        document.body.classList.remove("modal-open");
-      }
+      const pane = document.getElementById("pane-" + tab.dataset.tab);
+      if (pane) pane.classList.add("active");
 
       if (tab.dataset.tab === "achievements") {
         unlockAchievement("achViewer");
@@ -362,13 +359,12 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("achievements", JSON.stringify(unlocked));
     const ach = ACHIEVEMENTS.find(a => a.id === id);
     if (ach) showToast(`🏆 Достижение: ${ach.title}!`);
-    
   }
 
   // Делаем функцию глобальной
   window.unlockAchievement = unlockAchievement;
 
-   function renderAchievements() {
+  function renderAchievements() {
     const grid = document.getElementById("achGrid");
     if (!grid) return;
     
@@ -460,7 +456,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sSpecs) sSpecs.textContent = visitedSpecs.length;
   }
 
-       const saveNameBtn = document.getElementById("saveNameBtn");
+  const saveNameBtn = document.getElementById("saveNameBtn");
   if (saveNameBtn) {
     saveNameBtn.addEventListener("click", () => {
       const input = document.getElementById("settingsName");
@@ -656,4 +652,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
-
