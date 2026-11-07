@@ -290,28 +290,67 @@ function currentWeek() {
 }
 
 function parseText(text) {
+  // 1. Убираем даты в начале (если есть)
   const t = String(text || "")
     .replace(/^\d{2}\.\d{2}\.\d{4}(,\s*\d{2}\.\d{2}\.\d{4})*\s*/, "")
     .trim();
 
-  // 1. Аудитория (всегда в конце после "ауд." / "аудитория")
-  const roomMatch = t.match(/(?:ауд\.?|аудитория)\s*([^,]+?)(?:\s*$|,)/i);
-  let room = roomMatch ? roomMatch[1].trim() : "";
-  if (/спортивный зал|с\/зал/i.test(t)) room = "Спортивный зал";
+  // 2. Ищем аудиторию. Она почти всегда в самом конце: "ауд. 2-28", "аудитория 1-33", "с/зал"
+  let room = "";
+  let textWithoutRoom = t;
 
-  // 2. Отрезаем аудиторию — остаётся "предмет (вид) [степень] ФИО"
-  let beforeRoom = t;
-  if (roomMatch) beforeRoom = t.slice(0, roomMatch.index).replace(/,\s*$/, "").trim();
+  // Паттерн для аудитории
+  const roomRegex = /(?:ауд\.?|аудитория)\s*([А-Яа-яA-Za-z0-9\/\-]+)(?:\s*$|,)/i;
+  const roomMatch = t.match(roomRegex);
+  
+  if (roomMatch) {
+    room = roomMatch[1].trim();
+    // Если это спортзал, приводим к красивому виду
+    if (/с\/зал|спортивный/i.test(room)) room = "Спортивный зал";
+    
+    // Отрезаем аудиторию от текста, чтобы она не путалась с преподавателем
+    textWithoutRoom = t.replace(roomRegex, "").replace(/,\s*$/, "").trim();
+  } else if (/спортивный зал|с\/зал/i.test(t)) {
+    room = "Спортивный зал";
+    textWithoutRoom = t.replace(/,\s*(?:ауд\.?)?\s*(?:спортивный зал|с\/зал)/i, "").trim();
+  }
 
-  // 3. Преподаватель — ФИО в конце строки (с опциональной степенью)
-  const teacherRe = /((?:(?:к\.|д-р|д\.|ст\.|доцент|профессор|ассистент|преп\.|ст\.преп\.?)[^А-ЯЁA-Z]*)?[А-ЯЁA-Z][а-яёa-z\-]+(?:\s+[А-ЯЁA-Z]\.(?:\s*[А-ЯЁA-Z]\.)?)?(?:\s*,\s*[А-ЯЁA-Z][а-яёa-z\-]+(?:\s+[А-ЯЁA-Z]\.(?:\s*[А-ЯЁA-Z]\.)?)?)*)\s*$/;
-  const teacherMatch = beforeRoom.match(teacherRe);
-  const teacher = teacherMatch ? teacherMatch[1].trim() : "";
+  // 3. Ищем преподавателя в оставшемся тексте.
+  // Преподаватель — это всё, что идет после степени (к.пед.н., доцент, ст.преп., ассистент и т.д.)
+  // или после слова "преп."
+  let teacher = "";
+  let subject = textWithoutRoom;
 
-  // 4. Предмет = всё до преподавателя
-  let subject = beforeRoom;
-  if (teacherMatch) subject = beforeRoom.slice(0, teacherMatch.index).trim();
-  subject = subject.replace(/[,\s]+$/, "").trim();
+  // Паттерн: степень + ФИО (до конца строки)
+  const teacherRegex = /(?:,\s*|\s+)((?:к\.|д-р|д\.|ст\.|доцент|профессор|ассистент|преп\.?|ст\.преп\.?)[^А-ЯЁA-Z]*[А-ЯЁA-Z][а-яёa-z\-]+(?:\s+[А-ЯЁA-Z]\.(?:\s*[А-ЯЁA-Z]\.)?)?)$/;
+  
+  const teacherMatch = textWithoutRoom.match(teacherRegex);
+  
+  if (teacherMatch) {
+    teacher = teacherMatch[1].trim();
+    // Предмет — это всё, что было до преподавателя
+    subject = textWithoutRoom.slice(0, teacherMatch.index).replace(/,\s*$/, "").trim();
+  } else {
+    // Если не нашли по степени, ищем просто ФИО в конце (например, "Абрамов Е.В.")
+    const simpleTeacherRegex = /(?:,\s*|\s+)([А-ЯЁ][а-яё\-]+\s+[А-ЯЁ]\.\s*[А-ЯЁ]\.)$/;
+    const simpleMatch = textWithoutRoom.match(simpleTeacherRegex);
+    if (simpleMatch) {
+      teacher = simpleMatch[1].trim();
+      subject = textWithoutRoom.slice(0, simpleMatch.index).replace(/,\s*$/, "").trim();
+    }
+  }
+
+  // 4. Чистим предмет от лишних запятых и пробелов
+  subject = subject.replace(/,\s*$/, "").trim();
+
+  // Если преподаватель не нашелся, но в тексте есть "преп.", попробуем вытащить по нему
+  if (!teacher && /преп\./i.test(subject)) {
+      const parts = subject.split(/преп\./i);
+      if (parts.length > 1) {
+          teacher = parts[1].trim();
+          subject = parts[0].trim();
+      }
+  }
 
   return { subject, teacher, room };
 }
@@ -482,20 +521,31 @@ function activateInstitution(institution, restore = true) {
   state.institution = institution === "institute" ? "institute" : "college";
   localStorage.setItem("institution", state.institution);
   SCHEDULE = buildSchedule(state.institution === "institute" ? VUZ_RAW_DATA : RAW_DATA, state.institution);
+  
   state.spec = state.course = state.group = null;
   state.subgroup = null;
   state.week = currentWeek();
+  
   if (restore && window.loadUserGroup) {
     const saved = window.loadUserGroup(state.institution);
     if (saved && SCHEDULE[saved.spec]?.[saved.course]?.[saved.group]) {
       state.spec = saved.spec; state.course = saved.course; state.group = saved.group;
     }
   }
+  
+  // Обновляем кнопки
   document.querySelectorAll(".institution-btn").forEach(btn => {
     const active = btn.dataset.institution === state.institution;
     btn.classList.toggle("active", active);
     btn.setAttribute("aria-pressed", String(active));
   });
+  
+  // ФИКС: Двигаем ползунок в новое положение
+  const switchEl = document.getElementById("institutionSwitch");
+  if (switchEl) {
+    switchEl.setAttribute("data-active", state.institution);
+  }
+
   applyColor(state.spec || (state.institution === "college" ? "ИСП" : "teacher"));
   renderAll();
 }
@@ -761,19 +811,81 @@ function openMobileBells(sorted) {
 
 function renderTomorrow() {
   const wrap = $("tomorrow");
-  if (!wrap || state.viewTeacher || !state.spec || !state.group) { if(wrap) wrap.classList.add("hidden"); return; }
-  const now = new Date(), todayIndex = (now.getDay() + 6) % 7, tomorrowIndex = (todayIndex + 1) % 7;
-  const raw = SCHEDULE[state.spec][state.course][state.group]; let pairs = raw[tomorrowIndex];
-  const dayName = DAY_NAMES[DAYS[tomorrowIndex]], tomorrowDate = new Date(now); tomorrowDate.setDate(now.getDate() + 1);
+  if (!wrap || state.viewTeacher || !state.spec || !state.group) { 
+    if(wrap) wrap.classList.add("hidden"); 
+    return; 
+  }
+
+  const now = new Date();
+  // Получаем завтрашнюю дату
+  const tomorrowDate = new Date(now);
+  tomorrowDate.setDate(now.getDate() + 1);
+  tomorrowDate.setHours(0, 0, 0, 0); // Обнуляем время для точного сравнения
+
+  // Индекс дня недели для завтра (0 - Пн, 6 - Вс)
+  const tomorrowIndex = (tomorrowDate.getDay() + 6) % 7;
+  
+  // Форматируем завтрашнюю дату в ключ YYYY-MM-DD (как в данных)
+  const tomorrowKey = `${tomorrowDate.getFullYear()}-${String(tomorrowDate.getMonth() + 1).padStart(2, "0")}-${String(tomorrowDate.getDate()).padStart(2, "0")}`;
+
+  // Получаем пары на завтра
+  const raw = SCHEDULE[state.spec][state.course][state.group]; 
+  let pairs = raw[tomorrowIndex] || [];
+
+  // Определяем, какая неделя будет завтра (если сегодня воскресенье — берем следующую)
+  let weekIndex = state.week;
+  // Если сегодня воскресенье, завтра понедельник — это новая неделя
+  if (now.getDay() === 0) {
+    weekIndex = Math.min(state.week + 1, WEEK_LIST.length - 1);
+  }
+  const w = WEEK_LIST[weekIndex];
+
+  // Фильтруем пары: по звездочке (неделя) и по конкретным датам
+  pairs = pairs.filter(p => {
+    // 1. Проверка на звездочку (четность недели)
+    if (p.star && p.star !== w.star) return false;
+    
+    // 2. Проверка на конкретные даты (например, "2026-09-07")
+    if (p.dates && !p.dates.includes(tomorrowKey)) return false;
+    
+    // 3. Проверка на начало действия (from)
+    if (p.from && tomorrowKey < p.from) return false;
+    
+    // 4. Проверка на конец действия (until)
+    if (p.until && tomorrowKey > p.until) return false;
+    
+    // 5. Проверка на исключения (except)
+    if (p.except && p.except.includes(tomorrowKey)) return false;
+    
+    return true;
+  });
+
+  const dayName = DAY_NAMES[DAYS[tomorrowIndex]];
   const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
   const dateStr = `${tomorrowDate.getDate()} ${months[tomorrowDate.getMonth()]}`;
+  
   let headerHtml = `<div class="tm-header"><div class="tm-header-left"><span class="tm-icon">🌅</span><span class="tm-title">Завтра</span></div><div class="tm-header-right"><span class="tm-date">${dayName}, ${dateStr}</span></div></div>`;
-  if (!pairs || !pairs.length) { wrap.innerHTML = headerHtml + `<div class="tm-empty">Пар <b>нет</b> — отдыхай! 🎉</div>`; wrap.classList.remove("hidden"); if (window.unlockAchievement) window.unlockAchievement("tomorrowViewed"); return; }
-  const w = WEEK_LIST[state.week]; pairs = pairs.filter(p => !p.star || p.star === w.star);
-  if (!pairs.length) { wrap.innerHTML = headerHtml + `<div class="tm-empty">Пар <b>нет</b> — отдыхай! 🎉</div>`; wrap.classList.remove("hidden"); if (window.unlockAchievement) window.unlockAchievement("tomorrowViewed"); return; }
-  const sorted = [...pairs].sort((a, b) => a.number - b.number); let pairsHtml = '<div class="tm-list">';
-  sorted.forEach(p => { const time = BELLS[p.number] ? BELLS[p.number].split("–")[0] : ""; const parsed = parseText(p.text); pairsHtml += `<div class="tm-item"><div class="tm-time">${time}</div><div class="tm-subject"><div class="tm-subject-name">${parsed.subject.replace(/\s*\(.*?\)\s*/g, '')}</div>${parsed.room ? `<div class="tm-room">${parsed.room}</div>` : ""}</div></div>`; });
-  pairsHtml += '</div>'; wrap.innerHTML = headerHtml + pairsHtml + `<div class="tm-footer">Всего пар: ${sorted.length}</div>`; wrap.classList.remove("hidden");
+
+  if (!pairs.length) { 
+    wrap.innerHTML = headerHtml + `<div class="tm-empty">Пар <b>нет</b> — отдыхай! 🎉</div>`; 
+    wrap.classList.remove("hidden"); 
+    if (window.unlockAchievement) window.unlockAchievement("tomorrowViewed"); 
+    return; 
+  }
+
+  const sorted = [...pairs].sort((a, b) => a.number - b.number); 
+  let pairsHtml = '<div class="tm-list">';
+  
+  sorted.forEach(p => { 
+    const time = BELLS[p.number] ? BELLS[p.number].split("–")[0] : ""; 
+    const parsed = parseText(p.text); 
+    pairsHtml += `<div class="tm-item"><div class="tm-time">${time}</div><div class="tm-subject"><div class="tm-subject-name">${parsed.subject.replace(/\s*\(.*?\)\s*/g, '')}</div>${parsed.room ? `<div class="tm-room">${parsed.room}</div>` : ""}</div></div>`; 
+  });
+  
+  pairsHtml += '</div>'; 
+  wrap.innerHTML = headerHtml + pairsHtml + `<div class="tm-footer">Всего пар: ${sorted.length}</div>`; 
+  wrap.classList.remove("hidden");
+  
   if (window.unlockAchievement) window.unlockAchievement("tomorrowViewed");
 }
 
@@ -1039,6 +1151,9 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.classList.toggle("active", active);
     btn.setAttribute("aria-pressed", String(active));
   });
+    // Инициализируем ползунок при загрузке
+  const switchElInit = document.getElementById("institutionSwitch");
+  if (switchElInit) switchElInit.setAttribute("data-active", state.institution);
   buildMenu();
   renderAll();
 

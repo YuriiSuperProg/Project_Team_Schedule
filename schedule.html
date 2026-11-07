@@ -39,14 +39,6 @@
         </div>
       </a>
 
-
-      <div class="institution-switch-row header-institution-switch-row">
-        <div class="institution-switch" id="institutionSwitch" aria-label="Учебное заведение">
-          <button type="button" class="institution-btn active" data-institution="college" aria-pressed="true">Колледж</button>
-          <button type="button" class="institution-btn" data-institution="institute" aria-pressed="false">Институт</button>
-        </div>
-      </div>
-
       <div class="nav-actions">
         <button class="nav-burger-btn" id="menuBtn" aria-label="Меню">
           <div class="burger-icon">
@@ -131,8 +123,24 @@
     </div>
 
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
-      <div class="greeting" id="greeting">
+            <div class="greeting" id="greeting">
         <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
+        
+        <!-- ПЕРЕКЛЮЧАТЕЛЬ -->
+        <div class="institution-switch-wrap">
+          <div class="institution-switch" id="institutionSwitch" aria-label="Учебное заведение">
+            <button type="button" class="institution-btn active" data-institution="college" aria-pressed="true">
+              <span class="inst-icon">🏫</span>
+              <span class="inst-label">Колледж</span>
+            </button>
+            
+            <button type="button" class="institution-btn" data-institution="institute" aria-pressed="false">
+              <span class="inst-icon">🎓</span>
+              <span class="inst-label">Институт</span>
+            </button>
+          </div>
+        </div>
+
         <div class="greeting-actions">
           <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
           <button class="btn-report" id="reportNameBtn" title="Пожаловаться на имя" style="display: none;">🚩</button>

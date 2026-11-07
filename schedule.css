@@ -299,14 +299,14 @@ body.profile-open .mascot {
 .greeting {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
+  gap: 16px;
   margin: 32px 0 16px;
-  padding: 18px 22px;
+  padding: 20px 24px;
   background: var(--card);
   box-shadow: var(--shadow-md);
   border-radius: var(--radius);
 }
+
 .greeting-text { font-size: 1.1rem; font-weight: 500; }
 .greeting-text span { color: var(--c-text, var(--blue)); font-weight: 600; }
 
@@ -1695,3 +1695,309 @@ header .nav-actions > .nav-burger-btn { order: 2; }
   }
 }
 
+/* ============================================================
+   ПЕРЕКЛЮЧАТЕЛЬ: ПК - КАПСУЛА, МОБИЛКА - КАРТОЧКИ
+   ============================================================ */
+.institution-switch-wrap {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Базовая обертка (для ПК) */
+.institution-switch {
+  position: relative;
+  display: inline-flex;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  width: auto;
+  gap: 0;
+}
+
+/* На ПК иконки не нужны, делаем текст */
+.institution-btn {
+  position: relative;
+  z-index: 2;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.inst-icon {
+  display: none; /* Скрываем эмодзи на ПК */
+}
+
+.inst-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Ползунок для ПК (тот самый, красивый) */
+.institution-slider {
+  display: block !important;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  bottom: 4px;
+  width: calc(50% - 4px);
+  background: var(--card);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 1;
+}
+
+.institution-switch[data-active="institute"] .institution-slider {
+  transform: translateX(100%);
+}
+
+/* Ховер на ПК */
+.institution-btn:not(.active):hover {
+  color: var(--text);
+}
+
+.institution-btn.active {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ============================================================
+   МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ)
+   ============================================================ */
+@media (max-width: 640px) {
+  .institution-switch {
+    display: flex;
+    width: 100%;
+    max-width: 100%;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    gap: 8px;
+  }
+
+  .institution-slider {
+    display: none !important; /* Убираем ползунок на мобилке */
+  }
+
+  .institution-btn {
+    flex: 1;
+    flex-direction: column;
+    padding: 14px 8px;
+    background: var(--bg);
+    border: 2px solid transparent;
+    border-radius: 20px;
+    gap: 6px;
+  }
+
+  .inst-icon {
+    display: block; /* Показываем эмодзи */
+    font-size: 1.6rem;
+    line-height: 1;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .inst-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .institution-btn:not(.active):hover {
+    background: var(--card);
+    border-color: var(--line);
+    transform: translateY(-2px);
+  }
+
+  .institution-btn:not(.active):hover .inst-icon {
+    transform: scale(1.15);
+  }
+
+  .institution-btn.active {
+    background: color-mix(in srgb, var(--c, var(--blue)) 8%, var(--card));
+    border-color: color-mix(in srgb, var(--c, var(--blue)) 40%, transparent);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+    transform: translateY(-3px);
+  }
+
+  .institution-btn.active .inst-icon {
+    transform: scale(1.1);
+  }
+
+  .institution-btn.active .inst-label {
+    color: var(--c-text, var(--blue));
+  }
+}
+
+
+/* ============================================================
+   ПРИВЕТСТВИЕ И ПЕРЕКЛЮЧАТЕЛЬ (АДАПТИВНЫЙ)
+   ============================================================ */
+.greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 32px 0 16px;
+  padding: 16px 24px;
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius);
+  flex-wrap: wrap; /* Чтобы на мобилках переносилось */
+}
+
+.greeting-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.greeting-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* --- ПЕРЕКЛЮЧАТЕЛЬ --- */
+.institution-switch-wrap {
+  display: flex;
+  justify-content: center;
+  flex: 1; /* Занимает центральное место */
+}
+
+.institution-switch {
+  display: flex;
+  gap: 8px; /* Расстояние между карточками */
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* Карточки */
+.institution-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px; /* Компактные отступы */
+  background: var(--bg);
+  border: 2px solid transparent;
+  border-radius: 14px; /* Чуть меньше скругление, чтобы смотрелось аккуратнее */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 90px; /* Чтобы кнопки были одинаковыми */
+}
+
+.inst-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.inst-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.3s ease;
+}
+
+/* Ховер */
+.institution-btn:not(.active):hover {
+  background: var(--card);
+  border-color: var(--line);
+  transform: translateY(-2px);
+}
+
+.institution-btn:not(.active):hover .inst-icon {
+  transform: scale(1.15);
+}
+
+/* Активная карточка */
+.institution-btn.active {
+  background: color-mix(in srgb, var(--c, var(--blue)) 8%, var(--card));
+  border-color: color-mix(in srgb, var(--c, var(--blue)) 40%, transparent);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+  transform: translateY(-2px);
+}
+
+.institution-btn.active .inst-icon {
+  transform: scale(1.1);
+}
+
+.institution-btn.active .inst-label {
+  color: var(--c-text, var(--blue));
+}
+
+.institution-btn:active {
+  transform: scale(0.96) translateY(0);
+}
+
+/* Убираем индикатор-полоску, он тут не нужен */
+.institution-btn.active::after {
+  display: none;
+}
+
+/* ============================================================
+   МОБИЛЬНАЯ ВЕРСИЯ (СТОЛБИК)
+   ============================================================ */
+@media (max-width: 768px) {
+  .greeting {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .greeting-actions {
+    order: 2; /* Кнопки идут после переключателя */
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .institution-switch-wrap {
+    order: 3; /* Переключатель внизу */
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .institution-switch {
+    width: 100%;
+  }
+
+  .institution-btn {
+    flex: 1; /* На мобилке растягиваются на всю ширину */
+    padding: 12px 8px;
+  }
+
+  .inst-icon {
+    font-size: 1.6rem;
+  }
+
+  .inst-label {
+    font-size: 0.85rem;
+  }
+}
