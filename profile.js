@@ -198,18 +198,31 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabs = document.querySelectorAll(".profile-tab");
   const panes = document.querySelectorAll(".profile-pane");
 
-  // Открытие / Закрытие профиля
+    // Открытие / Закрытие профиля
   if (profileOverlay) {
     openProfileBtns.forEach(btn => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
+        
+        // ПРИНУДИТЕЛЬНО снимаем блокировки меню перед открытием профиля
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.width = "";
+        document.body.style.overflow = "";
+        delete document.body.dataset.menuScrollY;
+        
+        // Снимаем inert со всех элементов
+        document.querySelectorAll('[inert]').forEach(el => el.removeAttribute('inert'));
+
         updateProfileData();
         renderAchievements();
         renderStats();
         unlockAchievement("profileOpened");
+        
         profileOverlay.classList.add("open");
         document.body.classList.add("profile-open");
-        // ВАЖНО: снимаем modal-open, чтобы маскот не перекрывал вкладки
         document.body.classList.remove("modal-open");
       });
     });
@@ -226,19 +239,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Переключение вкладок (без modal-open — он ломал клики)
+     // Переключение вкладок
   tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
+    const handleTab = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
       tabs.forEach(t => t.classList.remove("active"));
       panes.forEach(p => p.classList.remove("active"));
+      
       tab.classList.add("active");
+      
       const pane = document.getElementById("pane-" + tab.dataset.tab);
       if (pane) pane.classList.add("active");
 
-      if (tab.dataset.tab === "achievements") {
-        unlockAchievement("achViewer");
+      if (tab.dataset.tab === "achievements" && window.unlockAchievement) {
+        window.unlockAchievement("achViewer");
       }
-    });
+    };
+
+    tab.addEventListener("click", handleTab);
   });
 
   // Обновление данных профиля
