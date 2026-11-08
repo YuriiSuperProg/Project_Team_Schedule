@@ -33,15 +33,20 @@ function isNameClean(raw) {
   return !BAD_WORDS.some(word => clean.includes(word));
 }
 
-// Основная функция валидации и очистки имени
 function validateName(raw) {
   if (!raw || !raw.trim()) return null;
   
-  let clean = raw.trim().replace(/[^a-zA-Zа-яА-ЯёЁ\s\-]/g, "");
+  // 1. Очищаем от всего, кроме русских букв, пробелов и дефисов
+  // (убираем цифры, латиницу, спецсимволы)
+  let clean = raw.trim().replace(/[^а-яА-ЯёЁ\s\-]/g, "");
+  
+  // 2. Убираем лишние пробелы и дефисы
   clean = clean.replace(/\s+/g, " ").replace(/-+/g, "-").trim();
 
+  // 3. Если после очистки осталось меньше 2 букв — отказ
   if (clean.length < 2) return null;
   
+  // 4. Проверка на повторение (ЮрийЮрий -> Юрий)
   const repeatPattern = /^(.{2,})\1+$/; 
   const isRepeat = repeatPattern.test(clean);
   
@@ -50,29 +55,37 @@ function validateName(raw) {
     return { value: baseName, tooLong: false, isRepeat: true };
   }
 
+  // 5. Проверка на длину
   if (clean.length > 20) {
     return { value: clean.slice(0, 20), tooLong: true, isRepeat: false };
   }
   
-  if (typeof isNameClean === "function" && !isNameClean(clean)) {
-    return null; 
-  }
-
-  const vowels = (clean.match(/[аеёиоуыэюяaeiouy]/gi) || []).length;
+  // 6. Проверка на "читаемость" (гласные/согласные)
+  const vowels = (clean.match(/[аеёиоуыэюя]/gi) || []).length;
   const vowelRatio = vowels / clean.length;
-  const hasLongConsonantRun = /[бвгджзйклмнпрстфхцчшщbcdfghjklmnpqrstvwxz]{5,}/i.test(clean);
+  const hasLongConsonantRun = /[бвгджзйклмнпрстфхцчшщ]{5,}/i.test(clean);
 
   if (vowelRatio < 0.25 || hasLongConsonantRun) {
     return null;
   }
 
+  // 7. Форматируем с большой буквы
   const finalName = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
-  const lowerClean = clean.toLowerCase();
-
+  
+  // 8. Если словарь имен загружен — проверяем
   if (ALLOWED_NAMES.length > 0) {
-    const isAllowed = ALLOWED_NAMES.some(n => {
-      if (lowerClean === n) return true;
-      if (lowerClean.length <= 4 && n.startsWith(lowerClean)) return true;
+    const lowerClean = clean.toLowerCase();
+        const isAllowed = ALLOWED_NAMES.some(n => {
+      // Приводим слово из словаря к нижнему регистру на всякий случай
+      const dictName = n.toLowerCase();
+      
+      // Точное совпадение (иван === иван)
+      if (lowerClean === dictName) return true;
+      
+      // Разрешаем короткие формы (миша -> михаил, саша -> александр)
+      // Если введенное имя короче 4 символов и словарь начинается с него
+      if (lowerClean.length <= 4 && dictName.startsWith(lowerClean)) return true;
+      
       return false;
     });
 
@@ -97,7 +110,8 @@ const BELLS = {
   4: "13:50–15:20", 
   5: "15:30–17:00",
   6: "17:10–18:40",
-  7: "18:50–20:20"
+  7: "18:50–20:20",
+  8: "20:30–22:00"
 };
 const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const DAY_NAMES = { Пн: "Понедельник", Вт: "Вторник", Ср: "Среда", Чт: "Четверг", Пт: "Пятница", Сб: "Суббота", Вс: "Воскресенье" };
@@ -1284,7 +1298,7 @@ function renderRoomsGrid() {
   const weekStar = WEEK_LIST[state.week].star; 
 
   // 2. Определяем, какие пары показывать
-  let displayPairs = [1, 2, 3, 4, 5, 6, 7];
+  let displayPairs = [1, 2, 3, 4, 5, 6, 7, 8];
   
   const now = new Date();
   const nowMin = now.getHours() * 60 + now.getMinutes();
@@ -1454,9 +1468,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
 // ============================================================
-//  УМНЫЙ ПОИСК ПО КАБИНЕТАМ (С ЗАДЕРЖКОЙ)
+//  ПОИСК И АВТО-ФОРМАТИРОВАНИЕ КАБИНЕТА (228 -> 2-28)
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("roomSearchInput");
@@ -1464,46 +1477,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let searchTimeout;
 
-  searchInput.addEventListener("input", () => {
-    // Очищаем предыдущий таймер
-    clearTimeout(searchTimeout);
-    
-    // Ставим новый с задержкой 300 мс (debounce)
-    searchTimeout = setTimeout(() => {
-      renderRoomsGrid();
-    }, 300);
-  });
-});
-
-// ============================================================
-//  АВТО-ФОРМАТИРОВАНИЕ ВВОДА КАБИНЕТА (228 -> 2-28)
-// ============================================================
-document.addEventListener("DOMContentLoaded", () => {
-  const searchInput = document.getElementById("roomSearchInput");
-  if (!searchInput) return;
-
   searchInput.addEventListener("input", (e) => {
     let value = e.target.value;
 
     // 1. Убираем все нецифровые символы (кроме дефиса)
     value = value.replace(/[^\d-]/g, "");
 
-    // 2. Если есть цифры и нет дефиса, ставим его после первой цифры
+    // 2. Если ввели больше 1 цифры и нет дефиса — ставим его после первой цифры
     // (например, "228" -> "2-28")
-    if (/^\d{2,}$/.test(value)) {
-      // Если ввели больше 1 цифры подряд, вставляем дефис после первой
-      if (value.length > 1 && value.indexOf("-") === -1) {
-        value = value[0] + "-" + value.slice(1);
-      }
+    if (/^\d{2,}$/.test(value) && value.indexOf("-") === -1) {
+      value = value[0] + "-" + value.slice(1);
     }
 
-    // 3. Ограничиваем длину (1 цифра этажа + дефис + 2 цифры кабинета = 4 символа)
+    // 3. Ограничиваем длину (1 цифра этажа + дефис + 2 цифры = 4 символа)
     if (value.length > 4 && value.indexOf("-") !== -1) {
-       // Обрезаем лишнее
-       value = value.slice(0, 4);
+      value = value.slice(0, 4);
     }
 
-    // 4. Если пользователь сам стер дефис, не мешаем ему (например, стер всё)
+    // 4. Если стерли все — оставляем пустоту
     if (value === "-" || value === "") {
       value = "";
     }
@@ -1511,9 +1502,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Применяем отформатированное значение обратно в поле
     e.target.value = value;
 
-    // Вызываем фильтрацию (если мы делали задержку, она сработает)
-    if (typeof renderRoomsGrid === "function") {
-      renderRoomsGrid();
-    }
+    // 5. Делаем задержку перед фильтрацией (чтобы не лагало при каждом нажатии)
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      if (typeof renderRoomsGrid === "function") {
+        renderRoomsGrid();
+      }
+    }, 300);
   });
 });

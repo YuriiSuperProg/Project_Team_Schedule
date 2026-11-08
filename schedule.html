@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="style.css">
   <meta name="google" content="notranslate">
   
-  <!-- Анти-мигание: проверяем роль до отрисовки страницы -->
   <script>
     if (localStorage.getItem("role")) {
       document.documentElement.classList.add("role-selected");
@@ -29,7 +28,6 @@
   <div class="bg-sparkles" id="bgSparkles" aria-hidden="true"></div>
   <div class="star-field" id="starField" aria-hidden="true"></div>
 
-  <!-- ШАПКА -->
   <header>
     <div class="container nav">
       <a href="index.html" class="logo">
@@ -39,7 +37,6 @@
           <small>Расписание ВФ ВолГУ</small>
         </div>
       </a>
-
       <div class="nav-actions">
         <button class="nav-burger-btn" id="menuBtn" aria-label="Меню">
           <div class="burger-icon">
@@ -50,17 +47,12 @@
     </div>
   </header>
 
-  <!-- ПОЛНОЭКРАННОЕ МЕНЮ -->
   <div class="fullscreen-menu" id="mobileMenu">
     <button class="fs-close-btn" id="closeMenuBtn" aria-label="Закрыть">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <path d="M18 6L6 18M6 6l12 12"/>
-      </svg>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
-
     <div class="fs-menu-content">
       <nav class="fs-nav" id="dynamicMenuNav"></nav>
-
       <div class="fs-actions">
         <button class="fs-theme-btn" id="themeToggleMenu">
           <span id="themeIcon">🌑</span> Сменить тему
@@ -70,91 +62,70 @@
   </div>
 
   <main class="container">
-    <!-- УВЕДОМЛЕНИЕ ОБ ИЗМЕНЕНИЯХ -->
+    <!-- Уведомления и праздники -->
     <div class="schedule-notice hidden" id="scheduleNotice">
       <div class="sn-content">
         <span class="sn-icon">⚠️</span>
-        <div class="sn-text">
-          <b>Внимание!</b> Расписание изменилось. Проверьте свои пары.
-        </div>
+        <div class="sn-text"><b>Внимание!</b> Расписание изменилось. Проверьте свои пары.</div>
       </div>
-      <div class="sn-actions">
-        <button class="sn-btn-close" id="snCloseBtn">Понятно</button>
-      </div>
+      <div class="sn-actions"><button class="sn-btn-close" id="snCloseBtn">Понятно</button></div>
     </div>
 
-    <!-- БЛОК ПРАЗДНИКА -->
     <section class="holiday-section" id="holidaySection" style="display: none;">
       <div class="holiday-card">
         <div class="holiday-bg-decor"></div>
-        
         <div class="holiday-content">
           <div class="holiday-badge">🎉 Праздник</div>
-                    <h2 class="holiday-title" id="holidayTitle">С наступающим Днём народного единства!</h2>
+          <h2 class="holiday-title" id="holidayTitle">С наступающим Днём народного единства!</h2>
           <p class="holiday-subtitle" id="holidaySubtitle">Скоро выходной — 4 ноября. Пар не будет.</p>
-          
           <div class="holiday-info">
             <div class="holiday-icon">🇷🇺</div>
-            <div class="holiday-text">
-              <span>Отдыхаем и набираемся сил</span>
-              <b>до 5 ноября!</b>
-            </div>
+            <div class="holiday-text"><span>Отдыхаем и набираемся сил</span><b>до 5 ноября!</b></div>
           </div>
         </div>
-
         <div class="holiday-confetti"></div>
       </div>
     </section>
 
+    <!-- Выбор роли -->
     <div class="role-screen" id="roleScreen">
       <div class="role-title">Кто ты?</div>
       <div class="role-sub">Выбери, чтобы настроить расписание под себя</div>
       <div class="role-cards">
         <button class="role-card" data-role="student">
-          <div class="rc-icon">👨‍🎓</div>
-          <div class="rc-title">Я студент</div>
-          <div class="rc-desc">Расписание своей группы</div>
+          <div class="rc-icon">👨‍🎓</div><div class="rc-title">Я студент</div><div class="rc-desc">Расписание своей группы</div>
         </button>
         <button class="role-card" data-role="teacher">
-          <div class="rc-icon">👨‍🏫</div>
-          <div class="rc-title">Я преподаватель</div>
-          <div class="rc-desc">Свои пары и группы</div>
+          <div class="rc-icon">👨‍🏫</div><div class="rc-title">Я преподаватель</div><div class="rc-desc">Свои пары и группы</div>
         </button>
       </div>
     </div>
 
+    <!-- Экран расписания -->
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
       <div class="greeting" id="greeting">
         <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
-        
-        <!-- ПЕРЕКЛЮЧАТЕЛЬ -->
         <div class="institution-switch-wrap">
-          <div class="institution-switch" id="institutionSwitch" aria-label="Учебное заведение">
-            <button type="button" class="institution-btn active" data-institution="college" aria-pressed="true">
-              <span class="inst-icon">🏫</span>
-              <span class="inst-label">Колледж</span>
+          <div class="institution-switch" id="institutionSwitch">
+            <button type="button" class="institution-btn active" data-institution="college">
+              <span class="inst-icon">🏫</span><span class="inst-label">Колледж</span>
             </button>
-            
-            <button type="button" class="institution-btn" data-institution="institute" aria-pressed="false">
-              <span class="inst-icon">🎓</span>
-              <span class="inst-label">Институт</span>
+            <button type="button" class="institution-btn" data-institution="institute">
+              <span class="inst-icon">🎓</span><span class="inst-label">Институт</span>
             </button>
           </div>
         </div>
-
         <div class="greeting-actions">
           <button class="btn btn-ghost" id="nameEdit">Изменить имя</button>
           <button class="btn-report" id="reportNameBtn" title="Пожаловаться на имя" style="display: none;">🚩</button>
         </div>
       </div>
 
-      <!-- ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ (Расписание / Кабинеты) -->
       <div class="view-switch">
         <button class="view-btn active" id="btnViewSchedule" onclick="switchView('schedule')">📅 Расписание</button>
         <button class="view-btn" id="btnViewRooms" onclick="switchView('rooms')">🚪 Кабинеты</button>
       </div>
 
-      <!-- ОСНОВНОЙ КОНТЕНТ РАСПИСАНИЯ -->
       <div id="scheduleContent">
         <div class="wish" id="wish">
           <span class="wish-emoji" id="wishEmoji">✨</span>
@@ -166,40 +137,32 @@
           <div class="row" id="rowSpecs"><span>Специальность</span><div class="chips" id="specs"></div></div>
           <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
           <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
-          <div class="row" id="rowSubgroups" style="display: none;">
-            <span>Подгруппа</span>
-            <div class="chips" id="subgroups"></div>
-          </div>
+          <div class="row" id="rowSubgroups" style="display: none;"><span>Подгруппа</span><div class="chips" id="subgroups"></div></div>
           <div class="row" id="rowTeacherBtn" style="display:none">
             <span>Преподаватель</span>
             <button class="btn btn-ghost teacher-search-btn" id="openTeacherModalBtn">
-              <span class="ts-btn-icon">🔍</span>
-              <span>Найти преподавателя</span>
+              <span class="ts-btn-icon">🔍</span><span>Найти преподавателя</span>
             </button>
           </div>
         </div>
 
         <div class="date-search">
           <span class="ds-icon">🔍</span>
-          <input type="text" id="dateInput" class="ds-input" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off">
+          <input type="text" id="dateInput" class="ds-input" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric">
           <button class="ds-btn" id="dateFind">Найти</button>
         </div>
 
         <div class="weekbar">
           <b id="weekInfo">Выберите группу</b>
-          
           <div class="weekbar-controls">
             <button onclick="shiftWeek(-1)">←</button>
             <button onclick="shiftWeek(1)">→</button>
           </div>
-          
           <button onclick="goToday()" class="btn-today">Сегодня</button>
         </div>
 
         <div class="active-teacher-banner" id="activeTeacherBanner" style="display:none">
-          <div class="atb-info">
-            👨‍🏫 Вы смотрите расписание: <b id="activeTeacherName">—</b>
-          </div>
+          <div class="atb-info">👨‍🏫 Вы смотрите расписание: <b id="activeTeacherName">—</b></div>
           <button class="atb-change-btn" id="activeTeacherChangeBtn">Сменить</button>
         </div>
 
@@ -229,10 +192,7 @@
         <div id="out"></div>
       </div>
 
-      <!-- БЛОК КАБИНЕТОВ (Сетка) -->
       <div id="roomsScreen" style="display: none;">
-        
-        <!-- ПЛАШКА ДЛЯ АКТИВА -->
         <div id="activistHeader" class="activist-header" style="display: none;">
           <span class="ah-icon">🌟</span>
           <div class="ah-text">
@@ -241,29 +201,22 @@
           </div>
         </div>
 
-              <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
         <div class="rooms-panel">
-          
-          <!-- Верхняя строка: День + Поиск -->
           <div class="panel-top">
             <div class="segmented-control">
               <button class="seg-btn active" id="roomDayToday" onclick="setRoomDay('today')">Сегодня</button>
               <button class="seg-btn" id="roomDayTomorrow" onclick="setRoomDay('tomorrow')">Завтра</button>
             </div>
-            
             <div class="panel-search">
               <span>🔍</span>
               <input type="text" id="roomSearchInput" placeholder="Поиск (напр. 2-28)" autocomplete="off">
             </div>
           </div>
-
-          <!-- Нижняя строка: Быстрые фильтры -->
           <div class="panel-bottom">
             <button class="pill-btn" onclick="setQuickPair('now', this)">⚡ Сейчас</button>
             <button class="pill-btn" onclick="setQuickPair('next', this)">⏭ Следующая</button>
             <button class="pill-btn active" onclick="setQuickPair('all', this)">📋 Все пары</button>
           </div>
-
         </div>
         
         <div class="rooms-legend">
@@ -271,32 +224,29 @@
           <span><span class="dot busy"></span> Занято</span>
         </div>
 
-        <div id="roomsGridContainer" class="rooms-scroll-container">
-          <!-- Сюда JS вставит таблицу -->
-        </div>
+        <div id="roomsGridContainer" class="rooms-scroll-container"></div>
       </div>
     </div>
   </main>
 
+  <!-- Модалки -->
   <div class="ts-modal-overlay" id="teacherModal">
     <div class="ts-modal">
       <div class="ts-modal-input-wrap">
         <span>🔍</span>
-        <input type="text" class="ts-modal-input" id="modalTeacherInput" placeholder="Введите фамилию..." autocomplete="off">
+        <input type="text" class="ts-modal-input" id="modalTeacherInput" placeholder="Введите фамилию...">
       </div>
       <div class="ts-filter-bar" id="modalSpecsFilter"></div>
       <div class="ts-modal-list" id="modalTeacherList"></div>
     </div>
   </div>
 
-  <!-- МОДАЛКА ПРОФИЛЯ -->
   <div class="profile-overlay" id="profileModal">
     <div class="profile-window">
       <button class="profile-close" id="profileCloseBtn">✕</button>
-
       <div class="profile-header">
         <div class="profile-avatar-wrap">
-          <div class="profile-avatar" id="profileAvatar" title="Кликни, чтобы сменить">🎓</div>
+          <div class="profile-avatar" id="profileAvatar">🎓</div>
           <div class="profile-level-badge" id="profileLevel">LVL 1</div>
         </div>
         <div class="profile-info">
@@ -311,67 +261,31 @@
           </div>
         </div>
       </div>
-
       <div class="profile-tabs">
-        <button class="profile-tab active" data-tab="achievements">
-          <span>🏆</span>
-          <span class="tab-text">Достижения</span>
-        </button>
-        <button class="profile-tab" data-tab="stats">
-          <span>📊</span>
-          <span class="tab-text">Статистика</span>
-        </button>
-        <button class="profile-tab" data-tab="settings">
-          <span>⚙️</span>
-          <span class="tab-text">Настройки</span>
-        </button>
-        <button class="profile-tab" data-tab="game">
-          <span>🎮</span>
-          <span class="tab-text">Мини-игра</span>
-        </button>
+        <button class="profile-tab active" data-tab="achievements"><span>🏆</span><span class="tab-text">Достижения</span></button>
+        <button class="profile-tab" data-tab="stats"><span>📊</span><span class="tab-text">Статистика</span></button>
+        <button class="profile-tab" data-tab="settings"><span>⚙️</span><span class="tab-text">Настройки</span></button>
+        <button class="profile-tab" data-tab="game"><span>🎮</span><span class="tab-text">Мини-игра</span></button>
       </div>
-
       <div class="profile-content">
-        <!-- 1. Достижения (включая секреты) -->
         <div class="profile-pane active" id="pane-achievements">
-          
-          <!-- Блок секретного кода -->
-          <div class="settings-form" style="margin-bottom: 24px; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px dashed var(--line); max-width: 100%;">
-            <h3 style="margin-bottom: 10px; font-size: 1.1rem; color: var(--text);">🤫 Секретные достижения</h3>
-            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; line-height: 1.5;">
-              Введи уникальный код от разработчика, чтобы открыть скрытое достижение.
-            </p>
+          <div class="settings-form" style="margin-bottom: 24px; background: var(--bg); padding: 20px; border-radius: 16px; border: 1px dashed var(--line);">
+            <h3 style="margin-bottom: 10px; font-size: 1.1rem;">🤫 Секретные достижения</h3>
+            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">Введи уникальный код от разработчика.</p>
             <div class="settings-input-wrap">
               <input type="text" id="secretCodeInput" class="settings-input" placeholder="НАПРИМЕР: HANDSHAKE" maxlength="30">
               <button class="settings-btn" id="saveSecretBtn">Активировать</button>
             </div>
           </div>
-
           <div class="ach-grid" id="achGrid"></div>
         </div>
-
-        <!-- 2. Статистика -->
         <div class="profile-pane" id="pane-stats">
           <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-icon">🔥</div>
-              <div class="stat-val" id="statStreak">0</div>
-              <div class="stat-label">Дней подряд</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🚀</div>
-              <div class="stat-val" id="statVisits">0</div>
-              <div class="stat-label">Всего заходов</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🔭</div>
-              <div class="stat-val" id="statSpecs">0</div>
-              <div class="stat-label">Специальностей изучено</div>
-            </div>
+            <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="statStreak">0</div><div class="stat-label">Дней подряд</div></div>
+            <div class="stat-card"><div class="stat-icon">🚀</div><div class="stat-val" id="statVisits">0</div><div class="stat-label">Всего заходов</div></div>
+            <div class="stat-card"><div class="stat-icon">🔭</div><div class="stat-val" id="statSpecs">0</div><div class="stat-label">Специальностей изучено</div></div>
           </div>
         </div>
-
-        <!-- 4. Настройки -->
         <div class="profile-pane" id="pane-settings">
           <div class="settings-form">
             <label class="settings-label">Ваше имя</label>
@@ -383,32 +297,24 @@
             <div class="avatar-picker" id="avatarPicker"></div>
           </div>
         </div>
-                <!-- 5. ИГРА -->
         <div class="profile-pane" id="pane-game">
-          <div class="game-preview-card" style="text-align: center; padding: 40px 20px; background: var(--bg); border-radius: 20px; border: 1px dashed var(--line);">
+          <div style="text-align: center; padding: 40px 20px; background: var(--bg); border-radius: 20px; border: 1px dashed var(--line);">
             <div style="font-size: 4rem; margin-bottom: 16px; animation: float 3s ease-in-out infinite;">⚔️</div>
-            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; color: var(--text);">Выживание в сессию</h2>
-            <p style="color: var(--muted); font-size: 0.95rem; margin-bottom: 24px; max-width: 400px; margin-left: auto; margin-right: auto;">
-              На тебя бегут модули, опросы и экзамены. Отстреливайся знаниями и выживи как можно дольше!
-            </p>
-            <button class="settings-btn" id="startGameBtn" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 14px; box-shadow: 0 8px 24px rgba(23, 105, 224, 0.3);">
-              🎮 Начать игру
-            </button>
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 8px;">Выживание в сессию</h2>
+            <p style="color: var(--muted); margin-bottom: 24px;">На тебя бегут модули и экзамены!</p>
+            <button class="settings-btn" id="startGameBtn" style="padding: 14px 32px; font-size: 1.1rem;">🎮 Начать игру</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- МОДАЛКА ИЗМЕНЕНИЯ ИМЕНИ -->
   <div class="name-modal-overlay" id="nameModal">
     <div class="name-modal-window">
       <h3 class="name-modal-title">Как тебя зовут?</h3>
-      
       <div class="name-modal-input-wrap">
-        <input type="text" id="nameModalInput" class="name-modal-input" placeholder="Введи имя..." maxlength="20" autocomplete="off">
+        <input type="text" id="nameModalInput" class="name-modal-input" placeholder="Введи имя..." maxlength="20">
       </div>
-      
       <div class="name-modal-actions">
         <button class="name-modal-btn name-modal-btn-cancel" id="nameModalCancel">Отмена</button>
         <button class="name-modal-btn name-modal-btn-save" id="nameModalSave">Сохранить</button>
@@ -416,182 +322,72 @@
     </div>
   </div>
 
-<!-- МАСКОТ СОКОЛ-САПСАН -->
-<div class="mascot" id="mascot">
-  <div class="mascot-bubble" id="mascotBubble" role="status" aria-live="polite">Привет! Выбери группу →</div>
-  <div class="falcon-svg-wrap" id="falconMascot" 
-       role="button" 
-       tabindex="0" 
-       aria-label="Сокол-помощник. Нажми Enter или Пробел, чтобы взаимодействовать">
-<svg class="falcon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <!-- Тень -->
-  <ellipse cx="50" cy="96" rx="26" ry="3" fill="rgba(0,0,0,0.15)"/>
-
-  <!-- Хвост: длиннее и уже (сапсан узнаётся по хвосту) -->
-  <path d="M 42 82 L 30 99 L 44 91 L 47 100 L 50 92 L 53 100 L 56 91 L 70 99 L 58 82 Z"
-        fill="var(--falcon-dark, #0F2A5C)" />
-
-  <!-- Тело: грудь уже, плечи шире — силуэт «каплей вниз» -->
-  <path d="M 50 22 C 30 26 24 58 28 84 C 33 94 46 97 50 97 C 54 97 67 94 72 84 C 76 58 70 26 50 22 Z"
-        fill="var(--falcon-main, #1769E0)" />
-
-  <!-- ЛЕВОЕ КРЫЛО (id и transform-origin НЕ трогаем — на них висит взлёт) -->
-  <g id="falconWingLeft" style="transform-origin: 30px 50px;">
-    <path d="M 28 44 C 12 58 8 80 18 92 C 28 96 40 82 40 60 Z"
-          fill="var(--falcon-dark, #0F2A5C)" />
-    <!-- Перья: длиннее, веером -->
-    <g stroke="var(--falcon-light, #4C9AFF)" stroke-width="1.4" fill="none" opacity="0.55" stroke-linecap="round">
-      <path d="M 16 58 Q 12 70 18 82" />
-      <path d="M 22 53 Q 18 66 24 78" />
-      <path d="M 29 50 Q 26 63 31 76" />
-      <path d="M 35 50 Q 33 62 37 74" />
-    </g>
-  </g>
-
-  <!-- ПРАВОЕ КРЫЛО -->
-  <g id="falconWingRight" style="transform-origin: 70px 50px;">
-    <path d="M 72 44 C 88 58 92 80 82 92 C 72 96 60 82 60 60 Z"
-          fill="var(--falcon-dark, #0F2A5C)" />
-    <g stroke="var(--falcon-light, #4C9AFF)" stroke-width="1.4" fill="none" opacity="0.55" stroke-linecap="round">
-      <path d="M 84 58 Q 88 70 82 82" />
-      <path d="M 78 53 Q 82 66 76 78" />
-      <path d="M 71 50 Q 74 63 69 76" />
-      <path d="M 65 50 Q 67 62 63 74" />
-    </g>
-  </g>
-
-  <!-- Голова: уже, с угловатым затылком -->
-  <path d="M 50 8 C 38 8 31 16 30 26 C 29 34 34 40 42 41 L 50 42 L 58 41 C 66 40 71 34 70 26 C 69 16 62 8 50 8 Z"
-        fill="var(--falcon-main, #1769E0)" />
-
-  <!-- Надбровные дуги: тёмные клины над глазами — «злой» взгляд -->
-  <path d="M 33 22 L 43 27 L 41 21 Z" fill="var(--falcon-dark, #0F2A5C)" />
-  <path d="M 67 22 L 57 27 L 59 21 Z" fill="var(--falcon-dark, #0F2A5C)" />
-
-  <!-- Белая маска (сапсан) — чуть уже, повторяет форму головы -->
-  <path d="M 37 24 C 35 30 37 36 43 38 C 47 39 53 39 57 38 C 63 36 65 30 63 24 Z" fill="#F7F9FC" />
-
-  <!-- «Усы» сапсана: вертикальные тёмные полосы от глаз вниз -->
-  <path d="M 32 26 L 36 32 L 40 26 Z" fill="var(--falcon-dark, #0F2A5C)" />
-  <path d="M 68 26 L 64 32 L 60 26 Z" fill="var(--falcon-dark, #0F2A5C)" />
-
-  <!-- Пестрины на груди: 8 крапинок цвета --falcon-dark -->
-  <g fill="var(--falcon-dark, #0F2A5C)" opacity="0.28">
-    <circle cx="44" cy="52" r="1.1"/>
-    <circle cx="50" cy="50" r="1.2"/>
-    <circle cx="56" cy="52" r="1.1"/>
-    <circle cx="42" cy="58" r="1.0"/>
-    <circle cx="48" cy="57" r="1.1"/>
-    <circle cx="54" cy="58" r="1.0"/>
-    <circle cx="46" cy="64" r="1.0"/>
-    <circle cx="52" cy="64" r="1.0"/>
-  </g>
-
-  <!-- Глаза-«миндаль»: вертикальные, с янтарной радужкой и зрачком -->
-    <!-- Левый глаз: радужка -->
-  <path d="M 38 24 Q 41.5 20 45 24 Q 41.5 28 38 24 Z" fill="#FFB300" stroke="#0F172A" stroke-width="1.3"/>
-  <!-- Правый глаз: радужка -->
-  <path d="M 55 24 Q 58.5 20 62 24 Q 58.5 28 55 24 Z" fill="#FFB300" stroke="#0F172A" stroke-width="1.3"/>
-
-  <!-- ЗРАЧКИ (группа для слежения) -->
-  <g id="falconPupils">
-    <ellipse class="falcon-pupil" cx="41.5" cy="24" rx="0.9" ry="1.8" fill="#0F172A"/>
-    <circle  class="falcon-pupil" cx="40.6" cy="22.9" r="0.55" fill="#FFF"/>
-    <ellipse class="falcon-pupil" cx="58.5" cy="24" rx="0.9" ry="1.8" fill="#0F172A"/>
-    <circle  class="falcon-pupil" cx="57.6" cy="22.9" r="0.55" fill="#FFF"/>
-  </g>
-
-    <!-- КЛЮВ (группа для чириканья) -->
-  <g id="falconBeak" style="transform-origin: 50px 31px;">
-    <!-- Надклювье (верхний крючок) -->
-    <path d="M 46 28 Q 47 33 50 37 Q 53 33 54 28 Q 50 31 46 28 Z" fill="#FFB300"/>
-    <!-- Тёмный кончик крючка -->
-    <path d="M 49 35 L 50 38 L 51 35 Z" fill="#1A1A1A"/>
-    <!-- Подклювье (нижняя часть) -->
-    <path d="M 47.5 31 Q 50 34 52.5 31 Q 50 32.5 47.5 31 Z" fill="#D99400"/>
-  </g>
-  <!-- Лапы: три пальца вперёд + один назад, когти -->
-  <g stroke="var(--falcon-accent, #FF8C00)" stroke-width="2.4" stroke-linecap="round" fill="none">
-    <!-- Левая лапа -->
-    <path d="M 44 95 L 42 99"/>
-    <path d="M 46 95 L 46 99"/>
-    <path d="M 48 95 L 50 99"/>
-    <path d="M 46 95 L 43.5 92.5"/>
-    <!-- Правая лапа -->
-    <path d="M 54 95 L 54 99"/>
-    <path d="M 56 95 L 56 99"/>
-    <path d="M 58 95 L 60 99"/>
-    <path d="M 56 95 L 58.5 92.5"/>
-  </g>
-</svg>
-  </div>
-</div>
-
-  <!-- МОДАЛКА ИНФОРМАЦИИ О ПАРЕ -->
   <div class="info-modal-overlay" id="pairInfoModal">
     <div class="info-modal-window">
-      <div class="info-modal-header">
-        <span id="pairInfoIcon">📚</span>
-        <h3 id="pairInfoSubject">Предмет</h3>
-      </div>
+      <div class="info-modal-header"><span id="pairInfoIcon">📚</span><h3 id="pairInfoSubject">Предмет</h3></div>
       <div class="info-modal-body">
-        <div class="info-row">
-          <span class="info-label">Группы:</span>
-          <span class="info-value" id="pairInfoGroups">—</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Аудитория:</span>
-          <span class="info-value" id="pairInfoRoom">—</span>
-        </div>
+        <div class="info-row"><span class="info-label">Группы:</span><span class="info-value" id="pairInfoGroups">—</span></div>
+        <div class="info-row"><span class="info-label">Аудитория:</span><span class="info-value" id="pairInfoRoom">—</span></div>
       </div>
-      <div class="info-modal-footer">
-        <button class="info-modal-btn" onclick="document.getElementById('pairInfoModal').classList.remove('open')">Понятно</button>
-      </div>
+      <div class="info-modal-footer"><button class="info-modal-btn" onclick="document.getElementById('pairInfoModal').classList.remove('open')">Понятно</button></div>
     </div>
   </div>
 
- <footer>
+  <div class="mascot" id="mascot">
+    <div class="mascot-bubble" id="mascotBubble">Привет! Выбери группу →</div>
+    <div class="falcon-svg-wrap" id="falconMascot" role="button" tabindex="0">
+      <svg class="falcon-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="96" rx="26" ry="3" fill="rgba(0,0,0,0.15)"/>
+        <path d="M 42 82 L 30 99 L 44 91 L 47 100 L 50 92 L 53 100 L 56 91 L 70 99 L 58 82 Z" fill="var(--falcon-dark, #0F2A5C)" />
+        <path d="M 50 22 C 30 26 24 58 28 84 C 33 94 46 97 50 97 C 54 97 67 94 72 84 C 76 58 70 26 50 22 Z" fill="var(--falcon-main, #1769E0)" />
+        <g id="falconWingLeft" style="transform-origin: 30px 50px;">
+          <path d="M 28 44 C 12 58 8 80 18 92 C 28 96 40 82 40 60 Z" fill="var(--falcon-dark, #0F2A5C)" />
+          <g stroke="var(--falcon-light, #4C9AFF)" stroke-width="1.4" fill="none" opacity="0.55"><path d="M 16 58 Q 12 70 18 82" /><path d="M 22 53 Q 18 66 24 78" /><path d="M 29 50 Q 26 63 31 76" /><path d="M 35 50 Q 33 62 37 74" /></g>
+        </g>
+        <g id="falconWingRight" style="transform-origin: 70px 50px;">
+          <path d="M 72 44 C 88 58 92 80 82 92 C 72 96 60 82 60 60 Z" fill="var(--falcon-dark, #0F2A5C)" />
+          <g stroke="var(--falcon-light, #4C9AFF)" stroke-width="1.4" fill="none" opacity="0.55"><path d="M 84 58 Q 88 70 82 82" /><path d="M 78 53 Q 82 66 76 78" /><path d="M 71 50 Q 74 63 69 76" /><path d="M 65 50 Q 67 62 63 74" /></g>
+        </g>
+        <path d="M 50 8 C 38 8 31 16 30 26 C 29 34 34 40 42 41 L 50 42 L 58 41 C 66 40 71 34 70 26 C 69 16 62 8 50 8 Z" fill="var(--falcon-main, #1769E0)" />
+        <path d="M 33 22 L 43 27 L 41 21 Z" fill="var(--falcon-dark, #0F2A5C)" /><path d="M 67 22 L 57 27 L 59 21 Z" fill="var(--falcon-dark, #0F2A5C)" />
+        <path d="M 37 24 C 35 30 37 36 43 38 C 47 39 53 39 57 38 C 63 36 65 30 63 24 Z" fill="#F7F9FC" />
+        <path d="M 32 26 L 36 32 L 40 26 Z" fill="var(--falcon-dark, #0F2A5C)" /><path d="M 68 26 L 64 32 L 60 26 Z" fill="var(--falcon-dark, #0F2A5C)" />
+        <g fill="var(--falcon-dark, #0F2A5C)" opacity="0.28"><circle cx="44" cy="52" r="1.1"/><circle cx="50" cy="50" r="1.2"/><circle cx="56" cy="52" r="1.1"/><circle cx="42" cy="58" r="1.0"/><circle cx="48" cy="57" r="1.1"/><circle cx="54" cy="58" r="1.0"/><circle cx="46" cy="64" r="1.0"/><circle cx="52" cy="64" r="1.0"/></g>
+        <path d="M 38 24 Q 41.5 20 45 24 Q 41.5 28 38 24 Z" fill="#FFB300" stroke="#0F172A" stroke-width="1.3"/>
+        <path d="M 55 24 Q 58.5 20 62 24 Q 58.5 28 55 24 Z" fill="#FFB300" stroke="#0F172A" stroke-width="1.3"/>
+        <g id="falconPupils"><ellipse class="falcon-pupil" cx="41.5" cy="24" rx="0.9" ry="1.8" fill="#0F172A"/><circle class="falcon-pupil" cx="40.6" cy="22.9" r="0.55" fill="#FFF"/><ellipse class="falcon-pupil" cx="58.5" cy="24" rx="0.9" ry="1.8" fill="#0F172A"/><circle class="falcon-pupil" cx="57.6" cy="22.9" r="0.55" fill="#FFF"/></g>
+        <g id="falconBeak" style="transform-origin: 50px 31px;"><path d="M 46 28 Q 47 33 50 37 Q 53 33 54 28 Q 50 31 46 28 Z" fill="#FFB300"/><path d="M 49 35 L 50 38 L 51 35 Z" fill="#1A1A1A"/><path d="M 47.5 31 Q 50 34 52.5 31 Q 50 32.5 47.5 31 Z" fill="#D99400"/></g>
+        <g stroke="var(--falcon-accent, #FF8C00)" stroke-width="2.4" stroke-linecap="round" fill="none"><path d="M 44 95 L 42 99"/><path d="M 46 95 L 46 99"/><path d="M 48 95 L 50 99"/><path d="M 46 95 L 43.5 92.5"/><path d="M 54 95 L 54 99"/><path d="M 56 95 L 56 99"/><path d="M 58 95 L 60 99"/><path d="M 56 95 L 58.5 92.5"/></g>
+      </svg>
+    </div>
+  </div>
+
+  <footer>
     <div class="container">
       <div class="footer-support">
         <h2>Остались вопросы?</h2>
         <p>Напишите нам — мы всегда рады помочь студентам и преподавателям.</p>
         <div class="footer-contact">
-          <a href="mailto:arturkuriev5@gmail.com" class="footer-btn" title="Написать на почту">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                 width="18" height="18">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
-            </svg>
+          <a href="mailto:arturkuriev5@gmail.com" class="footer-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             arturkuriev5@gmail.com
           </a>
-          <a href="https://t.me/shadwGG" target="_blank"
-             class="footer-btn footer-btn--tg" title="Написать в Telegram">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-            </svg>
+          <a href="https://t.me/shadwGG" target="_blank" class="footer-btn footer-btn--tg">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
             Telegram
           </a>
         </div>
       </div>
-
       <div class="footer-bottom">
         <div>© ПараЗвёзд 2026. Все права защищены.</div>
-        <a href="#" class="footer-up-btn"
-           onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-               stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-               stroke-linejoin="round">
-            <path d="M12 19V5M5 12l7-7 7 7"/>
-          </svg>
+        <a href="#" class="footer-up-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
           Наверх
         </a>
       </div>
     </div>
   </footer>
 
-  
-  <!-- ВАШИ СКРИПТЫ -->
   <script src="data.js"></script>
   <script src="vuz-data.js"></script>
   <script src="storage.js"></script>
