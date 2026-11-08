@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="schedule.css">
   <link rel="stylesheet" href="notifications.css">
   <link rel="stylesheet" href="atmosphere.css">
+  <link rel="stylesheet" href="style.css">
   <meta name="google" content="notranslate">
   
   <!-- Анти-мигание: проверяем роль до отрисовки страницы -->
@@ -123,7 +124,7 @@
     </div>
 
     <div class="schedule-screen" id="scheduleScreen" style="display:none">
-            <div class="greeting" id="greeting">
+      <div class="greeting" id="greeting">
         <div class="greeting-text">Привет, <span id="userName">друг</span>! 👋</div>
         
         <!-- ПЕРЕКЛЮЧАТЕЛЬ -->
@@ -147,77 +148,113 @@
         </div>
       </div>
 
-      <div class="wish" id="wish">
-        <span class="wish-emoji" id="wishEmoji">✨</span>
-        <span class="wish-text" id="wishText">Хорошего дня!</span>
-        <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
+      <!-- ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ (Расписание / Кабинеты) -->
+      <div class="view-switch">
+        <button class="view-btn active" id="btnViewSchedule" onclick="switchView('schedule')">📅 Расписание</button>
+        <button class="view-btn" id="btnViewRooms" onclick="switchView('rooms')">🚪 Кабинеты</button>
       </div>
 
-      <div class="filters">
-        <div class="row" id="rowSpecs"><span>Специальность</span><div class="chips" id="specs"></div></div>
-        <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
-        <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
-        <div class="row" id="rowSubgroups" style="display: none;">
-          <span>Подгруппа</span>
-          <div class="chips" id="subgroups"></div>
+      <!-- ОСНОВНОЙ КОНТЕНТ РАСПИСАНИЯ -->
+      <div id="scheduleContent">
+        <div class="wish" id="wish">
+          <span class="wish-emoji" id="wishEmoji">✨</span>
+          <span class="wish-text" id="wishText">Хорошего дня!</span>
+          <button class="wish-refresh" id="wishRefresh" title="Другое пожелание">🔄</button>
         </div>
-        <div class="row" id="rowTeacherBtn" style="display:none">
-          <span>Преподаватель</span>
-          <button class="btn btn-ghost teacher-search-btn" id="openTeacherModalBtn">
-            <span class="ts-btn-icon">🔍</span>
-            <span>Найти преподавателя</span>
-          </button>
-        </div>
-      </div>
 
-      <div class="date-search">
-        <span class="ds-icon">🔍</span>
-        <input type="text" id="dateInput" class="ds-input" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off">
-        <button class="ds-btn" id="dateFind">Найти</button>
-      </div>
-
-      <div class="weekbar">
-        <b id="weekInfo">Выберите группу</b>
-        
-        <div class="weekbar-controls">
-          <button onclick="shiftWeek(-1)">←</button>
-          <button onclick="shiftWeek(1)">→</button>
-        </div>
-        
-        <button onclick="goToday()" class="btn-today">Сегодня</button>
-      </div>
-
-      <div class="active-teacher-banner" id="activeTeacherBanner" style="display:none">
-        <div class="atb-info">
-          👨‍🏫 Вы смотрите расписание: <b id="activeTeacherName">—</b>
-        </div>
-        <button class="atb-change-btn" id="activeTeacherChangeBtn">Сменить</button>
-      </div>
-
-      <div class="day-card hidden" id="dayCard">
-        <div class="dc-main">
-          <div class="dc-ring" id="dcRing">
-            <svg viewBox="0 0 120 120">
-              <circle class="dc-ring-bg" cx="60" cy="60" r="52"/>
-              <circle class="dc-ring-fill" cx="60" cy="60" r="52" id="dcRingFill"/>
-            </svg>
-            <div class="dc-ring-text"><b id="dayPercent">0%</b><span>дня</span></div>
+        <div class="filters">
+          <div class="row" id="rowSpecs"><span>Специальность</span><div class="chips" id="specs"></div></div>
+          <div class="row" id="rowCourses"><span>Курс</span><div class="chips" id="courses"></div></div>
+          <div class="row" id="rowGroups"><span>Группа</span><div class="chips" id="groups"></div></div>
+          <div class="row" id="rowSubgroups" style="display: none;">
+            <span>Подгруппа</span>
+            <div class="chips" id="subgroups"></div>
           </div>
-          <div class="dc-info">
-            <div class="dc-status"><span class="pulse"></span><span id="dayStatus">Идёт учебный день</span></div>
-            <div class="dc-pair" id="dcPair">—</div>
-            <div class="dc-meta" id="dcMeta">—</div>
-            <div class="dc-left" id="dayLeft">—</div>
+          <div class="row" id="rowTeacherBtn" style="display:none">
+            <span>Преподаватель</span>
+            <button class="btn btn-ghost teacher-search-btn" id="openTeacherModalBtn">
+              <span class="ts-btn-icon">🔍</span>
+              <span>Найти преподавателя</span>
+            </button>
           </div>
         </div>
-        <div class="dc-timeline">
-          <div class="dc-track" id="dcTrack"><div class="dc-now" id="dcNow"></div></div>
-          <div class="dc-labels" id="dcLabels"></div>
+
+        <div class="date-search">
+          <span class="ds-icon">🔍</span>
+          <input type="text" id="dateInput" class="ds-input" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off">
+          <button class="ds-btn" id="dateFind">Найти</button>
         </div>
+
+        <div class="weekbar">
+          <b id="weekInfo">Выберите группу</b>
+          
+          <div class="weekbar-controls">
+            <button onclick="shiftWeek(-1)">←</button>
+            <button onclick="shiftWeek(1)">→</button>
+          </div>
+          
+          <button onclick="goToday()" class="btn-today">Сегодня</button>
+        </div>
+
+        <div class="active-teacher-banner" id="activeTeacherBanner" style="display:none">
+          <div class="atb-info">
+            👨‍🏫 Вы смотрите расписание: <b id="activeTeacherName">—</b>
+          </div>
+          <button class="atb-change-btn" id="activeTeacherChangeBtn">Сменить</button>
+        </div>
+
+        <div class="day-card hidden" id="dayCard">
+          <div class="dc-main">
+            <div class="dc-ring" id="dcRing">
+              <svg viewBox="0 0 120 120">
+                <circle class="dc-ring-bg" cx="60" cy="60" r="52"/>
+                <circle class="dc-ring-fill" cx="60" cy="60" r="52" id="dcRingFill"/>
+              </svg>
+              <div class="dc-ring-text"><b id="dayPercent">0%</b><span>дня</span></div>
+            </div>
+            <div class="dc-info">
+              <div class="dc-status"><span class="pulse"></span><span id="dayStatus">Идёт учебный день</span></div>
+              <div class="dc-pair" id="dcPair">—</div>
+              <div class="dc-meta" id="dcMeta">—</div>
+              <div class="dc-left" id="dayLeft">—</div>
+            </div>
+          </div>
+          <div class="dc-timeline">
+            <div class="dc-track" id="dcTrack"><div class="dc-now" id="dcNow"></div></div>
+            <div class="dc-labels" id="dcLabels"></div>
+          </div>
+        </div>
+
+        <div class="tomorrow hidden" id="tomorrow"></div>
+        <div id="out"></div>
       </div>
 
-      <div class="tomorrow hidden" id="tomorrow"></div>
-      <div id="out"></div>
+      <!-- БЛОК КАБИНЕТОВ (Сетка) -->
+      <div id="roomsScreen" style="display: none;">
+        
+        <!-- ПЛАШКА ДЛЯ АКТИВА -->
+        <div id="activistHeader" class="activist-header" style="display: none;">
+          <span class="ah-icon">🌟</span>
+          <div class="ah-text">
+            <b>Спецпроект для студенческого актива</b>
+            <span>Здесь ты можешь найти свободный кабинет для собраний и мероприятий.</span>
+          </div>
+        </div>
+
+        <div class="view-switch" style="margin-bottom: 16px; background: var(--bg);">
+          <button class="view-btn active" id="roomDayToday" onclick="setRoomDay('today')">Сегодня</button>
+          <button class="view-btn" id="roomDayTomorrow" onclick="setRoomDay('tomorrow')">Завтра</button>
+        </div>
+        
+        <div class="rooms-legend">
+          <span><span class="dot free"></span> Свободно</span>
+          <span><span class="dot busy"></span> Занято</span>
+        </div>
+
+        <div id="roomsGridContainer" class="rooms-scroll-container">
+          <!-- Сюда JS вставит таблицу -->
+        </div>
+      </div>
     </div>
   </main>
 

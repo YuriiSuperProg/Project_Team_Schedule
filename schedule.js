@@ -1204,3 +1204,178 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// ============================================================
+//  КАБИНЕТЫ: ИНТЕРАКТИВНАЯ СЕТКА
+// ============================================================
+let roomCurrentDay = 'today';
+
+function switchView(view) {
+  const btnSchedule = document.getElementById("btnViewSchedule");
+  const btnRooms = document.getElementById("btnViewRooms");
+  const scheduleContent = document.getElementById("scheduleContent");
+  const roomsScreen = document.getElementById("roomsScreen");
+  const activistHeader = document.getElementById("activistHeader");
+
+  if (view === 'rooms') {
+    scheduleContent.style.display = "none";
+    roomsScreen.style.display = "block";
+    btnSchedule.classList.remove("active");
+    btnRooms.classList.add("active");
+    
+    // Показываем плашку ТОЛЬКО студентам (не преподам)
+    if (activistHeader) {
+      activistHeader.style.display = (state.viewTeacher || state.mode === 'teacher') ? "none" : "flex";
+    }
+    
+    renderRoomsGrid(); // Отрисовка таблицы
+  } else {
+    scheduleContent.style.display = "block";
+    roomsScreen.style.display = "none";
+    btnSchedule.classList.add("active");
+    btnRooms.classList.remove("active");
+  }
+}
+
+function setRoomDay(day) {
+  roomCurrentDay = day;
+  document.getElementById("roomDayToday").classList.toggle("active", day === 'today');
+  document.getElementById("roomDayTomorrow").classList.toggle("active", day === 'tomorrow');
+  renderRoomsGrid();
+}
+
+function renderRoomsGrid() {
+  const container = document.getElementById("roomsGridContainer");
+  if (!container) return;
+
+  // 1. Определяем день
+  const targetDate = new Date();
+  if (roomCurrentDay === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
+  const dayIndex = (targetDate.getDay() + 6) % 7;
+  const dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+  const weekStar = WEEK_LIST[state.week].star; 
+
+  // 2. Собираем все кабинеты и их загрузку
+  const allRooms = new Set();
+  const busyMap = {}; 
+
+  const processBase = (rawData, instType) => {
+    const data = buildSchedule(rawData, instType);
+    Object.keys(data).forEach(spec => {
+      Object.keys(data[spec]).forEach(course => {
+        Object.keys(data[spec][course]).forEach(group => {
+          const pairs = data[spec][course][group][dayIndex] || [];
+          pairs.forEach(p => {
+            if (p.star && p.star !== weekStar) return;
+            if (p.dates && !p.dates.includes(dateKey)) return;
+            if (p.from && dateKey < p.from) return;
+            if (p.until && dateKey > p.until) return;
+            if (p.except && p.except.includes(dateKey)) return;
+
+            const parsed = parseText(p.text);
+            const room = parsed.room.replace(/[^А-Яа-я0-9\-\/\s]/g, "").trim();
+            if (!room) return;
+
+            allRooms.add(room);
+            if (!busyMap[room]) busyMap[room] = {};
+            
+            const existing = busyMap[room][p.number];
+            if (existing) {
+              if (!existing.group.includes(group)) existing.group += `, ${group}`;
+            } else {
+              busyMap[room][p.number] = {
+                group: group,
+                subj: parsed.subject.replace(/\s*\(.*?\)\s*/g, "")
+              };
+            }
+          });
+        });
+      });
+    });
+  };
+
+  processBase(RAW_DATA, "college");
+  processBase(VUZ_RAW_DATA, "institute");
+
+  const sortedRooms = Array.from(allRooms).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+  if (sortedRooms.length === 0) {
+    container.innerHTML = "<div class='rooms-empty'>Данных нет</div>";
+    return;
+  }
+
+  // === ПРОВЕРКА НА МОБИЛКУ ===
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    // ==========================================
+    // МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ)
+    // ==========================================
+    let html = `<div class="rooms-mobile-list">`;
+    
+    sortedRooms.forEach(room => {
+      let pairsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        const busyInfo = busyMap[room] && busyMap[room][i];
+        if (busyInfo) {
+          pairsHtml += `
+            <div class="room-pair busy" onclick="alert('${busyInfo.subj}\\nГруппа: ${busyInfo.group}')">
+              <span class="pair-num">${i}</span>
+              <span class="pair-icon">❌</span>
+            </div>
+          `;
+        } else {
+          pairsHtml += `
+            <div class="room-pair free">
+              <span class="pair-num">${i}</span>
+              <span class="pair-icon">✅</span>
+            </div>
+          `;
+        }
+      }
+
+      html += `
+        <div class="room-card">
+          <div class="room-header">
+            <span class="room-name">🚪 ${room}</span>
+          </div>
+          <div class="room-pairs">
+            ${pairsHtml}
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    container.innerHTML = html;
+
+  } else {
+    // ==========================================
+    // ПК ВЕРСИЯ (ТАБЛИЦА)
+    // ==========================================
+    let html = `<table class="rooms-table"><thead><tr><th>Кабинет</th>`;
+    for (let i = 1; i <= 5; i++) {
+      html += `<th>${i}-я пара</th>`;
+    }
+    html += `</tr></thead><tbody>`;
+
+    sortedRooms.forEach(room => {
+      html += `<tr><td>${room}</td>`;
+      for (let i = 1; i <= 5; i++) {
+        const busyInfo = busyMap[room] && busyMap[room][i];
+        if (busyInfo) {
+          html += `<td class="room-cell busy" title="${busyInfo.subj}">
+            ${busyInfo.subj}
+            <span class="group-name">${busyInfo.group}</span>
+          </td>`;
+        } else {
+          html += `<td class="room-cell free">Свободно</td>`;
+        }
+      }
+      html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+  }
+}
