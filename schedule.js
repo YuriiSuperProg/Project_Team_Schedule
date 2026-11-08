@@ -90,7 +90,15 @@ function validateName(raw) {
 // ============================================================
 //  СЕТКА ЗВОНКОВ И ДНИ
 // ============================================================
-const BELLS = { 1: "08:30–10:00", 2: "10:10–11:40", 3: "12:10–13:40", 4: "13:50–15:20", 5: "15:30–17:00" };
+const BELLS = { 
+  1: "08:30–10:00", 
+  2: "10:10–11:40", 
+  3: "12:10–13:40", 
+  4: "13:50–15:20", 
+  5: "15:30–17:00",
+  6: "17:10–18:40",
+  7: "18:50–20:20"
+};
 const DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const DAY_NAMES = { Пн: "Понедельник", Вт: "Вторник", Ср: "Среда", Чт: "Четверг", Пт: "Пятница", Сб: "Суббота", Вс: "Воскресенье" };
 const WISHES = {
@@ -1204,11 +1212,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
 // ============================================================
 //  КАБИНЕТЫ: ИНТЕРАКТИВНАЯ СЕТКА
 // ============================================================
 let roomCurrentDay = 'today';
+let roomQuickFilter = 'all'; // 'all', 'now', 'next'
 
 function switchView(view) {
   const btnSchedule = document.getElementById("btnViewSchedule");
@@ -1223,12 +1231,11 @@ function switchView(view) {
     btnSchedule.classList.remove("active");
     btnRooms.classList.add("active");
     
-    // Показываем плашку ТОЛЬКО студентам (не преподам)
     if (activistHeader) {
       activistHeader.style.display = (state.viewTeacher || state.mode === 'teacher') ? "none" : "flex";
     }
     
-    renderRoomsGrid(); // Отрисовка таблицы
+    renderRoomsGrid();
   } else {
     scheduleContent.style.display = "block";
     roomsScreen.style.display = "none";
@@ -1244,6 +1251,27 @@ function setRoomDay(day) {
   renderRoomsGrid();
 }
 
+function setQuickPair(type, btn) {
+  roomQuickFilter = type;
+  
+  // 1. Снимаем активный класс со ВСЕХ кнопок
+  document.querySelectorAll(".pill-btn").forEach(b => b.classList.remove("active"));
+  
+  // 2. Добавляем активный класс только на ту, которую нажали
+  if (btn) {
+    btn.classList.add("active");
+  } else {
+    // Если btn не передан (вызов из кода), находим нужную кнопку по порядку
+    const btns = document.querySelectorAll(".pill-btn");
+    if (type === 'now' && btns[0]) btns[0].classList.add("active");
+    if (type === 'next' && btns[1]) btns[1].classList.add("active");
+    if (type === 'all' && btns[2]) btns[2].classList.add("active");
+  }
+  
+  // 3. Перерисовываем сетку кабинетов
+  renderRoomsGrid();
+}
+
 function renderRoomsGrid() {
   const container = document.getElementById("roomsGridContainer");
   if (!container) return;
@@ -1255,7 +1283,43 @@ function renderRoomsGrid() {
   const dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
   const weekStar = WEEK_LIST[state.week].star; 
 
-  // 2. Собираем все кабинеты и их загрузку
+  // 2. Определяем, какие пары показывать
+  let displayPairs = [1, 2, 3, 4, 5, 6, 7];
+  
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const BELL_MIN = {};
+  Object.keys(BELLS).forEach(n => {
+    const [start, end] = BELLS[n].split("–");
+    BELL_MIN[n] = { start: toMin(start), end: toMin(end), num: Number(n) };
+  });
+
+  if (roomQuickFilter === 'now') {
+    let currentPair = null;
+    for (let n in BELL_MIN) {
+      if (nowMin >= BELL_MIN[n].start && nowMin <= BELL_MIN[n].end) {
+        currentPair = Number(n);
+        break;
+      }
+    }
+    displayPairs = currentPair ? [currentPair] : [];
+  } else if (roomQuickFilter === 'next') {
+    let nextPair = null;
+    for (let n in BELL_MIN) {
+      if (nowMin < BELL_MIN[n].start) {
+        nextPair = Number(n);
+        break;
+      }
+    }
+    displayPairs = nextPair ? [nextPair] : [];
+  }
+
+  if (displayPairs.length === 0) {
+    container.innerHTML = "<div class='rooms-empty'>Сейчас нет пар (перемена или отдых)</div>";
+    return;
+  }
+
+  // 3. Собираем все кабинеты
   const allRooms = new Set();
   const busyMap = {}; 
 
@@ -1297,85 +1361,159 @@ function renderRoomsGrid() {
   processBase(RAW_DATA, "college");
   processBase(VUZ_RAW_DATA, "institute");
 
-  const sortedRooms = Array.from(allRooms).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  // 4. Фильтр по номеру аудитории
+  const searchInput = document.getElementById("roomSearchInput");
+  const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+  let sortedRooms = Array.from(allRooms).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  
+  if (searchQuery) {
+    sortedRooms = sortedRooms.filter(r => r.toLowerCase().includes(searchQuery));
+  }
 
   if (sortedRooms.length === 0) {
-    container.innerHTML = "<div class='rooms-empty'>Данных нет</div>";
+    container.innerHTML = "<div class='rooms-empty'>Кабинеты не найдены</div>";
     return;
   }
 
-  // === ПРОВЕРКА НА МОБИЛКУ ===
-  const isMobile = window.innerWidth <= 768;
-
-  if (isMobile) {
-    // ==========================================
-    // МОБИЛЬНАЯ ВЕРСИЯ (КАРТОЧКИ)
-    // ==========================================
-    let html = `<div class="rooms-mobile-list">`;
+  // 5. Рендерим карточки
+  let html = `<div class="rooms-mobile-list">`;
+  
+  sortedRooms.forEach(room => {
+    let pairsHtml = '';
+    let hasFreeInDisplay = false;
     
-    sortedRooms.forEach(room => {
-      let pairsHtml = '';
-      for (let i = 1; i <= 5; i++) {
-        const busyInfo = busyMap[room] && busyMap[room][i];
-        if (busyInfo) {
-          pairsHtml += `
-            <div class="room-pair busy" onclick="alert('${busyInfo.subj}\\nГруппа: ${busyInfo.group}')">
-              <span class="pair-num">${i}</span>
-              <span class="pair-icon">❌</span>
-            </div>
-          `;
-        } else {
-          pairsHtml += `
-            <div class="room-pair free">
-              <span class="pair-num">${i}</span>
-              <span class="pair-icon">✅</span>
-            </div>
-          `;
-        }
+    displayPairs.forEach(i => {
+      const busyInfo = busyMap[room] && busyMap[room][i];
+      if (busyInfo) {
+        const safeSubj = busyInfo.subj.replace(/"/g, "&quot;");
+        const safeGroup = busyInfo.group.replace(/"/g, "&quot;");
+        const safeRoom = room.replace(/"/g, "&quot;");
+        
+        pairsHtml += `
+          <div class="room-pair busy" 
+               data-subject="${safeSubj}" 
+               data-groups="${safeGroup}" 
+               data-room="${safeRoom}">
+            <span class="pair-num">${i}</span>
+            <span class="pair-icon">❌</span>
+          </div>
+        `;
+      } else {
+        hasFreeInDisplay = true;
+        pairsHtml += `
+          <div class="room-pair free">
+            <span class="pair-num">${i}</span>
+            <span class="pair-icon">✅</span>
+          </div>
+        `;
       }
+    });
 
-      html += `
-        <div class="room-card">
-          <div class="room-header">
-            <span class="room-name">🚪 ${room}</span>
-          </div>
-          <div class="room-pairs">
-            ${pairsHtml}
-          </div>
+    const highlightClass = hasFreeInDisplay ? "highlight-free" : "";
+
+    html += `
+      <div class="room-card ${highlightClass}">
+        <div class="room-header">
+          <span class="room-name">🚪 ${room}</span>
         </div>
-      `;
+        <div class="room-pairs">
+          ${pairsHtml}
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+
+  // Навешиваем обработчики на занятые кнопки
+  container.querySelectorAll(".room-pair.busy").forEach(el => {
+    el.addEventListener("click", () => {
+      const subj = el.getAttribute("data-subject") || "—";
+      const groups = el.getAttribute("data-groups") || "—";
+      const room = el.getAttribute("data-room") || "—";
+      
+      const modal = document.getElementById("pairInfoModal");
+      if (!modal) return;
+
+      document.getElementById("pairInfoSubject").textContent = subj;
+      document.getElementById("pairInfoGroups").textContent = groups;
+      document.getElementById("pairInfoRoom").textContent = room;
+      modal.classList.add("open");
     });
-
-    html += `</div>`;
-    container.innerHTML = html;
-
-  } else {
-    // ==========================================
-    // ПК ВЕРСИЯ (ТАБЛИЦА)
-    // ==========================================
-    let html = `<table class="rooms-table"><thead><tr><th>Кабинет</th>`;
-    for (let i = 1; i <= 5; i++) {
-      html += `<th>${i}-я пара</th>`;
-    }
-    html += `</tr></thead><tbody>`;
-
-    sortedRooms.forEach(room => {
-      html += `<tr><td>${room}</td>`;
-      for (let i = 1; i <= 5; i++) {
-        const busyInfo = busyMap[room] && busyMap[room][i];
-        if (busyInfo) {
-          html += `<td class="room-cell busy" title="${busyInfo.subj}">
-            ${busyInfo.subj}
-            <span class="group-name">${busyInfo.group}</span>
-          </td>`;
-        } else {
-          html += `<td class="room-cell free">Свободно</td>`;
-        }
-      }
-      html += `</tr>`;
-    });
-
-    html += `</tbody></table>`;
-    container.innerHTML = html;
-  }
+  });
 }
+
+// Закрытие модалки по клику вне окна
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("pairInfoModal");
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.remove("open");
+    });
+  }
+});
+
+// ============================================================
+//  УМНЫЙ ПОИСК ПО КАБИНЕТАМ (С ЗАДЕРЖКОЙ)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("roomSearchInput");
+  if (!searchInput) return;
+
+  let searchTimeout;
+
+  searchInput.addEventListener("input", () => {
+    // Очищаем предыдущий таймер
+    clearTimeout(searchTimeout);
+    
+    // Ставим новый с задержкой 300 мс (debounce)
+    searchTimeout = setTimeout(() => {
+      renderRoomsGrid();
+    }, 300);
+  });
+});
+
+// ============================================================
+//  АВТО-ФОРМАТИРОВАНИЕ ВВОДА КАБИНЕТА (228 -> 2-28)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("roomSearchInput");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", (e) => {
+    let value = e.target.value;
+
+    // 1. Убираем все нецифровые символы (кроме дефиса)
+    value = value.replace(/[^\d-]/g, "");
+
+    // 2. Если есть цифры и нет дефиса, ставим его после первой цифры
+    // (например, "228" -> "2-28")
+    if (/^\d{2,}$/.test(value)) {
+      // Если ввели больше 1 цифры подряд, вставляем дефис после первой
+      if (value.length > 1 && value.indexOf("-") === -1) {
+        value = value[0] + "-" + value.slice(1);
+      }
+    }
+
+    // 3. Ограничиваем длину (1 цифра этажа + дефис + 2 цифры кабинета = 4 символа)
+    if (value.length > 4 && value.indexOf("-") !== -1) {
+       // Обрезаем лишнее
+       value = value.slice(0, 4);
+    }
+
+    // 4. Если пользователь сам стер дефис, не мешаем ему (например, стер всё)
+    if (value === "-" || value === "") {
+      value = "";
+    }
+
+    // Применяем отформатированное значение обратно в поле
+    e.target.value = value;
+
+    // Вызываем фильтрацию (если мы делали задержку, она сработает)
+    if (typeof renderRoomsGrid === "function") {
+      renderRoomsGrid();
+    }
+  });
+});

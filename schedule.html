@@ -241,9 +241,29 @@
           </div>
         </div>
 
-        <div class="view-switch" style="margin-bottom: 16px; background: var(--bg);">
-          <button class="view-btn active" id="roomDayToday" onclick="setRoomDay('today')">Сегодня</button>
-          <button class="view-btn" id="roomDayTomorrow" onclick="setRoomDay('tomorrow')">Завтра</button>
+              <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
+        <div class="rooms-panel">
+          
+          <!-- Верхняя строка: День + Поиск -->
+          <div class="panel-top">
+            <div class="segmented-control">
+              <button class="seg-btn active" id="roomDayToday" onclick="setRoomDay('today')">Сегодня</button>
+              <button class="seg-btn" id="roomDayTomorrow" onclick="setRoomDay('tomorrow')">Завтра</button>
+            </div>
+            
+            <div class="panel-search">
+              <span>🔍</span>
+              <input type="text" id="roomSearchInput" placeholder="Поиск (напр. 2-28)" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Нижняя строка: Быстрые фильтры -->
+          <div class="panel-bottom">
+            <button class="pill-btn" onclick="setQuickPair('now', this)">⚡ Сейчас</button>
+            <button class="pill-btn" onclick="setQuickPair('next', this)">⏭ Следующая</button>
+            <button class="pill-btn active" onclick="setQuickPair('all', this)">📋 Все пары</button>
+          </div>
+
         </div>
         
         <div class="rooms-legend">
@@ -506,6 +526,29 @@
 </svg>
   </div>
 </div>
+
+  <!-- МОДАЛКА ИНФОРМАЦИИ О ПАРЕ -->
+  <div class="info-modal-overlay" id="pairInfoModal">
+    <div class="info-modal-window">
+      <div class="info-modal-header">
+        <span id="pairInfoIcon">📚</span>
+        <h3 id="pairInfoSubject">Предмет</h3>
+      </div>
+      <div class="info-modal-body">
+        <div class="info-row">
+          <span class="info-label">Группы:</span>
+          <span class="info-value" id="pairInfoGroups">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Аудитория:</span>
+          <span class="info-value" id="pairInfoRoom">—</span>
+        </div>
+      </div>
+      <div class="info-modal-footer">
+        <button class="info-modal-btn" onclick="document.getElementById('pairInfoModal').classList.remove('open')">Понятно</button>
+      </div>
+    </div>
+  </div>
 
  <footer>
     <div class="container">
