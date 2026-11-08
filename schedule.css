@@ -2001,3 +2001,33 @@ header .nav-actions > .nav-burger-btn { order: 2; }
     font-size: 0.85rem;
   }
 }
+
+/* ============================================================
+   БЕЙДЖИКИ КОЛЛЕДЖ / ИНСТИТУТ (ДЛЯ ПРЕПОДАВАТЕЛЕЙ)
+   ============================================================ */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.inst-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.inst-badge--college {
+  background: color-mix(in srgb, #10b981 15%, transparent);
+  color: #10b981;
+  border: 1px solid color-mix(in srgb, #10b981 30%, transparent);
+}
+
+.inst-badge--institute {
+  background: color-mix(in srgb, #8b5cf6 15%, transparent);
+  color: #8b5cf6;
+  border: 1px solid color-mix(in srgb, #8b5cf6 30%, transparent);
+}
