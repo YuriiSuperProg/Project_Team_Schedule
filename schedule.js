@@ -1083,3 +1083,124 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setInterval(() => { if (!state.viewTeacher) { renderDayProgress(); renderTomorrow(); showRandomWish(false); } }, 60000);
 });
+
+// ============================================================
+//  МАСКОТ СОКОЛ: КЛИКИ, АНИМАЦИИ КРЫЛЬЕВ И КЛЮВА
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const mascot = document.getElementById("mascot");
+  const falconWrap = document.getElementById("falconMascot");
+  const bubble = document.getElementById("mascotBubble");
+  
+  if (!mascot || !falconWrap) return;
+
+  let clickCount = 0;
+  let lastClickTime = 0;
+  let isAnimating = false;
+  let currentFlyAnim = null;
+  let currentChirpAnim = null;
+
+  // Функция для нотки при чириканье
+  function spawnNote() {
+    const old = falconWrap.querySelector(".falcon-note");
+    if (old) old.remove();
+
+    const note = document.createElement("span");
+    note.className = "falcon-note";
+    note.textContent = "🎵";
+    falconWrap.appendChild(note);
+    requestAnimationFrame(() => note.classList.add("fly"));
+    setTimeout(() => note.remove(), 1000);
+  }
+
+  falconWrap.addEventListener("click", () => {
+    if (isAnimating) return;
+
+    const now = Date.now();
+    if (now - lastClickTime > 10000) clickCount = 0; // Сброс через 10 сек
+    lastClickTime = now;
+    clickCount++;
+
+    const reaction = clickCount % 2;
+    isAnimating = true;
+
+    if (reaction === 0) {
+      // === ВЗЛЁТ (машет крыльями) ===
+      if (currentFlyAnim) currentFlyAnim.cancel();
+      if (currentChirpAnim) currentChirpAnim.cancel();
+
+      // Анимация всего тела
+      currentFlyAnim = falconWrap.animate([
+        { transform: 'translateY(0) scale(1)' },
+        { transform: 'translateY(-30px) scale(1.05)', offset: 0.4 },
+        { transform: 'translateY(0) scale(1)' }
+      ], {
+        duration: 1200,
+        easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+      });
+
+      // Анимация КРЫЛЬЕВ
+      const wings = falconWrap.querySelectorAll("#falconWingLeft, #falconWingRight");
+      wings.forEach(wing => {
+        const isLeft = wing.id === 'falconWingLeft';
+        const angle = isLeft ? 40 : -40; // Размах
+        wing.animate([
+          { transform: 'rotate(0deg)' },
+          { transform: `rotate(${angle}deg)`, offset: 0.4 },
+          { transform: 'rotate(0deg)' }
+        ], {
+          duration: 1200,
+          easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
+        });
+      });
+
+      currentFlyAnim.onfinish = () => { isAnimating = false; };
+      setTimeout(() => { isAnimating = false; }, 1300);
+      
+      if (bubble) {
+        bubble.textContent = "Вжух! ✈️";
+        bubble.classList.add("show");
+        setTimeout(() => bubble.classList.remove("show"), 2000);
+      }
+
+    } else {
+      // === ЧИРИКАНЬЕ (двигает клювом) ===
+      if (currentFlyAnim) currentFlyAnim.cancel();
+      if (currentChirpAnim) currentChirpAnim.cancel();
+
+      // Легкое покачивание тела
+      currentChirpAnim = falconWrap.animate([
+        { transform: 'translateY(0) scale(1)' },
+        { transform: 'translateY(-2px) scale(1.02)', offset: 0.3 },
+        { transform: 'translateY(0) scale(1)' }
+      ], {
+        duration: 600,
+        easing: 'ease-in-out'
+      });
+
+      // Анимация КЛЮВА
+      const beak = falconWrap.querySelector("#falconBeak");
+      if (beak) {
+        beak.animate([
+          { transform: 'rotateX(0deg) scaleY(1)' },
+          { transform: 'rotateX(-25deg) scaleY(0.7)', offset: 0.5 },
+          { transform: 'rotateX(0deg) scaleY(1)' }
+        ], {
+          duration: 150, // Быстрое щелканье
+          iterations: 4,
+          easing: 'ease-in-out'
+        });
+      }
+
+      currentChirpAnim.onfinish = () => { isAnimating = false; };
+      setTimeout(() => { isAnimating = false; }, 700);
+      
+      spawnNote();
+      if (bubble) {
+        bubble.textContent = "Чирик! 🎵";
+        bubble.classList.add("show");
+        setTimeout(() => bubble.classList.remove("show"), 2000);
+      }
+    }
+  });
+});

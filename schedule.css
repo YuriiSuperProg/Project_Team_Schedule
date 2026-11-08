@@ -2031,3 +2031,171 @@ header .nav-actions > .nav-burger-btn { order: 2; }
   color: #8b5cf6;
   border: 1px solid color-mix(in srgb, #8b5cf6 30%, transparent);
 }
+
+/* ============================================================
+   ФУТЕР
+   ============================================================ */
+footer { 
+  border-top: 1px solid var(--line); 
+  padding: 60px 0 30px; 
+  margin-top: 40px; 
+  background: var(--card); 
+}
+
+.footer-support { 
+  text-align: center; 
+  max-width: 500px; 
+  margin: 0 auto 48px; 
+}
+
+.footer-support h2 { 
+  font-size: 1.4rem; 
+  font-weight: 700; 
+  color: var(--text); 
+  margin-bottom: 8px; 
+  letter-spacing: -.02em; 
+}
+
+.footer-support p { 
+  color: var(--muted); 
+  font-size: 0.95rem; 
+  margin-bottom: 24px; 
+}
+
+.footer-contact { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 16px; 
+  width: 100%; 
+}
+
+.footer-btn { 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 12px; 
+  width: 100%; 
+  max-width: 260px; 
+  padding: 12px 24px; 
+  border-radius: 999px; 
+  background: var(--bg); 
+  color: var(--text); 
+  text-decoration: none; 
+  font-size: 0.9rem; 
+  font-weight: 500; 
+  transition: all 0.2s ease; 
+  border: 1px solid var(--line); 
+}
+
+.footer-btn:hover { 
+  border-color: var(--blue); 
+  color: var(--blue); 
+  transform: translateY(-2px); 
+  box-shadow: var(--shadow-md); 
+}
+
+.footer-btn--tg:hover { 
+  background: #2AABEE; 
+  color: #fff; 
+  border-color: #2AABEE; 
+  box-shadow: 0 4px 12px rgba(42, 171, 238, 0.3); 
+}
+
+.footer-bottom { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding-top: 24px; 
+  border-top: 1px solid var(--line); 
+  color: var(--muted); 
+  font-size: 0.82rem; 
+  flex-wrap: wrap; 
+  gap: 12px; 
+}
+
+.footer-up-btn { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 6px; 
+  padding: 8px 16px; 
+  border-radius: 999px; 
+  background: var(--bg); 
+  color: var(--muted); 
+  text-decoration: none; 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  transition: all 0.2s ease; 
+  border: 1px solid var(--line); 
+}
+
+.footer-up-btn svg { 
+  transition: transform 0.2s ease; 
+}
+
+.footer-up-btn:hover { 
+  background: var(--card); 
+  color: var(--blue); 
+  border-color: var(--blue); 
+  box-shadow: var(--shadow-sm); 
+}
+
+.footer-up-btn:hover svg { 
+  transform: translateY(-3px); 
+}
+
+html.dark footer { 
+  background: var(--bg-2); 
+}
+
+html.dark .footer-btn { 
+  background: var(--card); 
+  border-color: var(--line); 
+}
+
+html.dark .footer-btn:hover { 
+  border-color: var(--blue-2); 
+  color: var(--blue-2); 
+}
+
+html.dark .footer-up-btn { 
+  background: var(--bg); 
+  border-color: var(--line); 
+  color: var(--muted); 
+}
+
+html.dark .footer-up-btn:hover { 
+  background: var(--card); 
+  color: var(--blue-2); 
+  border-color: var(--blue-2); 
+}
+
+@media (max-width: 640px) { 
+  footer { padding: 40px 0 20px; } 
+  .footer-bottom { flex-direction: column; text-align: center; gap: 16px; } 
+}
+
+  /* Сову прячем в угол и делаем компактнее */
+  .mascot { 
+    bottom: 16px; 
+    left: 16px; 
+  }
+  body.modal-open .mascot { 
+    right: 16px !important; 
+    bottom: 16px !important; 
+  }
+  
+  /* Уменьшаем саму картинку */
+  .falcon-svg-wrap {
+    width: 80px !important;  /* Было 120px */
+    height: 80px !important;
+    margin-left: 0 !important;
+  }
+  
+  /* Уменьшаем шрифт в облачке */
+  .mascot-bubble { 
+    font-size: 0.75rem; 
+    padding: 6px 10px; 
+    max-width: 180px;
+    margin-bottom: 8px;
+  }
