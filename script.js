@@ -561,3 +561,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 });
+
+// ============================================================
+//  ГЛОБАЛЬНЫЙ ОБРАБОТЧИК ДЛЯ МОДАЛКИ iOS
+// ============================================================
+window.openIosInstallModal = function(e) {
+  if (e) e.preventDefault();
+  
+  const modal = document.getElementById("iosInstallModal");
+  if (modal) {
+    modal.classList.add("open");
+  } else {
+    console.error("Модалка #iosInstallModal не найдена!");
+  }
+};
+
+// Закрытие модалки по кнопке "Всё понятно" и крестику
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("iosInstallModal");
+  const closeBtn = document.getElementById("closeInstallBtn");
+  const doneBtn = document.getElementById("installDoneBtn");
+  
+  if (closeBtn) closeBtn.onclick = () => modal.classList.remove("open");
+  if (doneBtn) doneBtn.onclick = () => modal.classList.remove("open");
+  
+  if (modal) {
+    modal.onclick = (e) => {
+      if (e.target === modal) modal.classList.remove("open");
+    };
+  }
+});

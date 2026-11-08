@@ -180,7 +180,7 @@
         <div class="emh-content" id="emhContent">
           <h3 class="emh-title" id="emhTitle">Web / PWA</h3>
           <p class="emh-desc" id="emhDesc">Работает в браузере. Можно установить на iPhone как приложение.</p>
-          <a href="#" class="emh-cta" id="emhCta">Как установить?</a>
+          <button class="emh-cta" id="emhCta" onclick="openIosInstallModal(event)">Как установить?</button>
         </div>
       </div>
 
@@ -348,25 +348,44 @@
     <div class="install-window">
       <button class="install-close" id="closeInstallBtn">✕</button>
       <div class="install-icon">🍏</div>
-      <h3>Как установить на iPhone</h3>
+      <h3>Установка на iPhone</h3>
+      <p class="install-subtitle">Это займёт 5 секунд. Работает только в <b>Safari</b>.</p>
+      
       <div class="install-steps">
         <div class="step">
-          <span class="step-num">1</span>
-          <div>Откройте сайт в браузере <b>Safari</b> (это важно).</div>
+          <div class="step-visual">🧭</div>
+          <div class="step-text">
+            <b>1. Откройте сайт в Safari</b>
+            <span>Скопируйте ссылку и вставьте в адресную строку Safari.</span>
+          </div>
         </div>
+        
         <div class="step">
-          <span class="step-num">2</span>
-          <div>Нажмите на кнопку <b>«Поделиться»</b> (квадрат со стрелочкой вверх).</div>
+          <div class="step-visual">📤</div>
+          <div class="step-text">
+            <b>2. Нажмите «Поделиться»</b>
+            <span>Кнопка внизу экрана (квадрат со стрелочкой вверх).</span>
+          </div>
         </div>
+        
         <div class="step">
-          <span class="step-num">3</span>
-          <div>Выберите <b>«На экран "Домой"»</b>.</div>
+          <div class="step-visual">➕</div>
+          <div class="step-text">
+            <b>3. Выберите «На экран "Домой"»</b>
+            <span>Прокрутите список вниз, если не видите.</span>
+          </div>
         </div>
+        
         <div class="step">
-          <span class="step-num">4</span>
-          <div>Нажмите <b>«Добавить»</b>.</div>
+          <div class="step-visual">✅</div>
+          <div class="step-text">
+            <b>4. Нажмите «Добавить»</b>
+            <span>Готово! Иконка появится на рабочем столе.</span>
+          </div>
         </div>
       </div>
+      
+      <button class="install-done-btn" id="installDoneBtn">Всё понятно</button>
     </div>
   </div>
 
