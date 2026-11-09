@@ -152,6 +152,7 @@
         closeModal(); 
         state.week = currentWeek(); 
         renderAll(); 
+        if (window.updateProfileData) window.updateProfileData();
       };
       list.appendChild(el);
     });
@@ -222,10 +223,13 @@
         });
       };
       
-      const collegeDayCards = filterCards((collegeCards[index] && collegeCards[index][w.star]) || [], "college");
-      const instituteDayCards = filterCards((instituteCards[index] && instituteCards[index][w.star]) || [], "institute");
-      const allCards = [...collegeDayCards, ...instituteDayCards];
-      
+     const collegeDayCards = filterCards((collegeCards[index] && collegeCards[index][w.star]) || [], "college");
+     const instituteDayCards = filterCards((instituteCards[index] && instituteCards[index][w.star]) || [], "institute");
+     const allCards = [...collegeDayCards, ...instituteDayCards];
+
+      // НОВАЯ СТРОКА: Сортируем все пары (и ВУЗа, и Колледжа) строго по номеру пары
+      allCards.sort((a, b) => a.number - b.number);
+            
       if (!allCards.length) { 
         const empty = document.createElement("div"); empty.className = "day-empty"; empty.textContent = "Выходной"; 
         block.appendChild(empty); out.appendChild(block); return; 

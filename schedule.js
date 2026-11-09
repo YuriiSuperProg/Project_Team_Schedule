@@ -150,6 +150,85 @@ const WISHES = {
     { emoji: "📊", text: "Пусть графики только растут, а убытки обходят стороной." },
     { emoji: "🧮", text: "Считай правильно, живи красиво." },
     { emoji: "🤝", text: "Связи решают всё. Не забывай общаться!" }
+  ],
+  // ... существующие ЮСП, ИСП, РУПО, ЗСП, ЭСП ...
+
+  "Ла": [
+    { emoji: "🌍", text: "Язык — это ключ к миру. Не теряй его!" },
+    { emoji: "🗣️", text: "Сегодня отличный день для нового слова!" },
+    { emoji: "📖", text: "Перевод — это искусство. Твори!" },
+    { emoji: "🧠", text: "Каждый язык делает тебя умнее." },
+    { emoji: "✈️", text: "Весь мир откроется тебе, когда ты выучишь язык." }
+  ],
+  "ПО": [
+    { emoji: "📚", text: "Учитель — это тот, кто зажигает свет. Зажги его!" },
+    { emoji: "🍎", text: "Пусть твои уроки будут интересными!" },
+    { emoji: "🎓", text: "Ты будущее образования!" },
+    { emoji: "💡", text: "Идеи рождаются в диалоге. Не бойся говорить!" },
+    { emoji: "❤️", text: "Педагогика — это любовь к детям и своему делу." }
+  ],
+  "Ю": [
+    { emoji: "⚖️", text: "Закон — это сила. Изучай его!" },
+    { emoji: "📜", text: "Параграфы сами себя не прочитают. Вперёд!" },
+    { emoji: "🧠", text: "Юрист должен быть умным и хитрым." },
+    { emoji: "⚡", text: "Сегодня отличный день для новых знаний!" },
+    { emoji: "🏛️", text: "Ты будущее правосудия!" }
+  ],
+  "ПР": [
+    { emoji: "🌱", text: "Береги природу, а она сбережёт тебя!" },
+    { emoji: "🌍", text: "Мир нуждается в твоей заботе." },
+    { emoji: "🍃", text: "Вдохни свежий воздух и начни день!" },
+    { emoji: "🔬", text: "Исследуй мир вокруг!" },
+    { emoji: "🌿", text: "Экология — это твой путь!" }
+  ],
+  "ПМБИ": [
+    { emoji: "📊", text: "Данные — это новая нефть. Управляй ими!" },
+    { emoji: "💻", text: "Пусть код работает без багов!" },
+    { emoji: "🧮", text: "Считай правильно — живи красиво!" },
+    { emoji: "📈", text: "Бизнес и математика — отличный тандем!" },
+    { emoji: "🚀", text: "Твои модели принесут пользу!" }
+  ],
+  "ПМИ": [
+    { emoji: "💻", text: "Программирование — это магия!" },
+    { emoji: "🧠", text: "Математика — царица наук. Изучай её!" },
+    { emoji: "🚀", text: "Пусть твой проект летит в продакшн!" },
+    { emoji: "🐛", text: "Найди все баги до защиты!" },
+    { emoji: "📊", text: "Данные решают всё!" }
+  ],
+  "П": [
+    { emoji: "🧠", text: "Психология — это ключ к человеку." },
+    { emoji: "❤️", text: "Слушай и понимай!" },
+    { emoji: "🕊️", text: "Спокойствие и гармония!" },
+    { emoji: "💡", text: "Ты можешь помочь другим!" },
+    { emoji: "🔬", text: "Исследуй человеческий разум!" }
+  ],
+  "Позо": [
+    { emoji: "🎓", text: "Учёба — это свет!" },
+    { emoji: "🧠", text: "Психология — твой путь!" },
+    { emoji: "📚", text: "Параграфы сами себя не прочитают. Вперёд!" },
+    { emoji: "✨", text: "Пусть зачётка пополняется пятёрками!" },
+    { emoji: "❤️", text: "Забота о людях — твоя суперсила." }
+  ],
+  "Юозо": [
+    { emoji: "⚖️", text: "Правосудие — это искусство!" },
+    { emoji: "📜", text: "Закон суров, но это закон!" },
+    { emoji: "🧠", text: "Знания — твоя сила!" },
+    { emoji: "🏛️", text: "Ты будущий защитник прав!" },
+    { emoji: "⚡", text: "Сессия не страшна, когда ты готов!" }
+  ],
+  "Эозо": [
+    { emoji: "📈", text: "Экономика — это жизнь!" },
+    { emoji: "💰", text: "Пусть графики растут, а убытки обходят стороной!" },
+    { emoji: "🧮", text: "Считай правильно, живи красиво!" },
+    { emoji: "📊", text: "Данные — твой инструмент!" },
+    { emoji: "🚀", text: "Вперёд к новым вершинам!" }
+  ],
+  "ЮмП": [
+    { emoji: "⚖️", text: "Магистратура — это новый уровень!" },
+    { emoji: "📜", text: "Право — это система!" },
+    { emoji: "🧠", text: "Исследуй и анализируй!" },
+    { emoji: "🏛️", text: "Ты будущий эксперт!" },
+    { emoji: "⚡", text: "Знания — твоя сила!" }
   ]
 };
 
@@ -616,7 +695,7 @@ function renderSchedule() {
           if (card.until && lessonDateKey > card.until) return false;
           if (card.except && card.except.includes(lessonDateKey)) return false;
 
-                   // Умный поиск: ищем по фамилии (минимум 3 буквы), чтобы не путаться с инициалами
+          // Умный поиск: ищем по фамилии (минимум 3 буквы), чтобы не путаться с инициалами
           const searchName = state.teacher.trim().toLowerCase().split(" ")[0]; // Берем только фамилию
           const hasTeacher = card.teachers.some(t => {
             const teacherName = t.toLowerCase();
@@ -634,6 +713,9 @@ function renderSchedule() {
       const instituteCards = filterCards((instituteSchedule[index] && instituteSchedule[index][w.star]) || [], "institute");
 
       const allCards = [...collegeCards, ...instituteCards];
+      
+      // ИСПРАВЛЕНИЕ: Сортируем объединенный список пар строго по номеру пары
+      allCards.sort((a, b) => a.number - b.number);
 
       if (!allCards.length) {
         const empty = document.createElement("div"); empty.className = "day-empty"; empty.textContent = "Выходной";
@@ -891,6 +973,9 @@ function renderAll() {
   renderTomorrow(); 
   showRandomWish();
   if (window.renderCurrentGroupBanner) window.renderCurrentGroupBanner(state.spec, state.course, state.group);
+  
+  // Добавляем вызов обновления профиля
+  if (window.updateProfileData) window.updateProfileData();
 }
 
 function shiftWeek(d) {
@@ -1230,7 +1315,9 @@ document.addEventListener("DOMContentLoaded", () => {
 //  КАБИНЕТЫ: ИНТЕРАКТИВНАЯ СЕТКА
 // ============================================================
 let roomCurrentDay = 'today';
-let roomQuickFilter = 'all'; // 'all', 'now', 'next'
+let roomQuickFilter = 'all';
+let roomSelectedDate = null; // Если null — используем "сегодня/завтра"
+let roomSelectedPair = 'now'; // 'now', 'all', '1'-'8'
 
 function switchView(view) {
   const btnSchedule = document.getElementById("btnViewSchedule");
@@ -1238,6 +1325,7 @@ function switchView(view) {
   const scheduleContent = document.getElementById("scheduleContent");
   const roomsScreen = document.getElementById("roomsScreen");
   const activistHeader = document.getElementById("activistHeader");
+  const institutionSwitch = document.querySelector(".institution-switch-wrap");
 
   if (view === 'rooms') {
     scheduleContent.style.display = "none";
@@ -1245,6 +1333,10 @@ function switchView(view) {
     btnSchedule.classList.remove("active");
     btnRooms.classList.add("active");
     
+    // Скрываем переключатель Колледж/Институт
+    if (institutionSwitch) institutionSwitch.style.display = "none";
+    
+    // Показываем плашку актива (если студент)
     if (activistHeader) {
       activistHeader.style.display = (state.viewTeacher || state.mode === 'teacher') ? "none" : "flex";
     }
@@ -1255,34 +1347,21 @@ function switchView(view) {
     roomsScreen.style.display = "none";
     btnSchedule.classList.add("active");
     btnRooms.classList.remove("active");
+    
+    // Возвращаем переключатель Колледж/Институт
+    if (institutionSwitch && !state.viewTeacher) {
+      institutionSwitch.style.display = "flex";
+    }
+    
+    renderSchedule();
   }
 }
 
 function setRoomDay(day) {
   roomCurrentDay = day;
+  roomSelectedDate = null; // <--- Сбрасываем дату
   document.getElementById("roomDayToday").classList.toggle("active", day === 'today');
   document.getElementById("roomDayTomorrow").classList.toggle("active", day === 'tomorrow');
-  renderRoomsGrid();
-}
-
-function setQuickPair(type, btn) {
-  roomQuickFilter = type;
-  
-  // 1. Снимаем активный класс со ВСЕХ кнопок
-  document.querySelectorAll(".pill-btn").forEach(b => b.classList.remove("active"));
-  
-  // 2. Добавляем активный класс только на ту, которую нажали
-  if (btn) {
-    btn.classList.add("active");
-  } else {
-    // Если btn не передан (вызов из кода), находим нужную кнопку по порядку
-    const btns = document.querySelectorAll(".pill-btn");
-    if (type === 'now' && btns[0]) btns[0].classList.add("active");
-    if (type === 'next' && btns[1]) btns[1].classList.add("active");
-    if (type === 'all' && btns[2]) btns[2].classList.add("active");
-  }
-  
-  // 3. Перерисовываем сетку кабинетов
   renderRoomsGrid();
 }
 
@@ -1290,52 +1369,66 @@ function renderRoomsGrid() {
   const container = document.getElementById("roomsGridContainer");
   if (!container) return;
 
-  // 1. Определяем день
-  const targetDate = new Date();
-  if (roomCurrentDay === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
-  const dayIndex = (targetDate.getDay() + 6) % 7;
-  const dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
-  const weekStar = WEEK_LIST[state.week].star; 
+  // 1. Определяем дату
+  let targetDate;
+  let dateKey;
+  let dayIndex;
 
-  // 2. Определяем, какие пары показывать
-  let displayPairs = [1, 2, 3, 4, 5, 6, 7, 8];
+  if (roomSelectedDate) {
+    targetDate = roomSelectedDate;
+    dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+    dayIndex = (targetDate.getDay() + 6) % 7;
+  } else {
+    targetDate = new Date();
+    if (roomCurrentDay === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
+    dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+    dayIndex = (targetDate.getDay() + 6) % 7;
+  }
+
+  // Определяем неделю по дате (если выбрана конкретная дата, ищем её неделю)
+  let weekStar = WEEK_LIST[state.week].star;
+  if (roomSelectedDate) {
+    const t = new Date(roomSelectedDate); t.setHours(0,0,0,0);
+    for (let i = 0; i < WEEK_LIST.length; i++) {
+      const a = parseDate(WEEK_LIST[i].start), b = parseDate(WEEK_LIST[i].end);
+      b.setHours(23, 59, 59, 999);
+      if (t >= a && t <= b) { weekStar = WEEK_LIST[i].star; break; }
+    }
+  }
+
+   // 2. Определяем, какие пары показывать
+  let displayPairs = [];
   
-  const now = new Date();
-  const nowMin = now.getHours() * 60 + now.getMinutes();
-  const BELL_MIN = {};
-  Object.keys(BELLS).forEach(n => {
-    const [start, end] = BELLS[n].split("–");
-    BELL_MIN[n] = { start: toMin(start), end: toMin(end), num: Number(n) };
-  });
-
-  if (roomQuickFilter === 'now') {
-    let currentPair = null;
-    for (let n in BELL_MIN) {
-      if (nowMin >= BELL_MIN[n].start && nowMin <= BELL_MIN[n].end) {
-        currentPair = Number(n);
-        break;
-      }
+  if (!roomSelectedPair || roomSelectedPair === 'all') {
+    displayPairs = [1, 2, 3, 4, 5, 6, 7, 8];
+  } else {
+    const num = Number(roomSelectedPair);
+    // Проверяем, что это действительно число от 1 до 8
+    if (!isNaN(num) && num >= 1 && num <= 8) {
+      displayPairs = [num];
+    } else {
+      // Если пришло что-то странное, показываем все пары
+      displayPairs = [1, 2, 3, 4, 5, 6, 7, 8];
     }
-    displayPairs = currentPair ? [currentPair] : [];
-  } else if (roomQuickFilter === 'next') {
-    let nextPair = null;
-    for (let n in BELL_MIN) {
-      if (nowMin < BELL_MIN[n].start) {
-        nextPair = Number(n);
-        break;
-      }
-    }
-    displayPairs = nextPair ? [nextPair] : [];
   }
 
   if (displayPairs.length === 0) {
-    container.innerHTML = "<div class='rooms-empty'>Сейчас нет пар (перемена или отдых)</div>";
+    container.innerHTML = "<div class='rooms-empty'>Пары не выбраны</div>";
     return;
   }
 
-  // 3. Собираем все кабинеты
+  // 3. Собираем кабинеты
   const allRooms = new Set();
   const busyMap = {}; 
+
+  const BASE_ROOMS = [
+    "1-01", "1-02", "1-04", "1-33", "1-36",
+    "2-13", "2-14", "2-17", "2-20", "2-22", "2-23", "2-24", "2-27", "2-28", "2-31", "2-32", "2-33",
+    "3-02", "3-03", "3-09", "3-12", "3-14", "3-15", "3-18", "3-19", "3-20", "3-27", "3-29", "3-30",
+    "4-01",
+    "Актовый зал", "Спортивный зал"
+  ];
+  BASE_ROOMS.forEach(r => allRooms.add(r));
 
   const processBase = (rawData, instType) => {
     const data = buildSchedule(rawData, instType);
@@ -1441,7 +1534,7 @@ function renderRoomsGrid() {
   html += `</div>`;
   container.innerHTML = html;
 
-  // Навешиваем обработчики на занятые кнопки
+  // Обработчики кликов
   container.querySelectorAll(".room-pair.busy").forEach(el => {
     el.addEventListener("click", () => {
       const subj = el.getAttribute("data-subject") || "—";
@@ -1469,7 +1562,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 // ============================================================
-//  ПОИСК И АВТО-ФОРМАТИРОВАНИЕ КАБИНЕТА (228 -> 2-28)
+//  ПОИСК И АВТО-ФОРМАТИРОВАНИЕ КАБИНЕТА
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("roomSearchInput");
@@ -1480,34 +1573,74 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.addEventListener("input", (e) => {
     let value = e.target.value;
 
-    // 1. Убираем все нецифровые символы (кроме дефиса)
-    value = value.replace(/[^\d-]/g, "");
+    // 1. Убираем всё, кроме цифр, букв (рус/лат), пробелов и дефиса
+    value = value.replace(/[^\dа-яА-ЯёЁa-zA-Z\s-]/g, "");
 
-    // 2. Если ввели больше 1 цифры и нет дефиса — ставим его после первой цифры
-    // (например, "228" -> "2-28")
+    // 2. Если пользователь вводит ТОЛЬКО ЦИФРЫ (например, "228"), 
+    // автоматически ставим дефис после первой цифры -> "2-28"
     if (/^\d{2,}$/.test(value) && value.indexOf("-") === -1) {
       value = value[0] + "-" + value.slice(1);
     }
 
-    // 3. Ограничиваем длину (1 цифра этажа + дефис + 2 цифры = 4 символа)
-    if (value.length > 4 && value.indexOf("-") !== -1) {
+    // 3. Ограничиваем длину для цифрового формата (1 цифра + дефис + 2 цифры = 4 символа)
+    // Но если есть буквы (Актовый), не обрезаем.
+    if (/^\d/.test(value) && value.length > 4 && value.indexOf("-") !== -1) {
       value = value.slice(0, 4);
     }
 
-    // 4. Если стерли все — оставляем пустоту
-    if (value === "-" || value === "") {
-      value = "";
-    }
-
-    // Применяем отформатированное значение обратно в поле
+    // Применяем отформатированное значение
     e.target.value = value;
 
-    // 5. Делаем задержку перед фильтрацией (чтобы не лагало при каждом нажатии)
+    // 4. Делаем задержку перед фильтрацией (чтобы не лагало при каждом нажатии)
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       if (typeof renderRoomsGrid === "function") {
         renderRoomsGrid();
       }
     }, 300);
+  });
+});
+
+// ============================================================
+//  КАСТОМНЫЙ СЕЛЕКТ ДЛЯ ВЫБОРА ПАРЫ
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const selectWrap = document.getElementById("roomPairSelectWrap");
+  const selectBtn = document.getElementById("roomPairSelectBtn");
+  const selectMenu = document.getElementById("roomPairSelectMenu");
+  
+  if (!selectWrap || !selectBtn || !selectMenu) return;
+
+  // Открытие/закрытие
+  selectBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    selectWrap.classList.toggle("open");
+  });
+
+  // Выбор элемента
+  selectMenu.querySelectorAll(".custom-select-item").forEach(item => {
+    item.addEventListener("click", () => {
+      const value = item.dataset.value;
+      const text = item.textContent;
+      
+      // Обновляем выбранное значение
+      selectMenu.querySelectorAll(".custom-select-item").forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+      selectBtn.querySelector("span").textContent = text;
+      
+      // Закрываем меню
+      selectWrap.classList.remove("open");
+      
+      // Применяем фильтр
+      roomSelectedPair = value;
+      renderRoomsGrid();
+    });
+  });
+
+  // Закрытие при клике вне селекта
+  document.addEventListener("click", (e) => {
+    if (!selectWrap.contains(e.target)) {
+      selectWrap.classList.remove("open");
+    }
   });
 });

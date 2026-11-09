@@ -3,7 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="img/favicon.png">
+  <!-- Иконка сайта (favicon) -->
+<link rel="icon" type="image/png" href="img/favicon.png">
+
+<!-- Мета-теги для ВКонтакте (Open Graph) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ПараЗвёзд">
+<meta property="og:title" content="ПараЗвёзд — расписание ВФ ВолГУ">
+<meta property="og:description" content="Удобное расписание занятий для студентов и преподавателей. Геймификация, мини-игра и достижения!">
+<meta property="og:url" content="https://yuriisuperprog.github.io/Project_Team_Schedule/">
+
+<!-- Ссылка на картинку-превью. ВАЖНО: путь должен быть абсолютным (начинаться с https://) -->
+<meta property="og:image" content="https://yuriisuperprog.github.io/Project_Team_Schedule/img/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
   <title>Расписание — ПараЗвёзд</title>
   <link rel="stylesheet" href="schedule.css">
   <link rel="stylesheet" href="notifications.css">
@@ -192,7 +205,10 @@
         <div id="out"></div>
       </div>
 
+            <!-- БЛОК КАБИНЕТОВ (Сетка) -->
       <div id="roomsScreen" style="display: none;">
+        
+        <!-- ПЛАШКА ДЛЯ АКТИВА -->
         <div id="activistHeader" class="activist-header" style="display: none;">
           <span class="ah-icon">🌟</span>
           <div class="ah-text">
@@ -201,22 +217,49 @@
           </div>
         </div>
 
+        <!-- ПАНЕЛЬ ФИЛЬТРОВ -->
         <div class="rooms-panel">
-          <div class="panel-top">
-            <div class="segmented-control">
-              <button class="seg-btn active" id="roomDayToday" onclick="setRoomDay('today')">Сегодня</button>
-              <button class="seg-btn" id="roomDayTomorrow" onclick="setRoomDay('tomorrow')">Завтра</button>
+          
+          <!-- Переключатель Сегодня/Завтра -->
+          <div class="segmented-control">
+            <button class="seg-btn active" id="roomDayToday" onclick="setRoomDay('today')">Сегодня</button>
+            <button class="seg-btn" id="roomDayTomorrow" onclick="setRoomDay('tomorrow')">Завтра</button>
+          </div>
+
+          <!-- Поиск -->
+          <div class="panel-search">
+            <span>🔍</span>
+            <input type="text" id="roomSearchInput" placeholder="Поиск (напр. 2-28)" autocomplete="off">
+          </div>
+
+          <!-- Дата и Выбор пары -->
+          <div class="panel-date-pair">
+            <div class="date-input-wrap">
+              <span>📅</span>
+              <input type="text" id="roomDateInput" placeholder="дд.мм.гггг" maxlength="10" inputmode="numeric" autocomplete="off">
             </div>
-            <div class="panel-search">
-              <span>🔍</span>
-              <input type="text" id="roomSearchInput" placeholder="Поиск (напр. 2-28)" autocomplete="off">
+            
+                        <div class="custom-select" id="roomPairSelectWrap">
+              <button class="custom-select-btn" id="roomPairSelectBtn" type="button">
+                <span>Все пары</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div class="custom-select-menu" id="roomPairSelectMenu">
+                <div class="custom-select-item active" data-value="all">Все пары</div>
+                <div class="custom-select-item" data-value="1">1-я пара</div>
+                <div class="custom-select-item" data-value="2">2-я пара</div>
+                <div class="custom-select-item" data-value="3">3-я пара</div>
+                <div class="custom-select-item" data-value="4">4-я пара</div>
+                <div class="custom-select-item" data-value="5">5-я пара</div>
+                <div class="custom-select-item" data-value="6">6-я пара</div>
+                <div class="custom-select-item" data-value="7">7-я пара</div>
+                <div class="custom-select-item" data-value="8">8-я пара</div>
+              </div>
             </div>
           </div>
-          <div class="panel-bottom">
-            <button class="pill-btn" onclick="setQuickPair('now', this)">⚡ Сейчас</button>
-            <button class="pill-btn" onclick="setQuickPair('next', this)">⏭ Следующая</button>
-            <button class="pill-btn active" onclick="setQuickPair('all', this)">📋 Все пары</button>
-          </div>
+
         </div>
         
         <div class="rooms-legend">
@@ -224,9 +267,10 @@
           <span><span class="dot busy"></span> Занято</span>
         </div>
 
-        <div id="roomsGridContainer" class="rooms-scroll-container"></div>
-      </div>
-    </div>
+        <div id="roomsGridContainer" class="rooms-scroll-container">
+          <!-- Сюда JS вставит таблицу -->
+        </div>
+      </div>    </div>
   </main>
 
   <!-- Модалки -->

@@ -262,12 +262,27 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Обновление данных профиля
-  function updateProfileData() {
-    const name = localStorage.getItem("userName") || "Студент";
-    const savedGroupRaw = localStorage.getItem("savedGroup");
-    let group = "Не выбрана";
-    let spec = "—";
+ function updateProfileData() {
+  const name = localStorage.getItem("userName") || "Студент";
+  
+  let group = "Не выбрана";
+  let spec = "—";
+
+  // 1. ПРОВЕРКА: Если включен режим преподавателя (state берется из schedule.js)
+  if (typeof state !== "undefined" && state.viewTeacher && state.teacher) {
+    let teacherDisplayName = state.teacher;
     
+    // Пытаемся достать красивое полное имя из базы преподавателей, если она загружена
+    if (window.ALL_TEACHERS && window.ALL_TEACHERS[state.teacher] && window.ALL_TEACHERS[state.teacher].fullName) {
+      teacherDisplayName = window.ALL_TEACHERS[state.teacher].fullName;
+    }
+    
+    group = `Преподаватель: ${teacherDisplayName}`;
+    spec = "—"; // Специальность для препода не выводим
+  } 
+  // 2. ПРОВЕРКА: Режим студента
+  else {
+    const savedGroupRaw = localStorage.getItem("savedGroup");
     if (savedGroupRaw) {
       try {
         const g = JSON.parse(savedGroupRaw);
@@ -275,51 +290,53 @@ document.addEventListener("DOMContentLoaded", () => {
         spec = g.spec || "—";
       } catch (e) {}
     }
-
-    let visits = parseInt(localStorage.getItem("visitCount") || "0", 10);
-    if (!sessionStorage.getItem("sessionCounted")) {
-      visits++;
-      localStorage.setItem("visitCount", visits);
-      sessionStorage.setItem("sessionCounted", "true");
-    }
-    
-    const level = Math.floor(visits / 5) + 1;
-    const xpInLevel = (visits % 5) * 20;
-
-    // --- СКРЫВАЕМ ДУБЛЬ СПЕЦИАЛЬНОСТИ ---
-    if (elName) elName.textContent = name;
-    if (elGroup) elGroup.textContent = group;
-    
-    if (elSpec) {
-      // Если специальность уже есть в названии группы (например, ЮСП-263) или это прочерк
-      if (group.includes(spec) || spec === "—") {
-        elSpec.style.display = "none"; // Скрываем
-      } else {
-        elSpec.style.display = "inline"; // Показываем
-        elSpec.textContent = spec;
-      }
-    }
-
-    if (elLevel) elLevel.textContent = `LVL ${level}`;
-    if (elXpBar) elXpBar.style.width = `${xpInLevel}%`;
-    if (elXpText) elXpText.textContent = `${xpInLevel} / 100 XP`;
-
-    if (elAvatar) {
-      const savedAvatar = localStorage.getItem("userAvatar") || "🎓";
-      const svg = getAvatarSVG(savedAvatar);
-      
-      if (svg) {
-        elAvatar.innerHTML = svg;
-      } else {
-        elAvatar.textContent = savedAvatar;
-      }
-    }
-    
-    const settingsName = document.getElementById("settingsName");
-    if (settingsName) settingsName.value = name;
-    renderAvatarPicker();
   }
 
+  let visits = parseInt(localStorage.getItem("visitCount") || "0", 10);
+  if (!sessionStorage.getItem("sessionCounted")) {
+    visits++;
+    localStorage.setItem("visitCount", visits);
+    sessionStorage.setItem("sessionCounted", "true");
+  }
+  
+  const level = Math.floor(visits / 5) + 1;
+  const xpInLevel = (visits % 5) * 20;
+
+  // --- ВЫВОД ДАННЫХ ---
+  if (elName) elName.textContent = name;
+  if (elGroup) elGroup.textContent = group;
+  
+  if (elSpec) {
+    // Если специальность уже есть в названии группы (например, ЮСП-263), или это прочерк, или это препод
+    if (group.includes(spec) || spec === "—" || group.startsWith("Преподаватель")) {
+      elSpec.style.display = "none"; // Скрываем
+    } else {
+      elSpec.style.display = "inline"; // Показываем
+      elSpec.textContent = spec;
+    }
+  }
+
+  if (elLevel) elLevel.textContent = `LVL ${level}`;
+  if (elXpBar) elXpBar.style.width = `${xpInLevel}%`;
+  if (elXpText) elXpText.textContent = `${xpInLevel} / 100 XP`;
+
+  if (elAvatar) {
+    const savedAvatar = localStorage.getItem("userAvatar") || "🎓";
+    const svg = getAvatarSVG(savedAvatar);
+    
+    if (svg) {
+      elAvatar.innerHTML = svg;
+    } else {
+      elAvatar.textContent = savedAvatar;
+    }
+  }
+  
+  const settingsName = document.getElementById("settingsName");
+  if (settingsName) settingsName.value = name;
+  renderAvatarPicker();
+}
+  // Делаем функцию глобальной, чтобы её могла вызывать schedule.js и teachers.js
+  window.updateProfileData = updateProfileData;
   // Достижения
   const ACHIEVEMENTS = [
     { id: "firstStep", icon: "🐣", title: "Первый шаг", desc: "Выбрана первая группа" },
@@ -684,3 +701,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+

@@ -801,3 +801,323 @@ header .nav-actions button:not(.nav-burger-btn):hover {
 @media (prefers-reduced-motion: reduce) {
   .falcon-note.fly { animation: none; opacity: 0; }
 }
+
+/* Строка с датой и выбором пары */
+.panel-date-pair {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.date-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 44px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 150px;
+}
+
+.date-input-wrap:focus-within {
+  border-color: var(--c, var(--blue));
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+}
+
+.date-input-wrap span {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+.date-input-wrap input {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  width: 100%;
+}
+
+.room-pair-select {
+  flex: 1;
+  min-width: 150px;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.room-pair-select:focus {
+  border-color: var(--c, var(--blue));
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+}
+
+@media (min-width: 768px) {
+  .panel-date-pair {
+    flex-wrap: nowrap;
+  }
+}
+
+/* ============================================================
+   ПАНЕЛЬ ФИЛЬТРОВ (ОБНОВЛЕННАЯ)
+   ============================================================ */
+.rooms-panel {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.segmented-control {
+  display: flex;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 4px;
+  position: relative;
+  width: 100%;
+}
+
+.seg-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.seg-btn.active {
+  color: #fff;
+  background: var(--c, var(--blue));
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--c, var(--blue)) 30%, transparent);
+}
+
+.panel-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 48px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.panel-search:focus-within {
+  border-color: var(--c, var(--blue));
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+}
+
+.panel-search span { font-size: 1.1rem; opacity: 0.6; }
+.panel-search input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  min-width: 0;
+}
+
+.panel-date-pair {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.date-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 48px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 140px;
+}
+
+.date-input-wrap:focus-within {
+  border-color: var(--c, var(--blue));
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+}
+
+.date-input-wrap span { font-size: 1rem; opacity: 0.6; }
+.date-input-wrap input {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  width: 100%;
+}
+
+.room-pair-select {
+  flex: 1;
+  min-width: 140px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.room-pair-select:focus {
+  border-color: var(--c, var(--blue));
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+}
+
+/* На ПК выстраиваем всё в одну строку */
+@media (min-width: 768px) {
+  .rooms-panel {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .segmented-control { width: 200px; flex-shrink: 0; }
+  .panel-search { flex: 2; max-width: 300px; }
+  .panel-date-pair { flex: 3; max-width: 400px; }
+}
+
+/* ============================================================
+   КАСТОМНЫЙ ВЫПАДАЮЩИЙ СПИСОК (В СТИЛЕ ПРИЛОЖЕНИЯ)
+   ============================================================ */
+.custom-select {
+  position: relative;
+  flex: 1;
+  min-width: 140px;
+}
+
+.custom-select-btn {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.custom-select-btn:hover {
+  border-color: var(--c, var(--blue));
+}
+
+.custom-select-btn svg {
+  transition: transform 0.3s ease;
+  opacity: 0.6;
+}
+
+.custom-select.open .custom-select-btn {
+  border-color: var(--c, var(--blue));
+  background: var(--card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 15%, transparent);
+}
+
+.custom-select.open .custom-select-btn svg {
+  transform: rotate(180deg);
+}
+
+/* Меню */
+.custom-select-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--line);
+  padding: 6px;
+  z-index: 100;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-origin: top center;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.custom-select.open .custom-select-menu {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* Элемент списка */
+.custom-select-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  color: var(--text);
+}
+
+.custom-select-item:hover {
+  background: var(--bg);
+  color: var(--c-text, var(--blue));
+}
+
+.custom-select-item.active {
+  background: var(--c, var(--blue));
+  color: #fff;
+  font-weight: 600;
+}
+
+html.dark .custom-select-menu {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
