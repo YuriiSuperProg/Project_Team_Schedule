@@ -1121,3 +1121,20 @@ header .nav-actions button:not(.nav-burger-btn):hover {
 html.dark .custom-select-menu {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
+
+/* Эффект клика по карточке */
+.card {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.card:active {
+  transform: translateY(-1px) scale(0.98) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+/* Чтобы карточка не сдвигалась при клике в списке преподавателя */
+.card-header {
+  pointer-events: none;
+}

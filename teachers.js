@@ -168,7 +168,7 @@
     if (changeBtn) changeBtn.addEventListener("click", openModal);
   }
 
-  function renderTeacherSchedule() {
+    function renderTeacherSchedule() {
     const out = get$("out"), info = get$("weekInfo"), banner = get$("activeTeacherBanner"), bannerName = get$("activeTeacherName");
     if (!out) return;
     out.innerHTML = "";
@@ -210,7 +210,6 @@
           if (card.until && lessonDateKey > card.until) return false;
           if (card.except && card.except.includes(lessonDateKey)) return false;
           
-          // Ищем по фамилии (первое слово)
           const searchName = state.teacher.trim().toLowerCase().split(" ")[0];
           const hasTeacher = card.teachers.some(t => {
             const teacherName = t.toLowerCase();
@@ -227,7 +226,7 @@
      const instituteDayCards = filterCards((instituteCards[index] && instituteCards[index][w.star]) || [], "institute");
      const allCards = [...collegeDayCards, ...instituteDayCards];
 
-      // НОВАЯ СТРОКА: Сортируем все пары (и ВУЗа, и Колледжа) строго по номеру пары
+      // Сортируем все пары строго по номеру
       allCards.sort((a, b) => a.number - b.number);
             
       if (!allCards.length) { 
@@ -263,6 +262,27 @@
           <div class="m">${card.room}</div>
           ${card.groups.length > 0 ? `<div class="card-groups">${chips}</div>` : ""}
         `;
+        
+        // ДОБАВЛЕНО: Открытие модалки для преподавателя
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
+          const modal = document.getElementById("lessonDetailsModal");
+          if (!modal) return;
+          document.getElementById("ldTime").textContent = card.time;
+          document.getElementById("ldSubject").textContent = card.subject;
+          document.getElementById("ldRoom").textContent = card.room || "Не указана";
+          document.getElementById("ldTeacher").textContent = card.teachers.length ? card.teachers.join(", ") : "Не указан";
+          
+          const groupsContainer = document.getElementById("ldGroups");
+          groupsContainer.innerHTML = "";
+          card.groups.forEach(g => {
+            const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
+            groupsContainer.innerHTML += `<span class="group-chip" style="--chip-c:${col}">${g.group}</span>`;
+          });
+          
+          modal.classList.add("open");
+        });
+
         grid.appendChild(el);
       });
       

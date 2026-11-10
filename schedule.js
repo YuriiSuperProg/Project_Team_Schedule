@@ -381,16 +381,20 @@ function parseText(text) {
   let room = "";
   let textWithoutRoom = t;
 
-  const roomRegex = /(?:ауд\.?|аудитория)\s*([А-Яа-яA-Za-z0-9\/\-]+)(?:\s*$|,)/i;
+  // Ищем "ауд." и забираем ВСЁ, что идет после него (до конца строки)
+  const roomRegex = /(?:ауд\.?|аудитория)\s*([^,]+)/i;
   const roomMatch = t.match(roomRegex);
   
   if (roomMatch) {
     room = roomMatch[1].trim();
-    if (/с\/зал|спортивный/i.test(room)) room = "Спортивный зал";
     textWithoutRoom = t.replace(roomRegex, "").replace(/,\s*$/, "").trim();
-  } else if (/спортивный зал|с\/зал/i.test(t)) {
-    room = "Спортивный зал";
-    textWithoutRoom = t.replace(/,\s*(?:ауд\.?)?\s*(?:спортивный зал|с\/зал)/i, "").trim();
+  } else if (/спортивный зал|с\/зал|актовый зал/i.test(t)) {
+    // Если слова "ауд." нет, но есть название зала
+    const hallMatch = t.match(/(?:спортивный|актовый)\s+зал|с\/зал/i);
+    if (hallMatch) {
+      room = hallMatch[0];
+      textWithoutRoom = t.replace(hallMatch[0], "").replace(/,\s*$/, "").trim();
+    }
   }
 
   let teacher = "";
@@ -695,11 +699,9 @@ function renderSchedule() {
           if (card.until && lessonDateKey > card.until) return false;
           if (card.except && card.except.includes(lessonDateKey)) return false;
 
-          // Умный поиск: ищем по фамилии (минимум 3 буквы), чтобы не путаться с инициалами
-          const searchName = state.teacher.trim().toLowerCase().split(" ")[0]; // Берем только фамилию
+          const searchName = state.teacher.trim().toLowerCase().split(" ")[0]; 
           const hasTeacher = card.teachers.some(t => {
             const teacherName = t.toLowerCase();
-            // Совпадение по фамилии (например, "Ерохина" найдёт "Ерохина О.А.")
             return teacherName.includes(searchName) || searchName.includes(teacherName.split(" ")[0]);
           });
           if (!hasTeacher) return false;
@@ -714,7 +716,7 @@ function renderSchedule() {
 
       const allCards = [...collegeCards, ...instituteCards];
       
-      // ИСПРАВЛЕНИЕ: Сортируем объединенный список пар строго по номеру пары
+      // Сортируем объединенный список пар строго по номеру пары
       allCards.sort((a, b) => a.number - b.number);
 
       if (!allCards.length) {
@@ -745,6 +747,27 @@ function renderSchedule() {
           <div class="m">${card.room}</div>
           ${card.groups.length > 0 ? `<div class="card-groups">${chips}</div>` : ""}
         `;
+        
+        // Открытие модалки для преподавателя
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
+          const modal = document.getElementById("lessonDetailsModal");
+          if (!modal) return;
+          document.getElementById("ldTime").textContent = card.time;
+          document.getElementById("ldSubject").textContent = card.subject;
+          document.getElementById("ldRoom").textContent = card.room || "Не указана";
+          document.getElementById("ldTeacher").textContent = card.teachers.length ? card.teachers.join(", ") : "Не указан";
+          
+          const groupsContainer = document.getElementById("ldGroups");
+          groupsContainer.innerHTML = "";
+          card.groups.forEach(g => {
+            const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
+            groupsContainer.innerHTML += `<span class="group-chip" style="--chip-c:${col}">${g.group}</span>`;
+          });
+          
+          modal.classList.add("open");
+        });
+
         grid.appendChild(el);
       });
 
@@ -803,6 +826,28 @@ function renderSchedule() {
       }).join("");
       
       el.innerHTML = `<div class="t">${card.time}</div><div class="s">${card.subject}</div><div class="m">${card.room}${teachers ? " · " + teachers : ""}</div>${card.groups.length > 1 ? `<div class="card-groups">${chips}</div>` : ""}`;
+      
+      // Открытие модалки для студента
+      el.style.cursor = "pointer";
+      el.addEventListener("click", () => {
+        const modal = document.getElementById("lessonDetailsModal");
+        if (!modal) return;
+        document.getElementById("ldTime").textContent = card.time;
+        document.getElementById("ldSubject").textContent = card.subject;
+        document.getElementById("ldRoom").textContent = card.room || "Не указана";
+        document.getElementById("ldTeacher").textContent = teachers || "Не указан";
+        
+        const groupsContainer = document.getElementById("ldGroups");
+        groupsContainer.innerHTML = "";
+        card.groups.forEach(g => {
+          const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
+          const isMine = (g.group === state.group);
+          groupsContainer.innerHTML += `<span class="group-chip${isMine ? " mine" : ""}" style="--chip-c:${col}">${g.group}</span>`;
+        });
+        
+        modal.classList.add("open");
+      });
+
       grid.appendChild(el);
     });
     
@@ -1365,59 +1410,94 @@ function setRoomDay(day) {
   renderRoomsGrid();
 }
 
+// Вспомогательная функция для очистки и унификации названий кабинетов
+function cleanRoomName(roomStr) {
+  if (!roomStr) return "";
+  let room = roomStr.trim();
+  
+  // Убираем "ауд.", "аудитория" и лишние символы, оставляем буквы, цифры, дефис и пробел
+  room = room.replace(/ауд\.?|аудитория/gi, "").replace(/[^А-Яа-я0-9\-\s]/g, "").trim();
+
+  // Унификация залов
+  if (/актовый/i.test(room)) return "Актовый зал";
+  if (/спортивный|с\/зал/i.test(room)) return "Спортивный зал";
+  
+  // Унификация кабинетов типа 1-1 -> 1-01
+  if (/^[14]\-1$/.test(room)) return room + "-01";
+
+  return room;
+}
+
 function renderRoomsGrid() {
   const container = document.getElementById("roomsGridContainer");
   if (!container) return;
 
-  // 1. Определяем дату
+  // Вспомогательная функция для очистки названий кабинетов (с поддержкой "й")
+  function cleanRoomName(roomStr) {
+    if (!roomStr) return "";
+    let room = roomStr.trim();
+    
+    // Убираем "ауд.", "аудитория" (в любом регистре)
+    room = room.replace(/ауд\.?|аудитория/gi, "").trim();
+    
+    // Убираем кавычки и лишние символы, но ОСТАВЛЯЕМ букву "й" (диапазон 'а-яё')
+    room = room.replace(/[^а-яА-ЯёЁ0-9\-\s]/g, "").trim();
+
+    // Приводим залы к единому виду
+    if (/актов/i.test(room)) return "Актовый зал";
+    if (/спорт|с\/зал/i.test(room)) return "Спортивный зал";
+    
+    // Если это 1-1 или 4-1, приводим к виду 1-01
+    if (/^[14]\-1$/.test(room)) return room + "-01";
+
+    return room;
+  }
+
+  // 1. ОПРЕДЕЛЯЕМ ДАТУ
   let targetDate;
   let dateKey;
   let dayIndex;
+  const dateInput = document.getElementById("roomDateInput") || document.querySelector('input[placeholder*="ДД"]');
+  
+  if (dateInput && dateInput.value.trim().length === 10) {
+    const parts = dateInput.value.trim().split(".");
+    if (parts.length === 3) {
+      targetDate = new Date(parts[2], parts[1] - 1, parts[0]);
+      roomSelectedDate = targetDate;
+    }
+  } else if (!dateInput || !dateInput.value.trim()) {
+    roomSelectedDate = null; 
+  }
 
   if (roomSelectedDate) {
     targetDate = roomSelectedDate;
-    dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
-    dayIndex = (targetDate.getDay() + 6) % 7;
   } else {
     targetDate = new Date();
     if (roomCurrentDay === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
-    dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
-    dayIndex = (targetDate.getDay() + 6) % 7;
   }
-
-  // Определяем неделю по дате (если выбрана конкретная дата, ищем её неделю)
-  let weekStar = WEEK_LIST[state.week].star;
-  if (roomSelectedDate) {
-    const t = new Date(roomSelectedDate); t.setHours(0,0,0,0);
-    for (let i = 0; i < WEEK_LIST.length; i++) {
-      const a = parseDate(WEEK_LIST[i].start), b = parseDate(WEEK_LIST[i].end);
-      b.setHours(23, 59, 59, 999);
-      if (t >= a && t <= b) { weekStar = WEEK_LIST[i].star; break; }
-    }
-  }
-
-   // 2. Определяем, какие пары показывать
-  let displayPairs = [];
   
-  if (!roomSelectedPair || roomSelectedPair === 'all') {
+  dateKey = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}-${String(targetDate.getDate()).padStart(2, "0")}`;
+  dayIndex = (targetDate.getDay() + 6) % 7;
+
+  // Определяем учебную неделю по дате
+  let weekStar = WEEK_LIST[state.week].star;
+  const t = new Date(targetDate); t.setHours(0,0,0,0);
+  for (let i = 0; i < WEEK_LIST.length; i++) {
+    const a = parseDate(WEEK_LIST[i].start), b = parseDate(WEEK_LIST[i].end);
+    b.setHours(23, 59, 59, 999);
+    if (t >= a && t <= b) { weekStar = WEEK_LIST[i].star; break; }
+  }
+
+  // 2. ОПРЕДЕЛЯЕМ ПАРЫ
+  let displayPairs = [];
+  if (!roomSelectedPair || roomSelectedPair === 'all' || roomSelectedPair === 'now') {
     displayPairs = [1, 2, 3, 4, 5, 6, 7, 8];
   } else {
     const num = Number(roomSelectedPair);
-    // Проверяем, что это действительно число от 1 до 8
-    if (!isNaN(num) && num >= 1 && num <= 8) {
-      displayPairs = [num];
-    } else {
-      // Если пришло что-то странное, показываем все пары
-      displayPairs = [1, 2, 3, 4, 5, 6, 7, 8];
-    }
+    displayPairs = (!isNaN(num) && num >= 1 && num <= 8) ? [num] : [1, 2, 3, 4, 5, 6, 7, 8];
   }
 
-  if (displayPairs.length === 0) {
-    container.innerHTML = "<div class='rooms-empty'>Пары не выбраны</div>";
-    return;
-  }
-
-  // 3. Собираем кабинеты
+  // 3. СОБИРАЕМ КАБИНЕТЫ
   const allRooms = new Set();
   const busyMap = {}; 
 
@@ -1425,8 +1505,7 @@ function renderRoomsGrid() {
     "1-01", "1-02", "1-04", "1-33", "1-36",
     "2-13", "2-14", "2-17", "2-20", "2-22", "2-23", "2-24", "2-27", "2-28", "2-31", "2-32", "2-33",
     "3-02", "3-03", "3-09", "3-12", "3-14", "3-15", "3-18", "3-19", "3-20", "3-27", "3-29", "3-30",
-    "4-01",
-    "Актовый зал", "Спортивный зал"
+    "4-01", "Актовый зал", "Спортивный зал"
   ];
   BASE_ROOMS.forEach(r => allRooms.add(r));
 
@@ -1444,7 +1523,8 @@ function renderRoomsGrid() {
             if (p.except && p.except.includes(dateKey)) return;
 
             const parsed = parseText(p.text);
-            const room = parsed.room.replace(/[^А-Яа-я0-9\-\/\s]/g, "").trim();
+            const room = cleanRoomName(parsed.room);
+            
             if (!room) return;
 
             allRooms.add(room);
@@ -1468,12 +1548,11 @@ function renderRoomsGrid() {
   processBase(RAW_DATA, "college");
   processBase(VUZ_RAW_DATA, "institute");
 
-  // 4. Фильтр по номеру аудитории
+  // 4. ФИЛЬТР ПО ПОИСКУ
   const searchInput = document.getElementById("roomSearchInput");
   const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
   let sortedRooms = Array.from(allRooms).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  
   if (searchQuery) {
     sortedRooms = sortedRooms.filter(r => r.toLowerCase().includes(searchQuery));
   }
@@ -1483,9 +1562,8 @@ function renderRoomsGrid() {
     return;
   }
 
-  // 5. Рендерим карточки
+  // 5. РЕНДЕР
   let html = `<div class="rooms-mobile-list">`;
-  
   sortedRooms.forEach(room => {
     let pairsHtml = '';
     let hasFreeInDisplay = false;
@@ -1496,54 +1574,34 @@ function renderRoomsGrid() {
         const safeSubj = busyInfo.subj.replace(/"/g, "&quot;");
         const safeGroup = busyInfo.group.replace(/"/g, "&quot;");
         const safeRoom = room.replace(/"/g, "&quot;");
-        
         pairsHtml += `
-          <div class="room-pair busy" 
-               data-subject="${safeSubj}" 
-               data-groups="${safeGroup}" 
-               data-room="${safeRoom}">
-            <span class="pair-num">${i}</span>
-            <span class="pair-icon">❌</span>
-          </div>
-        `;
+          <div class="room-pair busy" data-subject="${safeSubj}" data-groups="${safeGroup}" data-room="${safeRoom}">
+            <span class="pair-num">${i}</span><span class="pair-icon">❌</span>
+          </div>`;
       } else {
         hasFreeInDisplay = true;
-        pairsHtml += `
-          <div class="room-pair free">
-            <span class="pair-num">${i}</span>
-            <span class="pair-icon">✅</span>
-          </div>
-        `;
+        pairsHtml += `<div class="room-pair free"><span class="pair-num">${i}</span><span class="pair-icon">✅</span></div>`;
       }
     });
 
     const highlightClass = hasFreeInDisplay ? "highlight-free" : "";
-
     html += `
       <div class="room-card ${highlightClass}">
-        <div class="room-header">
-          <span class="room-name">🚪 ${room}</span>
-        </div>
-        <div class="room-pairs">
-          ${pairsHtml}
-        </div>
-      </div>
-    `;
+        <div class="room-header"><span class="room-name">🚪 ${room}</span></div>
+        <div class="room-pairs">${pairsHtml}</div>
+      </div>`;
   });
-
   html += `</div>`;
   container.innerHTML = html;
 
-  // Обработчики кликов
+  // 6. ОБРАБОТЧИКИ КЛИКОВ
   container.querySelectorAll(".room-pair.busy").forEach(el => {
     el.addEventListener("click", () => {
       const subj = el.getAttribute("data-subject") || "—";
       const groups = el.getAttribute("data-groups") || "—";
       const room = el.getAttribute("data-room") || "—";
-      
       const modal = document.getElementById("pairInfoModal");
       if (!modal) return;
-
       document.getElementById("pairInfoSubject").textContent = subj;
       document.getElementById("pairInfoGroups").textContent = groups;
       document.getElementById("pairInfoRoom").textContent = room;
@@ -1643,4 +1701,55 @@ document.addEventListener("DOMContentLoaded", () => {
       selectWrap.classList.remove("open");
     }
   });
+});
+
+// ============================================================
+//  МАСКА ДЛЯ ВВОДА ДАТЫ (ДД.ММ.ГГГГ)
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  // Ищем инпут для даты. Замени ID, если он у тебя называется иначе!
+  const dateInput = document.getElementById("roomDateInput") || document.querySelector('input[type="date"]');
+  
+  if (!dateInput) return;
+
+  // Если это нативный input[type="date"], возможно, стоит сменить его тип на text в HTML,
+  // чтобы маска работала корректно. Но попробуем обработать как есть.
+  
+  dateInput.addEventListener("input", (e) => {
+    let value = e.target.value.replace(/\D/g, ""); // Оставляем только цифры
+    
+    // Ограничиваем длину 8 символами (ДДММГГГГ)
+    if (value.length > 8) value = value.slice(0, 8);
+
+    // Форматируем с точками
+    if (value.length > 4) {
+      value = value.slice(0, 2) + "." + value.slice(2, 4) + "." + value.slice(4);
+    } else if (value.length > 2) {
+      value = value.slice(0, 2) + "." + value.slice(2);
+    }
+
+    e.target.value = value;
+
+    // Если ввели полную дату (10 символов с точками), вызываем поиск
+    if (value.length === 10) {
+      // ВЫЗОВ ФУНКЦИИ ПОИСКА (замени на свою, если она называется иначе)
+      if (typeof renderRoomsGrid === "function") {
+        renderRoomsGrid(); // Обновляем сетку кабинетов
+      }
+    }
+  });
+  
+  // Запрещаем вводить буквы (на всякий случай)
+  dateInput.addEventListener("keypress", (e) => {
+    if (e.key < "0" || e.key > "9") {
+      e.preventDefault();
+    }
+  });
+});
+
+document.addEventListener("click", (e) => {
+  const modal = document.getElementById("lessonDetailsModal");
+  if (modal && e.target === modal) {
+    modal.classList.remove("open");
+  }
 });
