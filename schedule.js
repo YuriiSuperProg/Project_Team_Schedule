@@ -455,8 +455,16 @@ function buildLessonCards(rawData, instType) {
         const parsed = parseText(p.text);
         const stars = p.star ? [p.star] : ["*", "**"];
         
+        // ИСПРАВЛЕНИЕ: Ищем подгруппу в свойстве (subgroup/subgroups) или в тексте ("1 подгруппа", "2 подгруппа")
+        let subValue = p.subgroup || p.subgroups;
+        if (!subValue) {
+          const subMatch = p.text.match(/([12])\s*подгрупп/i);
+          if (subMatch) subValue = Number(subMatch[1]);
+        }
+        
         stars.forEach(star => {
-          const key = [dayIndex, p.number, star, p.time || "", p.from || "", p.until || "", (p.except || []).join(","), parsed.subject.trim(), parsed.room.trim(), parsed.teacher].join("§");
+          // ВАЖНО: Добавляем subValue в ключ, чтобы пары для разных подгрупп не склеивались
+          const key = [dayIndex, p.number, star, p.time || "", p.from || "", p.until || "", (p.except || []).join(","), parsed.subject.trim(), parsed.room.trim(), parsed.teacher, subValue || ""].join("§");
           
           if (!byDay[dayIndex]) byDay[dayIndex] = {};
           if (!byDay[dayIndex][star]) byDay[dayIndex][star] = {};
@@ -473,7 +481,6 @@ function buildLessonCards(rawData, instType) {
           
           const card = bucket[key];
           
-          const subValue = p.subgroup || p.subgroups;
           if (subValue) card.subgroups.add(subValue);
           
           if (parsed.teacher && !card._tSet.has(parsed.teacher)) { 
@@ -592,10 +599,8 @@ function renderFilters() {
   const switchWrap = document.querySelector(".institution-switch-wrap");
   if (switchWrap) {
     if (state.viewTeacher) {
-      // Преподавателю переключатель не нужен — скрываем
       switchWrap.style.display = "none";
     } else {
-      // Студенту — показываем
       switchWrap.style.display = "flex";
     }
   }
@@ -638,22 +643,39 @@ function renderFilters() {
 
   if (state.spec && state.course && state.group) {
     const groupData = SCHEDULE[state.spec][state.course][state.group];
-    const hasSubgroups = Object.values(groupData).some(pairs => pairs.some(p => p.subgroup || p.subgroups));
+    
+    // ИСПРАВЛЕНИЕ: Ищем подгруппы не только в свойствах, но и в тексте пар
+    const hasSubgroups = Object.values(groupData).some(pairs => 
+      pairs.some(p => {
+        if (p.subgroup || p.subgroups) return true;
+        if (p.text && /[12]\s*подгрупп/i.test(p.text)) return true;
+        return false;
+      })
+    );
 
     if (hasSubgroups && subgroupsBox) {
-      rowSub.style.display = "flex"; subgroupsBox.innerHTML = "";
+      if (rowSub) rowSub.style.display = "flex"; 
+      subgroupsBox.innerHTML = "";
       [1, 2].forEach(sub => {
         const b = document.createElement("button");
         b.className = "chip" + (state.subgroup === sub ? " on" : "");
         b.textContent = `Подгруппа ${sub}`;
         b.onclick = () => {
-          state.subgroup = sub; renderFilters(); renderSchedule(); renderDayProgress(); renderTomorrow();
+          state.subgroup = sub; 
+          renderFilters(); 
+          renderSchedule(); 
+          renderDayProgress(); 
+          renderTomorrow();
           if (typeof maybeSayContextual === "function") maybeSayContextual(true);
         };
         subgroupsBox.appendChild(b);
       });
-    } else { rowSub.style.display = "none"; }
-  } else { if (rowSub) rowSub.style.display = "none"; }
+    } else { 
+      if (rowSub) rowSub.style.display = "none"; 
+    }
+  } else { 
+    if (rowSub) rowSub.style.display = "none"; 
+  }
 }
 
 function renderSchedule() {
@@ -1436,20 +1458,11 @@ function renderRoomsGrid() {
   function cleanRoomName(roomStr) {
     if (!roomStr) return "";
     let room = roomStr.trim();
-    
-    // Убираем "ауд.", "аудитория" (в любом регистре)
     room = room.replace(/ауд\.?|аудитория/gi, "").trim();
-    
-    // Убираем кавычки и лишние символы, но ОСТАВЛЯЕМ букву "й" (диапазон 'а-яё')
     room = room.replace(/[^а-яА-ЯёЁ0-9\-\s]/g, "").trim();
-
-    // Приводим залы к единому виду
     if (/актов/i.test(room)) return "Актовый зал";
     if (/спорт|с\/зал/i.test(room)) return "Спортивный зал";
-    
-    // Если это 1-1 или 4-1, приводим к виду 1-01
     if (/^[14]\-1$/.test(room)) return room + "-01";
-
     return room;
   }
 
@@ -1457,21 +1470,12 @@ function renderRoomsGrid() {
   let targetDate;
   let dateKey;
   let dayIndex;
-  const dateInput = document.getElementById("roomDateInput") || document.querySelector('input[placeholder*="ДД"]');
   
-  if (dateInput && dateInput.value.trim().length === 10) {
-    const parts = dateInput.value.trim().split(".");
-    if (parts.length === 3) {
-      targetDate = new Date(parts[2], parts[1] - 1, parts[0]);
-      roomSelectedDate = targetDate;
-    }
-  } else if (!dateInput || !dateInput.value.trim()) {
-    roomSelectedDate = null; 
-  }
-
+  // Если дата выбрана (через кнопку "Найти"), берем её
   if (roomSelectedDate) {
     targetDate = roomSelectedDate;
   } else {
+    // Иначе берем "сегодня" или "завтра"
     targetDate = new Date();
     if (roomCurrentDay === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
   }
@@ -1704,52 +1708,87 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ============================================================
-//  МАСКА ДЛЯ ВВОДА ДАТЫ (ДД.ММ.ГГГГ)
+//  МАСКА ДЛЯ ВВОДА ДАТЫ И КНОПКИ
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
-  // Ищем инпут для даты. Замени ID, если он у тебя называется иначе!
-  const dateInput = document.getElementById("roomDateInput") || document.querySelector('input[type="date"]');
+  const dateInput = document.getElementById("roomDateInput");
+  const dateBtn = document.getElementById("roomDateBtn");
+  const dateReset = document.getElementById("roomDateReset");
   
   if (!dateInput) return;
 
-  // Если это нативный input[type="date"], возможно, стоит сменить его тип на text в HTML,
-  // чтобы маска работала корректно. Но попробуем обработать как есть.
-  
+  // Маска для ввода
   dateInput.addEventListener("input", (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // Оставляем только цифры
-    
-    // Ограничиваем длину 8 символами (ДДММГГГГ)
+    let value = e.target.value.replace(/\D/g, "");
     if (value.length > 8) value = value.slice(0, 8);
 
-    // Форматируем с точками
     if (value.length > 4) {
       value = value.slice(0, 2) + "." + value.slice(2, 4) + "." + value.slice(4);
     } else if (value.length > 2) {
       value = value.slice(0, 2) + "." + value.slice(2);
     }
-
     e.target.value = value;
 
-    // Если ввели полную дату (10 символов с точками), вызываем поиск
-    if (value.length === 10) {
-      // ВЫЗОВ ФУНКЦИИ ПОИСКА (замени на свою, если она называется иначе)
-      if (typeof renderRoomsGrid === "function") {
-        renderRoomsGrid(); // Обновляем сетку кабинетов
+    // Управляем видимостью крестика (сброса)
+    if (dateReset) {
+      if (value.length > 0) {
+        dateReset.style.display = "flex";
+      } else {
+        dateReset.style.display = "none";
       }
     }
   });
   
-  // Запрещаем вводить буквы (на всякий случай)
+  // Запрещаем вводить буквы
   dateInput.addEventListener("keypress", (e) => {
-    if (e.key < "0" || e.key > "9") {
-      e.preventDefault();
-    }
+    if (e.key < "0" || e.key > "9") e.preventDefault();
   });
-});
 
-document.addEventListener("click", (e) => {
-  const modal = document.getElementById("lessonDetailsModal");
-  if (modal && e.target === modal) {
-    modal.classList.remove("open");
+  // Кнопка "Найти"
+  if (dateBtn) {
+    dateBtn.addEventListener("click", () => {
+      if (dateInput.value.trim().length === 10) {
+        // Создаем дату и сохраняем
+        const parts = dateInput.value.trim().split(".");
+        roomSelectedDate = new Date(parts[2], parts[1] - 1, parts[0]);
+        
+        if (typeof renderRoomsGrid === "function") renderRoomsGrid();
+      } else {
+        // Красивое уведомление вместо alert
+        let container = document.getElementById("toastContainer");
+        if (!container) {
+          container = document.createElement("div");
+          container.id = "toastContainer";
+          container.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:25000;display:flex;flex-direction:column;gap:10px;pointer-events:none;align-items:center;";
+          document.body.appendChild(container);
+        }
+        const toast = document.createElement("div");
+        toast.style.cssText = "background:var(--card);color:var(--text);padding:14px 20px;border-radius:12px;box-shadow:var(--shadow-xl);border-left:4px solid var(--c,var(--blue));font-weight:600;font-size:0.95rem;animation:fadeIn 0.3s ease; pointer-events:auto; max-width:90vw; text-align:center;";
+        toast.textContent = "📅 Пожалуйста, введите дату полностью (ДД.ММ.ГГГГ)";
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transition = "opacity 0.3s";
+          setTimeout(() => toast.remove(), 300);
+        }, 3000);
+      }
+    });
+  }
+
+  // Кнопка "Сброс" (крестик)
+  if (dateReset) {
+    dateReset.addEventListener("click", () => {
+      dateInput.value = "";
+      roomSelectedDate = null;
+      dateReset.style.display = "none";
+      
+      // Принудительно переключаем на "Сегодня"
+      if (typeof setRoomDay === "function") {
+        setRoomDay('today');
+      } else if (typeof renderRoomsGrid === "function") {
+        renderRoomsGrid();
+      }
+    });
   }
 });
