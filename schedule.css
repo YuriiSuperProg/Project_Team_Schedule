@@ -610,7 +610,17 @@ footer { border-top: 1px solid var(--line); padding: 60px 0 30px; margin-top: 40
 .footer-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; width: 100%; max-width: 260px; padding: 12px 24px; border-radius: 999px; background: var(--bg); color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; border: 1px solid var(--line); }
 .footer-btn:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .footer-btn--tg:hover { background: #2AABEE; color: #fff; border-color: #2AABEE; box-shadow: 0 4px 12px rgba(42, 171, 238, 0.3); }
-.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.82rem; flex-wrap: wrap; gap: 12px; }
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
 .footer-up-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 999px; background: var(--bg); color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.2s ease; border: 1px solid var(--line); }
 .footer-up-btn svg { transition: transform 0.2s ease; }
 .footer-up-btn:hover { background: var(--card); color: var(--blue); border-color: var(--blue); box-shadow: var(--shadow-sm); }
@@ -1137,4 +1147,157 @@ html.dark .custom-select-menu {
 /* Чтобы карточка не сдвигалась при клике в списке преподавателя */
 .card-header {
   pointer-events: none;
+}
+
+/* ============================================================
+   КНОПКА "НАВЕРХ"
+   ============================================================ */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: var(--card);
+  color: var(--c, var(--blue));
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 9000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.scroll-top-btn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+  background: var(--c, var(--blue));
+  color: #fff;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--c, var(--blue)) 40%, transparent);
+}
+
+html.dark .scroll-top-btn {
+  background: #1A2338;
+  border-color: #2A3448;
+}
+
+/* На мобилках делаем кнопку чуть меньше, чтобы не мешала */
+@media (max-width: 640px) {
+  .scroll-top-btn {
+    bottom: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ============================================================
+   МОБИЛЬНАЯ КАРТОЧКА ПРОГРЕССА (ВРЕМЯ И КНОПКА)
+   ============================================================ */
+
+/* По умолчанию (на ПК) скрываем */
+.dc-mobile-edge-label, 
+.dc-mobile-btn { 
+  display: none; 
+}
+
+/* Показываем на телефонах и планшетах */
+@media (max-width: 800px) {
+  /* Время по краям полосы */
+  .dc-mobile-edge-label { 
+    display: block; 
+    position: absolute; 
+    top: 14px; 
+    font-size: 0.65rem; 
+    font-weight: 600; 
+    color: var(--muted); 
+    z-index: 3; 
+    white-space: nowrap; 
+  }
+  .dc-mobile-edge-label.start { left: 0; }
+  .dc-mobile-edge-label.end { right: 0; }
+
+  /* Кнопка "Посмотреть время пар" */
+  .dc-mobile-btn { 
+    display: block; 
+    margin-top: 12px; 
+    padding: 10px 14px; 
+    background: var(--c-soft, var(--blue-soft)); 
+    color: var(--c-text, var(--blue)); 
+    border: 1px solid color-mix(in srgb, var(--c, var(--blue)) 25%, transparent); 
+    border-radius: 10px; 
+    font: inherit; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    cursor: pointer; 
+    width: 100%; 
+    text-align: center;
+    transition: transform 0.1s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .dc-mobile-btn:active {
+    transform: scale(0.98);
+    background: color-mix(in srgb, var(--c, var(--blue)) 15%, var(--card));
+  }
+}
+
+.bells-modal-overlay {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 40000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+  padding: 20px;
+}
+.bells-modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+.bells-modal {
+  background: var(--card); width: 100%; max-width: 400px;
+  border-radius: 24px; box-shadow: var(--shadow-xl);
+  transform: translateY(10px); /* Уменьшили смещение */
+  transition: transform 0.2s ease; /* Убрали scale, сделали быстрее */
+  overflow: hidden;
+}
+.bells-modal-overlay.open .bells-modal { transform: translateY(0); }
+
+.bells-modal-header { 
+  padding: 20px; 
+  border-bottom: 1px solid var(--line); 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.bells-modal-header h3 { font-size: 1.2rem; font-weight: 800; }
+.bells-modal-close { 
+  background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--muted); 
+  padding: 4px; border-radius: 8px; transition: background 0.15s;
+}
+.bells-modal-close:active { background: var(--line); }
+
+.bells-modal-content { 
+  padding: 20px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+  max-height: 60vh; 
+  overflow-y: auto; 
+  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+}
+.bells-row { 
+  display: flex; justify-content: space-between; font-size: 0.95rem; 
+  padding-bottom: 8px; border-bottom: 1px dashed var(--line); 
+}
+.bells-break { 
+  text-align: center; font-size: 0.8rem; color: var(--muted); margin: 4px 0; 
 }

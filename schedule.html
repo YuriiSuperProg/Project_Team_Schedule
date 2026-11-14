@@ -239,7 +239,7 @@
           <div class="panel-date-pair">
             <div class="date-input-wrap" style="display: flex; align-items: center; padding: 4px 6px 4px 14px; gap: 6px; height: 48px; flex: 1; min-width: 200px;">
               <span style="font-size: 1.1rem; opacity: 0.7;">📅</span>
-              <input type="text" id="roomDateInput" placeholder="ДД.ММ.ГГГГ" maxlength="10" style="flex: 1; border: none; background: transparent; color: var(--text); font: inherit; font-size: 0.95rem; outline: none; min-width: 100px;">
+              <input type="text" id="roomDateInput" placeholder="ДД.ММ или ДД.ММ.ГГГГ" maxlength="10" style="flex: 1; border: none; background: transparent; color: var(--text); font: inherit; font-size: 0.95rem; outline: none; min-width: 100px;">
               
               <button id="roomDateBtn" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; background: var(--c, var(--blue)); color: white; border: none; cursor: pointer; transition: 0.2s;" title="Найти по дате">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -467,13 +467,16 @@
       </div>
       <div class="footer-bottom">
         <div>© ПараЗвёзд 2026. Все права защищены.</div>
-        <a href="#" class="footer-up-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-          Наверх
-        </a>
       </div>
     </div>
   </footer>
+
+  <!-- Кнопка "Наверх" -->
+  <button id="scrollToTopBtn" class="scroll-top-btn" aria-label="Наверх">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 19V5M5 12l7-7 7 7"/>
+    </svg>
+  </button>
 
   <script src="data.js"></script>
   <script src="vuz-data.js"></script>

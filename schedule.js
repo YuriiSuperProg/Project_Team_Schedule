@@ -37,7 +37,6 @@ function validateName(raw) {
   if (!raw || !raw.trim()) return null;
   
   // 1. Очищаем от всего, кроме русских букв, пробелов и дефисов
-  // (убираем цифры, латиницу, спецсимволы)
   let clean = raw.trim().replace(/[^а-яА-ЯёЁ\s\-]/g, "");
   
   // 2. Убираем лишние пробелы и дефисы
@@ -75,17 +74,10 @@ function validateName(raw) {
   // 8. Если словарь имен загружен — проверяем
   if (ALLOWED_NAMES.length > 0) {
     const lowerClean = clean.toLowerCase();
-        const isAllowed = ALLOWED_NAMES.some(n => {
-      // Приводим слово из словаря к нижнему регистру на всякий случай
+    const isAllowed = ALLOWED_NAMES.some(n => {
       const dictName = n.toLowerCase();
-      
-      // Точное совпадение (иван === иван)
       if (lowerClean === dictName) return true;
-      
-      // Разрешаем короткие формы (миша -> михаил, саша -> александр)
-      // Если введенное имя короче 4 символов и словарь начинается с него
       if (lowerClean.length <= 4 && dictName.startsWith(lowerClean)) return true;
-      
       return false;
     });
 
@@ -151,8 +143,6 @@ const WISHES = {
     { emoji: "🧮", text: "Считай правильно, живи красиво." },
     { emoji: "🤝", text: "Связи решают всё. Не забывай общаться!" }
   ],
-  // ... существующие ЮСП, ИСП, РУПО, ЗСП, ЭСП ...
-
   "Ла": [
     { emoji: "🌍", text: "Язык — это ключ к миру. Не теряй его!" },
     { emoji: "🗣️", text: "Сегодня отличный день для нового слова!" },
@@ -381,7 +371,6 @@ function parseText(text) {
   let room = "";
   let textWithoutRoom = t;
 
-  // Ищем "ауд." и забираем ВСЁ, что идет после него (до конца строки)
   const roomRegex = /(?:ауд\.?|аудитория)\s*([^,]+)/i;
   const roomMatch = t.match(roomRegex);
   
@@ -389,7 +378,6 @@ function parseText(text) {
     room = roomMatch[1].trim();
     textWithoutRoom = t.replace(roomRegex, "").replace(/,\s*$/, "").trim();
   } else if (/спортивный зал|с\/зал|актовый зал/i.test(t)) {
-    // Если слова "ауд." нет, но есть название зала
     const hallMatch = t.match(/(?:спортивный|актовый)\s+зал|с\/зал/i);
     if (hallMatch) {
       room = hallMatch[0];
@@ -455,7 +443,6 @@ function buildLessonCards(rawData, instType) {
         const parsed = parseText(p.text);
         const stars = p.star ? [p.star] : ["*", "**"];
         
-        // ИСПРАВЛЕНИЕ: Ищем подгруппу в свойстве (subgroup/subgroups) или в тексте ("1 подгруппа", "2 подгруппа")
         let subValue = p.subgroup || p.subgroups;
         if (!subValue) {
           const subMatch = p.text.match(/([12])\s*подгрупп/i);
@@ -463,7 +450,6 @@ function buildLessonCards(rawData, instType) {
         }
         
         stars.forEach(star => {
-          // ВАЖНО: Добавляем subValue в ключ, чтобы пары для разных подгрупп не склеивались
           const key = [dayIndex, p.number, star, p.time || "", p.from || "", p.until || "", (p.except || []).join(","), parsed.subject.trim(), parsed.room.trim(), parsed.teacher, subValue || ""].join("§");
           
           if (!byDay[dayIndex]) byDay[dayIndex] = {};
@@ -514,6 +500,63 @@ function applyColor(spec) {
   r.setProperty("--c", col.c); r.setProperty("--c-soft", col.soft); r.setProperty("--c-text", col.text);
   const owl = document.querySelector(".owl");
   if (owl) owl.style.boxShadow = `0 10px 24px ${hexToRgba(col.c, 0.3)}`;
+}
+
+// ============================================================
+//  МАСКОТ: КОРОТКИЕ ФРАЗЫ ПРИ ВЫБОРЕ СПЕЦИАЛЬНОСТИ
+// ============================================================
+function saySpecWish(spec) {
+  const bubble = document.getElementById("mascotBubble");
+  if (!bubble) return;
+
+  // Короткие фразы для маскота (подходят для любой специальности)
+  const MASCOT_PHRASES = [
+    "Вперёд к знаниям! 🚀",
+    "Ты справишься! 💪",
+    "Отличный выбор! 🔥",
+    "Учись на отлично! ⭐",
+    "Всё получится! ✨",
+    "Пусть пара будет лёгкой! 🕊️",
+    "Грызи гранит науки! 🧠",
+    "Ты на верном пути! 🎯",
+    "Продуктивного дня! ☀️",
+    "Не сдавайся! 🌟",
+    "Код компилируется! 💻", // Для ИСП/ПМИ
+    "Закон на твоей стороне! ⚖️", // Для юридических
+    "Природа ждёт тебя! 🌿", // Для экологических
+    "Языки — это сила! 🗣️" // Для лингвистов
+  ];
+
+  // Выбираем случайную фразу
+  const randomPhrase = MASCOT_PHRASES[Math.floor(Math.random() * MASCOT_PHRASES.length)];
+
+  // Показываем пузырь
+  bubble.textContent = randomPhrase;
+  bubble.classList.add("show");
+
+  // Анимация взлета и взмаха крыльев
+  const falconWrap = document.getElementById("falconMascot");
+  if (falconWrap && typeof falconWrap.animate === "function") {
+    falconWrap.animate([
+      { transform: 'translateY(0) scale(1)' },
+      { transform: 'translateY(-20px) scale(1.05)', offset: 0.4 },
+      { transform: 'translateY(0) scale(1)' }
+    ], { duration: 1000, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)' });
+
+    const wings = falconWrap.querySelectorAll("#falconWingLeft, #falconWingRight");
+    wings.forEach(wing => {
+      const isLeft = wing.id === 'falconWingLeft';
+      const angle = isLeft ? 30 : -30;
+      wing.animate([
+        { transform: 'rotate(0deg)' },
+        { transform: `rotate(${angle}deg)`, offset: 0.4 },
+        { transform: 'rotate(0deg)' }
+      ], { duration: 1000, easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)' });
+    });
+  }
+
+  // Прячем пузырь через 4 секунды (чтобы не мешал)
+  setTimeout(() => bubble.classList.remove("show"), 4000);
 }
 
 function flapFalcon() {
@@ -595,7 +638,6 @@ function renderChips(containerId, items, current, onClick, label = x => x) {
 }
 
 function renderFilters() {
-  // Управляем видимостью переключателя Колледж/Институт
   const switchWrap = document.querySelector(".institution-switch-wrap");
   if (switchWrap) {
     if (state.viewTeacher) {
@@ -605,17 +647,32 @@ function renderFilters() {
     }
   }
 
-  // Если это режим преподавателя — уходим в его фильтры
   if (window.__renderTeacherFilters && state.viewTeacher) {
     return window.__renderTeacherFilters();
   }
 
   // --- РЕЖИМ СТУДЕНТА ---
   renderChips("specs", Object.keys(SCHEDULE), state.spec, spec => {
-    state.spec = spec; state.course = null; state.group = null; state.subgroup = null; state.week = currentWeek();
-    applyColor(spec); flapFalcon();
+    state.spec = spec; 
+    state.course = null; 
+    state.group = null; 
+    state.subgroup = null; 
+    state.week = currentWeek();
+    
+    applyColor(spec); 
+    flapFalcon();
+    
     if (window.saveUserGroup) window.saveUserGroup(state.spec, state.course, state.group, state.institution);
-    showRandomWish(true); renderAll();
+    
+    // Показываем пожелание в блоке wish
+    showRandomWish(true); 
+    
+    // ВЫЗОВ МАСКОТА: говорим фразу для специальности
+    if (typeof saySpecWish === "function") {
+      saySpecWish(spec);
+    }
+    
+    renderAll();
     window.dispatchEvent(new CustomEvent("specChanged", { detail: spec }));
     if (typeof maybeSayContextual === "function") maybeSayContextual(true);
   });
@@ -644,7 +701,6 @@ function renderFilters() {
   if (state.spec && state.course && state.group) {
     const groupData = SCHEDULE[state.spec][state.course][state.group];
     
-    // ИСПРАВЛЕНИЕ: Ищем подгруппы не только в свойствах, но и в тексте пар
     const hasSubgroups = Object.values(groupData).some(pairs => 
       pairs.some(p => {
         if (p.subgroup || p.subgroups) return true;
@@ -737,8 +793,6 @@ function renderSchedule() {
       const instituteCards = filterCards((instituteSchedule[index] && instituteSchedule[index][w.star]) || [], "institute");
 
       const allCards = [...collegeCards, ...instituteCards];
-      
-      // Сортируем объединенный список пар строго по номеру пары
       allCards.sort((a, b) => a.number - b.number);
 
       if (!allCards.length) {
@@ -770,7 +824,6 @@ function renderSchedule() {
           ${card.groups.length > 0 ? `<div class="card-groups">${chips}</div>` : ""}
         `;
         
-        // Открытие модалки для преподавателя
         el.style.cursor = "pointer";
         el.addEventListener("click", () => {
           const modal = document.getElementById("lessonDetailsModal");
@@ -786,7 +839,6 @@ function renderSchedule() {
             const col = (COLORS[g.spec] && COLORS[g.spec].c) || "#1769E0";
             groupsContainer.innerHTML += `<span class="group-chip" style="--chip-c:${col}">${g.group}</span>`;
           });
-          
           modal.classList.add("open");
         });
 
@@ -849,7 +901,6 @@ function renderSchedule() {
       
       el.innerHTML = `<div class="t">${card.time}</div><div class="s">${card.subject}</div><div class="m">${card.room}${teachers ? " · " + teachers : ""}</div>${card.groups.length > 1 ? `<div class="card-groups">${chips}</div>` : ""}`;
       
-      // Открытие модалки для студента
       el.style.cursor = "pointer";
       el.addEventListener("click", () => {
         const modal = document.getElementById("lessonDetailsModal");
@@ -884,53 +935,105 @@ function renderDayProgress() {
   if (!card || !track) return;
   if (state.viewTeacher) { card.classList.add("hidden"); return; }
   if (!state.spec || !state.group || state.week !== currentWeek()) { card.classList.add("hidden"); return; }
+  
   const now = new Date(), todayIndex = (now.getDay() + 6) % 7;
   const raw = SCHEDULE[state.spec][state.course][state.group];
   let pairs = raw[todayIndex];
   if (!pairs || !pairs.length) { card.classList.add("hidden"); return; }
+  
   const week = WEEK_LIST[state.week];
   pairs = pairs.filter(p => !p.star || p.star === week.star);
   if (!pairs.length) { card.classList.add("hidden"); return; }
+  
   const BELL_MIN = {};
-  Object.keys(BELLS).forEach(n => { const [start, end] = BELLS[n].split("–"); BELL_MIN[n] = { start: toMin(start), end: toMin(end), num: Number(n) }; });
+  Object.keys(BELLS).forEach(n => { 
+    const [start, end] = BELLS[n].split("–"); 
+    BELL_MIN[n] = { start: toMin(start), end: toMin(end), num: Number(n) }; 
+  });
+  
   const seenNum = new Set();
-  const sorted = pairs.filter(p => BELL_MIN[p.number]).filter(p => { if (seenNum.has(p.number)) return false; seenNum.add(p.number); return true; }).map(p => ({ ...BELL_MIN[p.number], pair: p })).sort((a, b) => a.start - b.start);
+  const sorted = pairs
+    .filter(p => BELL_MIN[p.number])
+    .filter(p => { if (seenNum.has(p.number)) return false; seenNum.add(p.number); return true; })
+    .map(p => ({ ...BELL_MIN[p.number], pair: p }))
+    .sort((a, b) => a.start - b.start);
+    
   if (!sorted.length) { card.classList.add("hidden"); return; }
+  
   const dayStart = sorted[0].start, dayEnd = sorted[sorted.length - 1].end;
   const nowMin = now.getHours() * 60 + now.getMinutes();
   card.classList.remove("hidden");
   const total = dayEnd - dayStart;
   let passed = Math.max(0, Math.min(total, nowMin - dayStart));
   const percentVal = Math.round((passed / total) * 100);
+  
   percent.textContent = percentVal + "%";
   const dash = 2 * Math.PI * 52;
   ringFill.style.strokeDasharray = dash;
   ringFill.style.strokeDashoffset = dash - (dash * percentVal / 100);
-  const existingBtn = document.getElementById("dcMobileBtn");
+
+  // 1. Создаем и вставляем кнопку "Посмотреть время пар" (покажется только на мобилке через CSS)
+  let existingBtn = document.getElementById("dcMobileBtn");
   if (existingBtn) existingBtn.remove();
-  if (window.innerWidth <= 640) {
-    const btn = document.createElement("button"); btn.id = "dcMobileBtn"; btn.className = "dc-mobile-btn"; btn.innerHTML = "🕒 Посмотреть время пар";
-    btn.onclick = () => openMobileBells(sorted);
-    leftEl.after(btn);
+
+  const btn = document.createElement("button"); 
+  btn.id = "dcMobileBtn"; 
+  btn.className = "dc-mobile-btn"; 
+  btn.type = "button";
+  btn.innerHTML = "🕒 Посмотреть время пар";
+  
+  // Надежный обработчик клика
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openMobileBells(sorted);
+  });
+  
+  if (leftEl && leftEl.parentNode) {
+    leftEl.parentNode.insertBefore(btn, leftEl.nextSibling);
   }
+
+  // 2. Рисуем полосу прогресса
   track.innerHTML = ""; labels.innerHTML = "";
-  const trackWrap = document.createElement("div"); trackWrap.style.cssText = "position:relative;width:100%;height:100%;"; track.appendChild(trackWrap);
-  const bg = document.createElement("div"); bg.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;background:var(--line);border-radius:999px;"; trackWrap.appendChild(bg);
+  const trackWrap = document.createElement("div"); 
+  trackWrap.style.cssText = "position:relative;width:100%;height:100%;"; 
+  track.appendChild(trackWrap);
+  
+  const bg = document.createElement("div"); 
+  bg.style.cssText = "position:absolute;top:0;left:0;right:0;bottom:0;background:var(--line);border-radius:999px;"; 
+  trackWrap.appendChild(bg);
+  
   for (let i = 0; i < sorted.length; i++) {
     const item = sorted[i];
     const leftP = ((item.start - dayStart) / total) * 100, wP = ((item.end - item.start) / total) * 100;
-    const seg = document.createElement("div"); seg.style.cssText = `position:absolute; left:${leftP}%; width:${wP}%; top:0; bottom:0; background: var(--c, var(--blue)); border-radius: 4px; z-index: 2;`; trackWrap.appendChild(seg);
-    const timeLabel = document.createElement("span"); timeLabel.className = "dc-time-label desktop-only"; timeLabel.textContent = BELLS[item.num].replace("–", " – "); timeLabel.style.left = `${leftP + wP/2}%`; trackWrap.appendChild(timeLabel);
+    const seg = document.createElement("div"); 
+    seg.style.cssText = `position:absolute; left:${leftP}%; width:${wP}%; top:0; bottom:0; background: var(--c, var(--blue)); border-radius: 4px; z-index: 2;`; 
+    trackWrap.appendChild(seg);
+    
+    const timeLabel = document.createElement("span"); 
+    timeLabel.className = "dc-time-label desktop-only"; 
+    timeLabel.textContent = BELLS[item.num].replace("–", " – "); 
+    timeLabel.style.left = `${leftP + wP/2}%`; 
+    trackWrap.appendChild(timeLabel);
+    
     if (i < sorted.length - 1) {
       const nextItem = sorted[i + 1], breakStart = item.end, breakEnd = nextItem.start, breakDuration = breakEnd - breakStart;
       if (breakDuration > 0) {
         const bLeftP = ((breakStart - dayStart) / total) * 100, bWP = ((breakEnd - breakStart) / total) * 100;
-        const breakSeg = document.createElement("div"); breakSeg.style.cssText = `position:absolute; left:${bLeftP}%; width:${bWP}%; top:0; bottom:0; background: var(--c-soft, var(--blue-soft)); z-index: 1;`; trackWrap.appendChild(breakSeg);
-        const bLabel = document.createElement("span"); bLabel.className = "dc-break-label desktop-only"; bLabel.textContent = `${breakDuration} мин`; bLabel.style.left = `${bLeftP + bWP/2}%`; trackWrap.appendChild(bLabel);
+        const breakSeg = document.createElement("div"); 
+        breakSeg.style.cssText = `position:absolute; left:${bLeftP}%; width:${bWP}%; top:0; bottom:0; background: var(--c-soft, var(--blue-soft)); z-index: 1;`; 
+        trackWrap.appendChild(breakSeg);
+        
+        const bLabel = document.createElement("span"); 
+        bLabel.className = "dc-break-label desktop-only"; 
+        bLabel.textContent = `${breakDuration} мин`; 
+        bLabel.style.left = `${bLeftP + bWP/2}%`; 
+        trackWrap.appendChild(bLabel);
       }
     }
   }
   
+  // 3. Время начала и конца дня (на мобилках)
   const mobileStart = document.createElement("span");
   mobileStart.className = "dc-mobile-edge-label start";
   mobileStart.textContent = BELLS[sorted[0].num].split("–")[0];
@@ -941,39 +1044,115 @@ function renderDayProgress() {
   mobileEnd.textContent = BELLS[sorted[sorted.length - 1].num].split("–")[1];
   trackWrap.appendChild(mobileEnd);
 
+  // 4. Текущее время на полосе
   if (nowMin >= dayStart && nowMin <= dayEnd) {
     const nowP = ((nowMin - dayStart) / total) * 100;
-    const dot = document.createElement("div"); dot.style.cssText = `position:absolute; top:50%; left:${nowP}%; width:14px; height:14px; border-radius:50%; background: var(--c, var(--blue)); border: 3px solid var(--card); transform: translate(-50%, -50%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 25%, transparent); z-index: 4;`; trackWrap.appendChild(dot);
-    const nowTimeLabel = document.createElement("span"); const hh = String(now.getHours()).padStart(2, '0'), mm = String(now.getMinutes()).padStart(2, '0');
-    nowTimeLabel.textContent = `${hh}:${mm}`; nowTimeLabel.style.cssText = `position:absolute; left:${nowP}%; top: -22px; transform: translateX(-50%); font-size: 0.7rem; font-weight: 600; color: var(--c, var(--blue)); background: var(--card); padding: 2px 6px; border-radius: 6px; white-space: nowrap; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.08);`; trackWrap.appendChild(nowTimeLabel);
+    const dot = document.createElement("div"); 
+    dot.style.cssText = `position:absolute; top:50%; left:${nowP}%; width:14px; height:14px; border-radius:50%; background: var(--c, var(--blue)); border: 3px solid var(--card); transform: translate(-50%, -50%); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c, var(--blue)) 25%, transparent); z-index: 4;`; 
+    trackWrap.appendChild(dot);
+    
+    const nowTimeLabel = document.createElement("span"); 
+    const hh = String(now.getHours()).padStart(2, '0'), mm = String(now.getMinutes()).padStart(2, '0');
+    nowTimeLabel.textContent = `${hh}:${mm}`; 
+    nowTimeLabel.style.cssText = `position:absolute; left:${nowP}%; top: -22px; transform: translateX(-50%); font-size: 0.7rem; font-weight: 600; color: var(--c, var(--blue)); background: var(--card); padding: 2px 6px; border-radius: 6px; white-space: nowrap; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.08);`; 
+    trackWrap.appendChild(nowTimeLabel);
   }
+  
+  // 5. Обновляем статус (Идёт пара / Перемена)
   let current = null;
   sorted.forEach(item => { if (nowMin >= item.start && nowMin <= item.end) current = item; });
-  if (nowMin < dayStart) { status.textContent = "День ещё не начался"; pairEl.textContent = "Скоро первая пара"; metaEl.textContent = `Начало в ${BELLS[sorted[0].num].split("–")[0]}`; leftEl.textContent = `До начала ${fmtLeft(dayStart - nowMin)}`; return; }
-  if (nowMin > dayEnd) {
-    status.textContent = "День завершён 🎉"; pairEl.textContent = "Хорошего отдыха!"; metaEl.textContent = ""; leftEl.textContent = "До завтра"; return;
+  
+  if (nowMin < dayStart) { 
+    status.textContent = "День ещё не начался"; 
+    pairEl.textContent = "Скоро первая пара"; 
+    metaEl.textContent = `Начало в ${BELLS[sorted[0].num].split("–")[0]}`; 
+    leftEl.textContent = `До начала ${fmtLeft(dayStart - nowMin)}`; 
+    return; 
   }
-  if (current) { status.textContent = `Идёт ${current.num}-я пара`; pairEl.textContent = current.pair.text.split("преп.")[0].trim(); metaEl.textContent = `${BELLS[current.num]}`; leftEl.textContent = `До звонка ${fmtLeft(current.end - nowMin)}`; }
+  if (nowMin > dayEnd) {
+    status.textContent = "День завершён 🎉"; 
+    pairEl.textContent = "Хорошего отдыха!"; 
+    metaEl.textContent = ""; 
+    leftEl.textContent = "До завтра"; 
+    return;
+  }
+  if (current) { 
+    status.textContent = `Идёт ${current.num}-я пара`; 
+    pairEl.textContent = current.pair.text.split("преп.")[0].trim(); 
+    metaEl.textContent = `${BELLS[current.num]}`; 
+    leftEl.textContent = `До звонка ${fmtLeft(current.end - nowMin)}`; 
+  }
   else {
     let currentBreak = null;
-    for (let i = 0; i < sorted.length - 1; i++) { if (nowMin > sorted[i].end && nowMin < sorted[i + 1].start) { currentBreak = { end: sorted[i].end, nextStart: sorted[i + 1].start, nextPair: sorted[i + 1].pair }; break; } }
-    if (currentBreak) { status.textContent = "Перемена"; pairEl.textContent = currentBreak.nextPair.text.split("преп.")[0].trim(); metaEl.textContent = `Следующая в ${BELLS[sorted.find(s => s.start === currentBreak.nextStart).num].split("–")[0]}`; leftEl.textContent = `До пары ${fmtLeft(currentBreak.nextStart - nowMin)}`; }
+    for (let i = 0; i < sorted.length - 1; i++) { 
+      if (nowMin > sorted[i].end && nowMin < sorted[i + 1].start) { 
+        currentBreak = { end: sorted[i].end, nextStart: sorted[i + 1].start, nextPair: sorted[i + 1].pair }; 
+        break; 
+      } 
+    }
+    if (currentBreak) { 
+      status.textContent = "Перемена"; 
+      pairEl.textContent = currentBreak.nextPair.text.split("преп.")[0].trim(); 
+      metaEl.textContent = `Следующая в ${BELLS[sorted.find(s => s.start === currentBreak.nextStart).num].split("–")[0]}`; 
+      leftEl.textContent = `До пары ${fmtLeft(currentBreak.nextStart - nowMin)}`; 
+    }
   }
 }
 function openMobileBells(sorted) {
+  // Ищем старое окно, если есть — удаляем, чтобы не было дублей
   let modal = document.getElementById("bellsModal");
-  if (!modal) {
-    modal = document.createElement("div"); modal.id = "bellsModal"; modal.className = "bells-modal-overlay";
-    modal.innerHTML = `<div class="bells-modal"><div class="bells-modal-header"><h3>Расписание звонков</h3><button class="bells-modal-close" onclick="document.getElementById('bellsModal').classList.remove('open')">✕</button></div><div class="bells-modal-content" id="bellsModalContent"></div></div>`;
-    document.body.appendChild(modal);
-    modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("open"); });
-  }
-  const content = document.getElementById("bellsModalContent"); let html = "";
+  if (modal) modal.remove();
+
+  // Создаем окно заново
+  modal = document.createElement("div"); 
+  modal.id = "bellsModal"; 
+  modal.className = "bells-modal-overlay";
+  
+  // Формируем список пар с переменами
+  let html = "";
   sorted.forEach((item, i) => {
-    const timeStr = BELLS[item.num].replace("–", " – "); html += `<div class="bells-row"><span>${item.num}-я пара</span> <b>${timeStr}</b></div>`;
-    if (i < sorted.length - 1) { const next = sorted[i+1], bDur = next.start - item.end; if (bDur > 0) html += `<div class="bells-break">Перемена: ${bDur} мин</div>`; }
+    const timeStr = BELLS[item.num].replace("–", " – "); 
+    html += `<div class="bells-row"><span>${item.num}-я пара</span> <b>${timeStr}</b></div>`;
+    if (i < sorted.length - 1) { 
+      const next = sorted[i+1], bDur = next.start - item.end; 
+      if (bDur > 0) html += `<div class="bells-break">Перемена: ${bDur} мин</div>`; 
+    }
   });
-  content.innerHTML = html; modal.classList.add("open");
+
+  // Вставляем HTML внутрь
+  modal.innerHTML = `
+    <div class="bells-modal">
+      <div class="bells-modal-header">
+        <h3>Расписание звонков</h3>
+        <button class="bells-modal-close" id="bellsModalClose">✕</button>
+      </div>
+      <div class="bells-modal-content">
+        ${html}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Закрытие по крестику
+  document.getElementById("bellsModalClose").addEventListener("click", () => {
+    modal.classList.remove("open");
+    setTimeout(() => modal.remove(), 300); // Удаляем через 300мс (для анимации)
+  });
+
+  // Закрытие по клику на фон
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("open");
+      setTimeout(() => modal.remove(), 300);
+    }
+  });
+
+  // Показываем окно (с задержкой, чтобы сработала CSS анимация)
+  setTimeout(() => {
+    modal.classList.add("open");
+  }, 10);
+  
   if (window.unlockAchievement) window.unlockAchievement("bellSchedule");
 }
 
@@ -1041,7 +1220,6 @@ function renderAll() {
   showRandomWish();
   if (window.renderCurrentGroupBanner) window.renderCurrentGroupBanner(state.spec, state.course, state.group);
   
-  // Добавляем вызов обновления профиля
   if (window.updateProfileData) window.updateProfileData();
 }
 
@@ -1273,8 +1451,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let isAnimating = false;
   let currentFlyAnim = null;
   let currentChirpAnim = null;
+  let lastMascotPhrase = ""; // Для того чтобы фразы не повторялись
 
-  // Функция для нотки при чириканье
+  // Список коротких фраз
+  const MASCOT_PHRASES = [
+    "Вперёд к знаниям! 🚀",
+    "Ты справишься! 💪",
+    "Отличный выбор! 🔥",
+    "Учись на отлично! ⭐",
+    "Всё получится! ✨",
+    "Пусть пара будет лёгкой! 🕊️",
+    "Грызи гранит науки! 🧠",
+    "Ты на верном пути! 🎯",
+    "Продуктивного дня! ☀️",
+    "Не сдавайся! 🌟",
+    "Код компилируется! 💻",
+    "Закон на твоей стороне! ⚖️",
+    "Природа ждёт тебя! 🌿",
+    "Языки — это сила! 🗣️"
+  ];
+
   function spawnNote() {
     const old = falconWrap.querySelector(".falcon-note");
     if (old) old.remove();
@@ -1291,19 +1487,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isAnimating) return;
 
     const now = Date.now();
-    if (now - lastClickTime > 10000) clickCount = 0; // Сброс через 10 сек
+    if (now - lastClickTime > 10000) clickCount = 0; 
     lastClickTime = now;
     clickCount++;
 
     const reaction = clickCount % 2;
     isAnimating = true;
 
+    // Выбираем случайную фразу (не повторяя предыдущую)
+    let phrase;
+    do { 
+      phrase = MASCOT_PHRASES[Math.floor(Math.random() * MASCOT_PHRASES.length)]; 
+    } while (phrase === lastMascotPhrase && MASCOT_PHRASES.length > 1);
+    
+    lastMascotPhrase = phrase;
+
     if (reaction === 0) {
       // === ВЗЛЁТ (машет крыльями) ===
       if (currentFlyAnim) currentFlyAnim.cancel();
       if (currentChirpAnim) currentChirpAnim.cancel();
 
-      // Анимация всего тела
       currentFlyAnim = falconWrap.animate([
         { transform: 'translateY(0) scale(1)' },
         { transform: 'translateY(-30px) scale(1.05)', offset: 0.4 },
@@ -1313,11 +1516,10 @@ document.addEventListener("DOMContentLoaded", () => {
         easing: 'cubic-bezier(0.25, 0.1, 0.25, 1)'
       });
 
-      // Анимация КРЫЛЬЕВ
       const wings = falconWrap.querySelectorAll("#falconWingLeft, #falconWingRight");
       wings.forEach(wing => {
         const isLeft = wing.id === 'falconWingLeft';
-        const angle = isLeft ? 40 : -40; // Размах
+        const angle = isLeft ? 40 : -40; 
         wing.animate([
           { transform: 'rotate(0deg)' },
           { transform: `rotate(${angle}deg)`, offset: 0.4 },
@@ -1332,9 +1534,9 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => { isAnimating = false; }, 1300);
       
       if (bubble) {
-        bubble.textContent = "Вжух! ✈️";
+        bubble.textContent = phrase; // Показываем фразу
         bubble.classList.add("show");
-        setTimeout(() => bubble.classList.remove("show"), 2000);
+        setTimeout(() => bubble.classList.remove("show"), 4000);
       }
 
     } else {
@@ -1342,7 +1544,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentFlyAnim) currentFlyAnim.cancel();
       if (currentChirpAnim) currentChirpAnim.cancel();
 
-      // Легкое покачивание тела
       currentChirpAnim = falconWrap.animate([
         { transform: 'translateY(0) scale(1)' },
         { transform: 'translateY(-2px) scale(1.02)', offset: 0.3 },
@@ -1352,7 +1553,6 @@ document.addEventListener("DOMContentLoaded", () => {
         easing: 'ease-in-out'
       });
 
-      // Анимация КЛЮВА
       const beak = falconWrap.querySelector("#falconBeak");
       if (beak) {
         beak.animate([
@@ -1360,7 +1560,7 @@ document.addEventListener("DOMContentLoaded", () => {
           { transform: 'rotateX(-25deg) scaleY(0.7)', offset: 0.5 },
           { transform: 'rotateX(0deg) scaleY(1)' }
         ], {
-          duration: 150, // Быстрое щелканье
+          duration: 150, 
           iterations: 4,
           easing: 'ease-in-out'
         });
@@ -1371,20 +1571,21 @@ document.addEventListener("DOMContentLoaded", () => {
       
       spawnNote();
       if (bubble) {
-        bubble.textContent = "Чирик! 🎵";
+        bubble.textContent = phrase; // Показываем фразу
         bubble.classList.add("show");
-        setTimeout(() => bubble.classList.remove("show"), 2000);
+        setTimeout(() => bubble.classList.remove("show"), 4000);
       }
     }
   });
 });
+
 // ============================================================
 //  КАБИНЕТЫ: ИНТЕРАКТИВНАЯ СЕТКА
 // ============================================================
 let roomCurrentDay = 'today';
 let roomQuickFilter = 'all';
-let roomSelectedDate = null; // Если null — используем "сегодня/завтра"
-let roomSelectedPair = 'now'; // 'now', 'all', '1'-'8'
+let roomSelectedDate = null;
+let roomSelectedPair = 'now'; 
 
 function switchView(view) {
   const btnSchedule = document.getElementById("btnViewSchedule");
@@ -1400,10 +1601,8 @@ function switchView(view) {
     btnSchedule.classList.remove("active");
     btnRooms.classList.add("active");
     
-    // Скрываем переключатель Колледж/Институт
     if (institutionSwitch) institutionSwitch.style.display = "none";
     
-    // Показываем плашку актива (если студент)
     if (activistHeader) {
       activistHeader.style.display = (state.viewTeacher || state.mode === 'teacher') ? "none" : "flex";
     }
@@ -1415,7 +1614,6 @@ function switchView(view) {
     btnSchedule.classList.add("active");
     btnRooms.classList.remove("active");
     
-    // Возвращаем переключатель Колледж/Институт
     if (institutionSwitch && !state.viewTeacher) {
       institutionSwitch.style.display = "flex";
     }
@@ -1426,43 +1624,32 @@ function switchView(view) {
 
 function setRoomDay(day) {
   roomCurrentDay = day;
-  roomSelectedDate = null; // <--- Сбрасываем дату
+  roomSelectedDate = null; 
   document.getElementById("roomDayToday").classList.toggle("active", day === 'today');
   document.getElementById("roomDayTomorrow").classList.toggle("active", day === 'tomorrow');
   renderRoomsGrid();
-}
-
-// Вспомогательная функция для очистки и унификации названий кабинетов
-function cleanRoomName(roomStr) {
-  if (!roomStr) return "";
-  let room = roomStr.trim();
-  
-  // Убираем "ауд.", "аудитория" и лишние символы, оставляем буквы, цифры, дефис и пробел
-  room = room.replace(/ауд\.?|аудитория/gi, "").replace(/[^А-Яа-я0-9\-\s]/g, "").trim();
-
-  // Унификация залов
-  if (/актовый/i.test(room)) return "Актовый зал";
-  if (/спортивный|с\/зал/i.test(room)) return "Спортивный зал";
-  
-  // Унификация кабинетов типа 1-1 -> 1-01
-  if (/^[14]\-1$/.test(room)) return room + "-01";
-
-  return room;
 }
 
 function renderRoomsGrid() {
   const container = document.getElementById("roomsGridContainer");
   if (!container) return;
 
-  // Вспомогательная функция для очистки названий кабинетов (с поддержкой "й")
+  // Вспомогательная функция для очистки названий кабинетов
   function cleanRoomName(roomStr) {
     if (!roomStr) return "";
     let room = roomStr.trim();
+    
+    // Сначала проверяем залы (важно, пока не удалили слэш)
+    if (/спорт|с\/зал/i.test(room)) return "Спортивный зал";
+    if (/актов/i.test(room)) return "Актовый зал";
+
+    // Очищаем от "ауд.", кавычек и лишних символов
     room = room.replace(/ауд\.?|аудитория/gi, "").trim();
     room = room.replace(/[^а-яА-ЯёЁ0-9\-\s]/g, "").trim();
-    if (/актов/i.test(room)) return "Актовый зал";
-    if (/спорт|с\/зал/i.test(room)) return "Спортивный зал";
+
+    // Приводим 1-1 к 1-01
     if (/^[14]\-1$/.test(room)) return room + "-01";
+
     return room;
   }
 
@@ -1471,11 +1658,9 @@ function renderRoomsGrid() {
   let dateKey;
   let dayIndex;
   
-  // Если дата выбрана (через кнопку "Найти"), берем её
   if (roomSelectedDate) {
     targetDate = roomSelectedDate;
   } else {
-    // Иначе берем "сегодня" или "завтра"
     targetDate = new Date();
     if (roomCurrentDay === 'tomorrow') targetDate.setDate(targetDate.getDate() + 1);
   }
@@ -1623,6 +1808,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 // ============================================================
 //  ПОИСК И АВТО-ФОРМАТИРОВАНИЕ КАБИНЕТА
 // ============================================================
@@ -1634,31 +1820,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   searchInput.addEventListener("input", (e) => {
     let value = e.target.value;
-
-    // 1. Убираем всё, кроме цифр, букв (рус/лат), пробелов и дефиса
     value = value.replace(/[^\dа-яА-ЯёЁa-zA-Z\s-]/g, "");
 
-    // 2. Если пользователь вводит ТОЛЬКО ЦИФРЫ (например, "228"), 
-    // автоматически ставим дефис после первой цифры -> "2-28"
     if (/^\d{2,}$/.test(value) && value.indexOf("-") === -1) {
       value = value[0] + "-" + value.slice(1);
     }
-
-    // 3. Ограничиваем длину для цифрового формата (1 цифра + дефис + 2 цифры = 4 символа)
-    // Но если есть буквы (Актовый), не обрезаем.
     if (/^\d/.test(value) && value.length > 4 && value.indexOf("-") !== -1) {
       value = value.slice(0, 4);
     }
 
-    // Применяем отформатированное значение
     e.target.value = value;
-
-    // 4. Делаем задержку перед фильтрацией (чтобы не лагало при каждом нажатии)
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      if (typeof renderRoomsGrid === "function") {
-        renderRoomsGrid();
-      }
+      if (typeof renderRoomsGrid === "function") renderRoomsGrid();
     }, 300);
   });
 });
@@ -1673,33 +1847,26 @@ document.addEventListener("DOMContentLoaded", () => {
   
   if (!selectWrap || !selectBtn || !selectMenu) return;
 
-  // Открытие/закрытие
   selectBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     selectWrap.classList.toggle("open");
   });
 
-  // Выбор элемента
   selectMenu.querySelectorAll(".custom-select-item").forEach(item => {
     item.addEventListener("click", () => {
       const value = item.dataset.value;
       const text = item.textContent;
       
-      // Обновляем выбранное значение
       selectMenu.querySelectorAll(".custom-select-item").forEach(i => i.classList.remove("active"));
       item.classList.add("active");
       selectBtn.querySelector("span").textContent = text;
       
-      // Закрываем меню
       selectWrap.classList.remove("open");
-      
-      // Применяем фильтр
       roomSelectedPair = value;
       renderRoomsGrid();
     });
   });
 
-  // Закрытие при клике вне селекта
   document.addEventListener("click", (e) => {
     if (!selectWrap.contains(e.target)) {
       selectWrap.classList.remove("open");
@@ -1717,7 +1884,20 @@ document.addEventListener("DOMContentLoaded", () => {
   
   if (!dateInput) return;
 
-  // Маска для ввода
+  // Функция, которая ставит сегодняшнюю дату в инпут
+  function setTodayDate() {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    dateInput.value = `${dd}.${mm}.${yyyy}`;
+    roomSelectedDate = null; 
+    if (dateReset) dateReset.style.display = "flex"; 
+  }
+
+  setTodayDate();
+
+  // Маска для ввода (поддерживает ДД.ММ и ДД.ММ.ГГГГ)
   dateInput.addEventListener("input", (e) => {
     let value = e.target.value.replace(/\D/g, "");
     if (value.length > 8) value = value.slice(0, 8);
@@ -1729,7 +1909,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     e.target.value = value;
 
-    // Управляем видимостью крестика (сброса)
     if (dateReset) {
       if (value.length > 0) {
         dateReset.style.display = "flex";
@@ -1739,51 +1918,76 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   
-  // Запрещаем вводить буквы
   dateInput.addEventListener("keypress", (e) => {
     if (e.key < "0" || e.key > "9") e.preventDefault();
   });
 
-  // Кнопка "Найти"
+  function showToastMsg(msg) {
+    let container = document.getElementById("toastContainer");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "toastContainer";
+      container.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:25000;display:flex;flex-direction:column;gap:10px;pointer-events:none;align-items:center;";
+      document.body.appendChild(container);
+    }
+    const toast = document.createElement("div");
+    toast.style.cssText = "background:var(--card);color:var(--text);padding:14px 20px;border-radius:12px;box-shadow:var(--shadow-xl);border-left:4px solid var(--c,var(--blue));font-weight:600;font-size:0.95rem;animation:fadeIn 0.3s ease; pointer-events:auto; max-width:90vw; text-align:center;";
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity 0.3s";
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
   if (dateBtn) {
     dateBtn.addEventListener("click", () => {
-      if (dateInput.value.trim().length === 10) {
-        // Создаем дату и сохраняем
-        const parts = dateInput.value.trim().split(".");
-        roomSelectedDate = new Date(parts[2], parts[1] - 1, parts[0]);
-        
-        if (typeof renderRoomsGrid === "function") renderRoomsGrid();
+      const val = dateInput.value.trim();
+      let day, month, year;
+
+      if (val.length === 5) {
+        const parts = val.split(".");
+        day = parseInt(parts[0], 10);
+        month = parseInt(parts[1], 10);
+        year = new Date().getFullYear();
+      } else if (val.length === 10) {
+        const parts = val.split(".");
+        day = parseInt(parts[0], 10);
+        month = parseInt(parts[1], 10);
+        year = parseInt(parts[2], 10);
       } else {
-        // Красивое уведомление вместо alert
-        let container = document.getElementById("toastContainer");
-        if (!container) {
-          container = document.createElement("div");
-          container.id = "toastContainer";
-          container.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:25000;display:flex;flex-direction:column;gap:10px;pointer-events:none;align-items:center;";
-          document.body.appendChild(container);
-        }
-        const toast = document.createElement("div");
-        toast.style.cssText = "background:var(--card);color:var(--text);padding:14px 20px;border-radius:12px;box-shadow:var(--shadow-xl);border-left:4px solid var(--c,var(--blue));font-weight:600;font-size:0.95rem;animation:fadeIn 0.3s ease; pointer-events:auto; max-width:90vw; text-align:center;";
-        toast.textContent = "📅 Пожалуйста, введите дату полностью (ДД.ММ.ГГГГ)";
-        container.appendChild(toast);
-        
-        setTimeout(() => {
-          toast.style.opacity = "0";
-          toast.style.transition = "opacity 0.3s";
-          setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        showToastMsg("📅 Введите дату в формате ДД.ММ или ДД.ММ.ГГГГ");
+        return;
       }
+
+      const testDate = new Date(year, month - 1, day);
+      if (testDate.getFullYear() !== year || testDate.getMonth() !== month - 1 || testDate.getDate() !== day) {
+        showToastMsg("❌ Такой даты не существует! Проверьте день и месяц.");
+        return;
+      }
+
+      const firstWeekStart = parseDate(WEEK_LIST[0].start);
+      const lastWeekEnd = parseDate(WEEK_LIST[WEEK_LIST.length - 1].end);
+      
+      testDate.setHours(0, 0, 0, 0);
+      firstWeekStart.setHours(0, 0, 0, 0);
+      lastWeekEnd.setHours(23, 59, 59, 999);
+
+      if (testDate < firstWeekStart || testDate > lastWeekEnd) {
+        showToastMsg("❌ Эта дата не входит в текущий учебный год!");
+        return;
+      }
+
+      roomSelectedDate = testDate;
+      if (typeof renderRoomsGrid === "function") renderRoomsGrid();
     });
   }
 
-  // Кнопка "Сброс" (крестик)
   if (dateReset) {
     dateReset.addEventListener("click", () => {
-      dateInput.value = "";
-      roomSelectedDate = null;
-      dateReset.style.display = "none";
+      setTodayDate(); 
       
-      // Принудительно переключаем на "Сегодня"
       if (typeof setRoomDay === "function") {
         setRoomDay('today');
       } else if (typeof renderRoomsGrid === "function") {
@@ -1791,4 +1995,27 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+});
+
+// ============================================================
+//  КНОПКА "НАВЕРХ"
+// ============================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const scrollBtn = document.getElementById("scrollToTopBtn");
+  if (!scrollBtn) return;
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      scrollBtn.classList.add("show");
+    } else {
+      scrollBtn.classList.remove("show");
+    }
+  });
+
+  scrollBtn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
 });
